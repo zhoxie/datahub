@@ -1,6 +1,7 @@
 import lookerLogo from '../../images/lookerlogo.png';
 import supersetLogo from '../../images/supersetlogo.png';
 import airflowLogo from '../../images/airflowlogo.png';
+import kafkaLogo from '../../images/kafkalogo.png';
 
 /**
  * TODO: This is a temporary solution, until the backend can push logos for all data platform types.
