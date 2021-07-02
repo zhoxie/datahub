@@ -48,7 +48,6 @@ import static com.linkedin.metadata.dao.Neo4jUtil.createRelationshipFilter;
 
 @Slf4j
 @Component
-@Conditional(MetadataAuditEventsProcessorCondition.class)
 @Import({GraphServiceFactory.class, SearchServiceFactory.class})
 @EnableKafka
 public class MetadataAuditEventsProcessor {
