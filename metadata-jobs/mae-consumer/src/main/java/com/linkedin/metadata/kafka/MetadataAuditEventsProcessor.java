@@ -59,6 +59,7 @@ public class MetadataAuditEventsProcessor {
 
   @Autowired
   public MetadataAuditEventsProcessor(GraphService graphService, SearchService searchService, UsageService usageService) {
+
     _graphService = graphService;
     _searchService = searchService;
     _usageService = usageService;
@@ -66,6 +67,8 @@ public class MetadataAuditEventsProcessor {
     _graphService.configure();
     _searchService.configure();
     _usageService.configure();
+    log.info("MetadataAuditEventsProcessor init.");
+
   }
 
   @KafkaListener(id = "${KAFKA_CONSUMER_GROUP_ID:mae-consumer-job-client}", topics = "${KAFKA_TOPIC_NAME:"
