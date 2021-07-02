@@ -26,7 +26,7 @@ public class DataJobDAOFactory {
   private ApplicationContext applicationContext;
 
   @Bean(name = "dataJobDAO")
-  @DependsOn({"gmsEbeanServiceConfig", "kafkaEventProducer", TopicConventionFactory.TOPIC_CONVENTION_BEAN})
+    @DependsOn({"gmsEbeanServiceConfig", "kafkaEventProducer", TopicConventionFactory.TOPIC_CONVENTION_BEAN})
   @Nonnull
   protected EbeanLocalDAO<DataJobAspect, DataJobUrn> createInstance() {
     KafkaMetadataEventProducer<DataJobSnapshot, DataJobAspect, DataJobUrn> producer =

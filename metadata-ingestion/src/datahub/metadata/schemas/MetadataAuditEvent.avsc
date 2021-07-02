@@ -2790,6 +2790,243 @@
         },
         {
           "type": "record",
+          "name": "DatasourceSnapshot",
+          "namespace": "com.linkedin.pegasus2avro.metadata.snapshot",
+          "fields": [
+            {
+              "name": "urn",
+              "type": "string",
+              "doc": "URN for the entity the metadata snapshot is associated with.",
+              "java": {
+                "class": "com.linkedin.pegasus2avro.common.urn.DatasourceUrn"
+              }
+            },
+            {
+              "name": "aspects",
+              "type": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "record",
+                    "name": "DatasourceKey",
+                    "namespace": "com.linkedin.pegasus2avro.metadata.key",
+                    "doc": "Key for a Datasource",
+                    "fields": [
+                      {
+                        "name": "platform",
+                        "type": "string",
+                        "doc": "Data platform urn associated with the datasource",
+                        "Searchable": {
+                          "addToFilters": true,
+                          "fieldType": "URN"
+                        },
+                        "java": {
+                          "class": "com.linkedin.pegasus2avro.common.urn.Urn"
+                        }
+                      },
+                      {
+                        "name": "name",
+                        "type": "string",
+                        "doc": "Datasource native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+                        "Searchable": {
+                          "boostScore": 10.0,
+                          "enableAutocomplete": true,
+                          "fieldType": "TEXT_PARTIAL"
+                        }
+                      },
+                      {
+                        "name": "origin",
+                        "type": "com.linkedin.pegasus2avro.common.FabricType",
+                        "doc": "Fabric type where datasource belongs to or where it was generated.",
+                        "Searchable": {
+                          "addToFilters": true,
+                          "fieldType": "TEXT_PARTIAL",
+                          "queryByDefault": false
+                        }
+                      }
+                    ],
+                    "Aspect": {
+                      "name": "datasourceKey"
+                    }
+                  },
+                  {
+                    "type": "record",
+                    "name": "DatasourceProperties",
+                    "namespace": "com.linkedin.pegasus2avro.datasource",
+                    "doc": "Properties associated with a Datasource",
+                    "fields": [
+                      {
+                        "name": "customProperties",
+                        "type": {
+                          "type": "map",
+                          "values": "string"
+                        },
+                        "doc": "Custom property bag.",
+                        "default": {}
+                      },
+                      {
+                        "name": "externalUrl",
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "doc": "URL where the reference exist",
+                        "default": null,
+                        "java": {
+                          "class": "com.linkedin.pegasus2avro.common.url.Url",
+                          "coercerClass": "com.linkedin.pegasus2avro.common.url.UrlCoercer"
+                        }
+                      },
+                      {
+                        "name": "description",
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "doc": "Documentation of the datasource",
+                        "default": null,
+                        "Searchable": {
+                          "fieldType": "TEXT",
+                          "hasValuesFieldName": "hasDescription"
+                        }
+                      },
+                      {
+                        "name": "uri",
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "doc": "The abstracted URI such as hdfs:///data/tracking/PageViewEvent, file:///dir/file_name. Uri should not include any environment specific properties. Some datasources might not have a standardized uri, which makes this field optional (i.e. kafka topic).",
+                        "default": null,
+                        "java": {
+                          "class": "java.net.URI"
+                        }
+                      },
+                      {
+                        "name": "tags",
+                        "type": {
+                          "type": "array",
+                          "items": "string"
+                        },
+                        "doc": "[Legacy] Unstructured tags for the datasource. Structured tags can be applied via the `GlobalTags` aspect.",
+                        "default": []
+                      }
+                    ],
+                    "Aspect": {
+                      "name": "datasourceProperties"
+                    }
+                  },
+                  {
+                    "type": "record",
+                    "name": "EditableDatasourceProperties",
+                    "namespace": "com.linkedin.pegasus2avro.datasource",
+                    "doc": "EditableDatasourceProperties stores editable changes made to datasource properties. This separates changes made from\ningestion pipelines and edits in the UI to avoid accidental overwrites of user-provided data by ingestion pipelines",
+                    "fields": [
+                      {
+                        "name": "created",
+                        "type": "com.linkedin.pegasus2avro.common.AuditStamp",
+                        "doc": "An AuditStamp corresponding to the creation of this resource/association/sub-resource"
+                      },
+                      {
+                        "name": "lastModified",
+                        "type": "com.linkedin.pegasus2avro.common.AuditStamp",
+                        "doc": "An AuditStamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+                      },
+                      {
+                        "name": "deleted",
+                        "type": [
+                          "null",
+                          "com.linkedin.pegasus2avro.common.AuditStamp"
+                        ],
+                        "doc": "An AuditStamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+                        "default": null
+                      },
+                      {
+                        "name": "description",
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "doc": "Documentation of the datasource",
+                        "default": null,
+                        "Searchable": {
+                          "fieldName": "editedDescription",
+                          "fieldType": "TEXT"
+                        }
+                      }
+                    ],
+                    "Aspect": {
+                      "name": "editableDatasourceProperties"
+                    }
+                  },
+                  {
+                    "type": "record",
+                    "name": "DatasourceDeprecation",
+                    "namespace": "com.linkedin.pegasus2avro.datasource",
+                    "doc": "Datasource deprecation status",
+                    "fields": [
+                      {
+                        "name": "deprecated",
+                        "type": "boolean",
+                        "doc": "Whether the datasource is deprecated by owner.",
+                        "Searchable": {
+                          "fieldType": "BOOLEAN",
+                          "weightsPerFieldValue": {
+                            "true": 0.5
+                          }
+                        }
+                      },
+                      {
+                        "name": "decommissionTime",
+                        "type": [
+                          "null",
+                          "long"
+                        ],
+                        "doc": "The time user plan to decommission this datasource.",
+                        "default": null
+                      },
+                      {
+                        "name": "note",
+                        "type": "string",
+                        "doc": "Additional information about the datasource deprecation plan, such as the wiki, doc, RB."
+                      },
+                      {
+                        "name": "actor",
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "doc": "The corpuser URN which will be credited for modifying this deprecation content.",
+                        "default": null,
+                        "java": {
+                          "class": "com.linkedin.pegasus2avro.common.urn.Urn"
+                        }
+                      }
+                    ],
+                    "Aspect": {
+                      "name": "datasourceDeprecation"
+                    }
+                  },
+                  "com.linkedin.pegasus2avro.common.InstitutionalMemory",
+                  "com.linkedin.pegasus2avro.common.Ownership",
+                  "com.linkedin.pegasus2avro.common.Status",
+                  "com.linkedin.pegasus2avro.schema.SchemaMetadata",
+                  "com.linkedin.pegasus2avro.schema.EditableSchemaMetadata",
+                  "com.linkedin.pegasus2avro.common.GlobalTags",
+                  "com.linkedin.pegasus2avro.common.GlossaryTerms",
+                  "com.linkedin.pegasus2avro.common.BrowsePaths"
+                ]
+              },
+              "doc": "The list of metadata aspects associated with the datasource. Depending on the use case, this can either be all, or a selection, of supported aspects."
+            }
+          ],
+          "Entity": {
+            "keyAspect": "datasourceKey",
+            "name": "datasource"
+          }
+        },
+        {
+          "type": "record",
           "name": "DataProcessSnapshot",
           "namespace": "com.linkedin.pegasus2avro.metadata.snapshot",
           "doc": "A metadata snapshot for a specific Data process entity.",
@@ -4502,6 +4739,7 @@
         "com.linkedin.pegasus2avro.metadata.snapshot.DataFlowSnapshot",
         "com.linkedin.pegasus2avro.metadata.snapshot.DataJobSnapshot",
         "com.linkedin.pegasus2avro.metadata.snapshot.DatasetSnapshot",
+        "com.linkedin.pegasus2avro.metadata.snapshot.DatasourceSnapshot",
         "com.linkedin.pegasus2avro.metadata.snapshot.DataProcessSnapshot",
         "com.linkedin.pegasus2avro.metadata.snapshot.DataPlatformSnapshot",
         "com.linkedin.pegasus2avro.metadata.snapshot.MLModelSnapshot",

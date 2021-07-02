@@ -27,6 +27,7 @@ public class RequestBuilders {
           add(new DataPlatformActionRequestBuilder());
           add(new DataProcessActionRequestBuilder());
           add(new DatasetActionRequestBuilder());
+          add(new DatasourceActionRequestBuilder());
           add(new MLModelActionRequestBuilder());
           add(new TagActionRequestBuilder());
           add(new GlossaryTermActionRequestBuilder());

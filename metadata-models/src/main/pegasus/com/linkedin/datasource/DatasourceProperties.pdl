@@ -1,0 +1,33 @@
+namespace com.linkedin.datasource
+
+import com.linkedin.common.Uri
+import com.linkedin.common.CustomProperties
+import com.linkedin.common.ExternalReference
+
+/**
+ * Properties associated with a Datasource
+ */
+@Aspect = {
+  "name": "datasourceProperties"
+}
+record DatasourceProperties includes CustomProperties, ExternalReference {
+
+  /**
+   * Documentation of the datasource
+   */
+  @Searchable = {
+    "fieldType": "TEXT",
+    "hasValuesFieldName": "hasDescription"
+  }
+  description: optional string
+
+  /**
+   * The abstracted URI such as hdfs:///data/tracking/PageViewEvent, file:///dir/file_name. Uri should not include any environment specific properties. Some datasources might not have a standardized uri, which makes this field optional (i.e. kafka topic).
+   */
+  uri: optional Uri
+
+  /**
+   * [Legacy] Unstructured tags for the datasource. Structured tags can be applied via the `GlobalTags` aspect.
+   */
+  tags: array[string] = [ ]
+}

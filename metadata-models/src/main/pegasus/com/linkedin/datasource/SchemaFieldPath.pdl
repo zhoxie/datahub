@@ -1,0 +1,6 @@
+namespace com.linkedin.datasource
+
+/**
+ * Schema field path. TODO: Add formal documentation on normalization rules.
+ */
+typeref SchemaFieldPath = string

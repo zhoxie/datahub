@@ -1,0 +1,137 @@
+namespace com.linkedin.datasource
+
+import com.linkedin.common.ChangeAuditStamps
+import com.linkedin.common.DatasourceUrn
+import com.linkedin.common.InstitutionalMemory
+import com.linkedin.common.Ownership
+import com.linkedin.common.Status
+import com.linkedin.common.Uri
+import com.linkedin.common.Url
+import com.linkedin.common.VersionTag
+import com.linkedin.schema.SchemaMetadata
+import com.linkedin.schema.EditableSchemaMetadata
+import com.linkedin.common.GlobalTags
+import com.linkedin.common.GlossaryTerms
+
+/**
+ * Datasource spec for a data store. A collection of data conforming to a single schema that can evolve over time. This is equivalent to a Table in most data platforms. Espresso datasource: Identity.Profile; oracle datasource: member2.member_profile; hdfs datasource: /data/databases/JOBS/JOB_APPLICATIONS; kafka: PageViewEvent
+ */
+record Datasource includes DatasourceKey, ChangeAuditStamps, VersionTag {
+
+  /**
+   * Datasource unique identifier. System assigned value when a new datasource is created.
+   */
+  id: long = 0
+
+  /**
+   * Datasource urn
+   */
+  urn: DatasourceUrn
+
+  /**
+   * Description for datasource
+   */
+  description: string = ""
+
+  /**
+   * The native format for the data platform
+   */
+  platformNativeType: optional enum PlatformNativeType {
+
+    /**
+     * Table
+     */
+    TABLE
+
+    /**
+     * View
+     */
+    VIEW
+
+    /**
+     * Directory in file system
+     */
+    DIRECTORY
+
+    /**
+     * Stream
+     */
+    STREAM
+
+    /**
+     * Bucket in key value store
+     */
+    BUCKET
+  }
+
+  /**
+   * The abstracted such as hdfs:///data/tracking/PageViewEvent, file:///dir/file_name. Uri should not include any environment specific properties. Some datasources might not have a standardized uri, which makes this field optional (i.e. kafka topic).
+   */
+  uri: optional Uri
+
+  /**
+   * tags for searching datasource
+   */
+  tags: array[string] = [ ]
+
+  /**
+   * A key-value map of platform-specific properties
+   */
+  properties: optional map[string, string]
+
+  /**
+   * Editable properties
+   */
+  editableProperties: optional EditableDatasourceProperties
+
+  /**
+   * whether the datasource is removed or not
+   */
+  @deprecated
+  removed: boolean = false
+
+  /**
+   * The datasource deprecation status
+   */
+  deprecation: optional DatasourceDeprecation
+
+  /**
+   * Institutional memory metadata of the datasource
+   */
+  institutionalMemory: optional InstitutionalMemory
+
+  /**
+   * Ownership metadata of the datasource
+   */
+  ownership: optional Ownership
+
+  /**
+   * Schema metadata of the datasource
+   */
+  schemaMetadata: optional SchemaMetadata
+
+  /**
+   * Editable schema metadata of the datasource
+   */
+  editableSchemaMetadata: optional EditableSchemaMetadata
+
+  /**
+   * Status metadata of the datasource
+   */
+  status: optional Status
+
+  /**
+   * List of global tags applied to the datasource
+   */
+  globalTags: optional GlobalTags
+
+  /**
+   * External URL associated with the datasource
+   */
+   externalUrl: optional Url
+
+  /**
+   * Related business terms of the datasource
+   */
+  glossaryTerms: optional GlossaryTerms
+}

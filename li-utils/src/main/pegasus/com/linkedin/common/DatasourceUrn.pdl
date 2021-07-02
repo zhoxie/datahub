@@ -1,0 +1,32 @@
+namespace com.linkedin.common
+
+/**
+ * Standardized datasource identifier.
+ */
+@java.class = "com.linkedin.common.urn.DatasourceUrn"
+@validate.`com.linkedin.common.validator.TypedUrnValidator` = {
+  "accessible" : true,
+  "owningTeam" : "urn:li:internalTeam:datahub",
+  "entityType" : "datasource",
+  "constructable" : true,
+  "namespace" : "li",
+  "name" : "Datasource",
+  "doc" : "Standardized datasource identifier.",
+  "owners" : [ "urn:li:corpuser:fbar", "urn:li:corpuser:bfoo" ],
+  "fields" : [ {
+    "type" : "com.linkedin.common.urn.DataPlatformUrn",
+    "name" : "platform",
+    "doc" : "Standardized platform urn where datasource is defined."
+  }, {
+    "name" : "datasourceName",
+    "doc" : "Datasource native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+    "type" : "string",
+    "maxLength" : 210
+  }, {
+    "type" : "com.linkedin.common.FabricType",
+    "name" : "origin",
+    "doc" : "Fabric type where datasource belongs to or where it was generated."
+  } ],
+  "maxLength" : 284
+}
+typeref DatasourceUrn = string

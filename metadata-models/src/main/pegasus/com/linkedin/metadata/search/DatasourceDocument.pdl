@@ -1,0 +1,90 @@
+namespace com.linkedin.metadata.search
+
+import com.linkedin.common.DatasourceUrn
+import com.linkedin.common.FabricType
+
+/**
+ * Data model for datasource entity search
+ */
+record DatasourceDocument includes BaseDocument {
+
+  /**
+   * Urn for the datasource
+   */
+  urn: DatasourceUrn
+
+  /**
+   * Datasource native name e.g. {db}.{table}, /dir/subdir/{name}, or {name}
+   */
+  name: optional string
+
+  /**
+   * Platform name for the datasource
+   */
+  platform: optional string
+
+  /**
+   * Fabric type where datasource belongs to or where it was generated
+   */
+  origin: optional FabricType
+
+  /**
+   * LDAP usernames of corp users who are the owners of this datasource
+   */
+  owners: optional array[string]
+
+  /**
+   * Flag to indicate if the datasource is deprecated.
+   */
+  deprecated: optional boolean
+
+  /**
+   * Documentation of the datasource.
+   */
+  description: optional string
+
+  /**
+   * Field paths of the datasource
+   */
+  fieldPaths: optional array[string]
+
+  /**
+   * Flag to indicate if the datasource has non empty corp users as owners or not.
+   */
+  hasOwners: optional boolean
+
+  /**
+   * Flag to indicate if the datasource has non-empty schema or not.
+   */
+  hasSchema: optional boolean
+
+  /**
+   * List of tags for this datasource
+   */
+  tags: optional array[string]
+
+  /**
+   * List of field descriptions
+   */
+  fieldDescriptions: optional array[string]
+
+  /**
+   * List of tags applied to fields
+   */
+  fieldTags: optional array[string]
+
+  /**
+   * List of field descriptions
+   */
+  editedFieldDescriptions: optional array[string]
+
+  /**
+   * List of tags applied to fields
+   */
+  editedFieldTags: optional array[string]
+
+  /**
+   * List of terms for this datasource
+   */
+  glossaryTerms: optional array[string]
+}
