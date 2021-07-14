@@ -1,0 +1,19 @@
+namespace com.linkedin.datasource
+
+import com.linkedin.common.BaseFieldMapping
+import com.linkedin.common.DatasourceFieldUrn
+
+/**
+ * Representation of mapping between fields in source datasource to the field in destination datasource
+ */
+record DatasourceFieldMapping includes BaseFieldMapping {
+  /**
+   * Source fields from which the fine grained lineage is derived
+   */
+  sourceFields: array[DatasourceFieldUpstream]
+
+  /**
+   * Destination field which is derived from source fields
+   */
+  destinationField: DatasourceFieldUrn
+}

@@ -32,16 +32,16 @@ import com.linkedin.restli.common.CollectionResponse;
 import com.linkedin.restli.common.ComplexResourceKey;
 import com.linkedin.restli.common.EmptyRecord;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.List;
-import java.util.Collections;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import static com.linkedin.metadata.dao.utils.QueryUtils.newFilter;
+import static com.linkedin.metadata.dao.utils.QueryUtils.*;
 
 public class Datasources extends BaseBrowsableClient<Datasource, DatasourceUrn> {
     private static final DatasourcesRequestBuilders DATASETS_REQUEST_BUILDERS = new DatasourcesRequestBuilders();
@@ -80,7 +80,7 @@ public class Datasources extends BaseBrowsableClient<Datasource, DatasourceUrn> 
      */
     @Nonnull
     public CollectionResponse<Datasource> search(@Nonnull String input, @Nonnull Map<String, String> requestFilters,
-                                               int start, int count) throws RemoteInvocationException {
+                                              int start, int count) throws RemoteInvocationException {
 
         return search(input, null, requestFilters, null, start, count);
     }
@@ -88,15 +88,15 @@ public class Datasources extends BaseBrowsableClient<Datasource, DatasourceUrn> 
     @Override
     @Nonnull
     public CollectionResponse<Datasource> search(@Nonnull String input, @Nullable StringArray aspectNames,
-                                                 @Nullable Map<String, String> requestFilters, @Nullable SortCriterion sortCriterion, int start, int count)
-        throws RemoteInvocationException {
+                                              @Nullable Map<String, String> requestFilters, @Nullable SortCriterion sortCriterion, int start, int count)
+            throws RemoteInvocationException {
 
         final DatasourcesFindBySearchRequestBuilder requestBuilder = DATASETS_REQUEST_BUILDERS.findBySearch()
-            .inputParam(input)
-            .aspectsParam(aspectNames)
-            .filterParam(newFilter(requestFilters))
-            .sortParam(sortCriterion)
-            .paginate(start, count);
+                .inputParam(input)
+                .aspectsParam(aspectNames)
+                .filterParam(newFilter(requestFilters))
+                .sortParam(sortCriterion)
+                .paginate(start, count);
         return _client.sendRequest(requestBuilder.build()).getResponse().getEntity();
     }
 
@@ -261,9 +261,9 @@ public class Datasources extends BaseBrowsableClient<Datasource, DatasourceUrn> 
     @Nonnull
     private DatasourceKey toDatasourceKey(@Nonnull DatasourceUrn urn) {
         return new DatasourceKey()
-            .setName(urn.getDatasourceNameEntity())
-            .setOrigin(urn.getOriginEntity())
-            .setPlatform(urn.getPlatformEntity());
+                .setName(urn.getDatasourceNameEntity())
+                .setOrigin(urn.getOriginEntity())
+                .setPlatform(urn.getPlatformEntity());
     }
 
     @Nonnull
@@ -302,6 +302,9 @@ public class Datasources extends BaseBrowsableClient<Datasource, DatasourceUrn> 
         }
         if (datasource.getStatus() != null) {
             aspects.add(ModelUtils.newAspectUnion(DatasourceAspect.class, datasource.getStatus()));
+        }
+        if (datasource.getUpstreamLineage() != null) {
+            aspects.add(ModelUtils.newAspectUnion(DatasourceAspect.class, datasource.getUpstreamLineage()));
         }
         if (datasource.hasRemoved()) {
             aspects.add(DatasourceAspect.create(new Status().setRemoved(datasource.isRemoved())));

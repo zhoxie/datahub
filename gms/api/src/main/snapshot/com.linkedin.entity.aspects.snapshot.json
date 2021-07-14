@@ -454,6 +454,42 @@
     }
   }, "com.linkedin.common.DatasetUrn", {
     "type" : "typeref",
+    "name" : "DatasourceUrn",
+    "namespace" : "com.linkedin.common",
+    "doc" : "Standardized datasource identifier.",
+    "ref" : "string",
+    "java" : {
+      "class" : "com.linkedin.common.urn.DatasourceUrn"
+    },
+    "validate" : {
+      "com.linkedin.common.validator.TypedUrnValidator" : {
+        "accessible" : true,
+        "constructable" : true,
+        "doc" : "Standardized datasource identifier.",
+        "entityType" : "datasource",
+        "fields" : [ {
+          "doc" : "Standardized platform urn where datasource is defined.",
+          "name" : "platform",
+          "type" : "com.linkedin.common.urn.DataPlatformUrn"
+        }, {
+          "doc" : "Datasource native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+          "maxLength" : 210,
+          "name" : "datasourceName",
+          "type" : "string"
+        }, {
+          "doc" : "Fabric type where datasource belongs to or where it was generated.",
+          "name" : "origin",
+          "type" : "com.linkedin.common.FabricType"
+        } ],
+        "maxLength" : 284,
+        "name" : "Datasource",
+        "namespace" : "li",
+        "owners" : [ "urn:li:corpuser:fbar", "urn:li:corpuser:bfoo" ],
+        "owningTeam" : "urn:li:internalTeam:datahub"
+      }
+    }
+  }, {
+    "type" : "typeref",
     "name" : "EmailAddress",
     "namespace" : "com.linkedin.common",
     "ref" : "string"
@@ -1173,6 +1209,48 @@
     }
   }, {
     "type" : "record",
+    "name" : "DSUpstreamLineage",
+    "namespace" : "com.linkedin.datasource",
+    "doc" : "Upstream lineage of a datasource",
+    "fields" : [ {
+      "name" : "upstreams",
+      "type" : {
+        "type" : "array",
+        "items" : {
+          "type" : "record",
+          "name" : "DatasourceUpstream",
+          "doc" : "Upstream lineage information about a datasource including the source reporting the lineage",
+          "fields" : [ {
+            "name" : "auditStamp",
+            "type" : "com.linkedin.common.AuditStamp",
+            "doc" : "Audit stamp containing who reported the lineage and when"
+          }, {
+            "name" : "datasource",
+            "type" : "com.linkedin.common.DatasourceUrn",
+            "doc" : "The upstream datasource the lineage points to",
+            "Relationship" : {
+              "entityTypes" : [ "datasource" ],
+              "name" : "DownstreamOf"
+            },
+            "Searchable" : {
+              "fieldName" : "datasourceUpstreams",
+              "fieldType" : "URN",
+              "queryByDefault" : false
+            }
+          }, {
+            "name" : "type",
+            "type" : "com.linkedin.dataset.DatasetLineageType",
+            "doc" : "The type of the lineage"
+          } ]
+        }
+      },
+      "doc" : "List of upstream datasource lineage information"
+    } ],
+    "Aspect" : {
+      "name" : "dsUpstreamLineage"
+    }
+  }, {
+    "type" : "record",
     "name" : "DatasourceDeprecation",
     "namespace" : "com.linkedin.datasource",
     "doc" : "Datasource deprecation status",
@@ -1236,7 +1314,7 @@
     "Aspect" : {
       "name" : "datasourceProperties"
     }
-  }, {
+  }, "com.linkedin.datasource.DatasourceUpstream", {
     "type" : "record",
     "name" : "GlossaryNodeInfo",
     "namespace" : "com.linkedin.glossary",
@@ -1636,7 +1714,7 @@
       "Aspect" : {
         "name" : "dataJobKey"
       }
-    }, "com.linkedin.datajob.DataJobInfo", "com.linkedin.datajob.DataJobInputOutput", "com.linkedin.dataset.DatasetDeprecation", "com.linkedin.dataset.DatasetProperties", "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.datasource.DatasourceProperties", "com.linkedin.dataset.UpstreamLineage", {
+    }, "com.linkedin.datajob.DataJobInfo", "com.linkedin.datajob.DataJobInputOutput", "com.linkedin.dataset.DatasetDeprecation", "com.linkedin.dataset.DatasetProperties", "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.datasource.DatasourceProperties", "com.linkedin.dataset.UpstreamLineage", "com.linkedin.datasource.DSUpstreamLineage", {
       "type" : "record",
       "name" : "SchemaMetadata",
       "namespace" : "com.linkedin.schema",
@@ -1984,6 +2062,26 @@
                   "name" : "parentField",
                   "type" : "com.linkedin.dataset.SchemaFieldPath",
                   "doc" : "SchemaField@fieldPath that uniquely identify field in parent dataset that this field references."
+                } ]
+              }, {
+                "type" : "record",
+                "name" : "DatasourceFieldForeignKey",
+                "doc" : "For non-urn based foregin keys.",
+                "fields" : [ {
+                  "name" : "parentDatasource",
+                  "type" : "com.linkedin.common.DatasourceUrn",
+                  "doc" : "datasource that stores the resource."
+                }, {
+                  "name" : "currentFieldPaths",
+                  "type" : {
+                    "type" : "array",
+                    "items" : "com.linkedin.dataset.SchemaFieldPath"
+                  },
+                  "doc" : "List of fields in hosting(current) SchemaMetadata that conform a foreign key. List can contain a single entry or multiple entries if several entries in hosting schema conform a foreign key in a single parent datasource."
+                }, {
+                  "name" : "parentField",
+                  "type" : "com.linkedin.dataset.SchemaFieldPath",
+                  "doc" : "SchemaField@fieldPath that uniquely identify field in parent datasource that this field references."
                 } ]
               }, {
                 "type" : "record",
@@ -2621,7 +2719,7 @@
       "name" : "version",
       "type" : "long"
     } ]
-  }, "com.linkedin.metadata.key.ChartKey", "com.linkedin.metadata.key.CorpGroupKey", "com.linkedin.metadata.key.CorpUserKey", "com.linkedin.metadata.key.DashboardKey", "com.linkedin.metadata.key.DataFlowKey", "com.linkedin.metadata.key.DataJobKey", "com.linkedin.metadata.key.GlossaryNodeKey", "com.linkedin.metadata.key.GlossaryTermKey", "com.linkedin.metadata.key.MLFeatureKey", "com.linkedin.metadata.key.MLModelKey", "com.linkedin.metadata.key.TagKey", "com.linkedin.ml.metadata.BaseData", "com.linkedin.ml.metadata.CaveatDetails", "com.linkedin.ml.metadata.CaveatsAndRecommendations", "com.linkedin.ml.metadata.EthicalConsiderations", "com.linkedin.ml.metadata.EvaluationData", "com.linkedin.ml.metadata.HyperParameterValueType", "com.linkedin.ml.metadata.IntendedUse", "com.linkedin.ml.metadata.IntendedUserType", "com.linkedin.ml.metadata.MLFeatureProperties", "com.linkedin.ml.metadata.MLModelFactorPrompts", "com.linkedin.ml.metadata.MLModelFactors", "com.linkedin.ml.metadata.MLModelProperties", "com.linkedin.ml.metadata.Metrics", "com.linkedin.ml.metadata.QuantitativeAnalyses", "com.linkedin.ml.metadata.ResultsType", "com.linkedin.ml.metadata.SourceCode", "com.linkedin.ml.metadata.SourceCodeUrl", "com.linkedin.ml.metadata.SourceCodeUrlType", "com.linkedin.ml.metadata.TrainingData", "com.linkedin.schema.ArrayType", "com.linkedin.schema.BinaryJsonSchema", "com.linkedin.schema.BooleanType", "com.linkedin.schema.BytesType", "com.linkedin.schema.DatasetFieldForeignKey", "com.linkedin.schema.DateType", "com.linkedin.schema.EditableSchemaFieldInfo", "com.linkedin.schema.EditableSchemaMetadata", "com.linkedin.schema.EnumType", "com.linkedin.schema.EspressoSchema", "com.linkedin.schema.FixedType", "com.linkedin.schema.ForeignKeySpec", "com.linkedin.schema.KafkaSchema", "com.linkedin.schema.KeyValueSchema", "com.linkedin.schema.MapType", "com.linkedin.schema.MySqlDDL", "com.linkedin.schema.NullType", "com.linkedin.schema.NumberType", "com.linkedin.schema.OracleDDL", "com.linkedin.schema.OrcSchema", "com.linkedin.schema.OtherSchema", "com.linkedin.schema.PrestoDDL", "com.linkedin.schema.RecordType", "com.linkedin.schema.SchemaField", "com.linkedin.schema.SchemaFieldDataType", "com.linkedin.schema.SchemaMetadata", "com.linkedin.schema.SchemaMetadataKey", "com.linkedin.schema.Schemaless", "com.linkedin.schema.StringType", "com.linkedin.schema.TimeType", "com.linkedin.schema.UnionType", "com.linkedin.schema.UrnForeignKey", "com.linkedin.tag.TagProperties" ],
+  }, "com.linkedin.metadata.key.ChartKey", "com.linkedin.metadata.key.CorpGroupKey", "com.linkedin.metadata.key.CorpUserKey", "com.linkedin.metadata.key.DashboardKey", "com.linkedin.metadata.key.DataFlowKey", "com.linkedin.metadata.key.DataJobKey", "com.linkedin.metadata.key.GlossaryNodeKey", "com.linkedin.metadata.key.GlossaryTermKey", "com.linkedin.metadata.key.MLFeatureKey", "com.linkedin.metadata.key.MLModelKey", "com.linkedin.metadata.key.TagKey", "com.linkedin.ml.metadata.BaseData", "com.linkedin.ml.metadata.CaveatDetails", "com.linkedin.ml.metadata.CaveatsAndRecommendations", "com.linkedin.ml.metadata.EthicalConsiderations", "com.linkedin.ml.metadata.EvaluationData", "com.linkedin.ml.metadata.HyperParameterValueType", "com.linkedin.ml.metadata.IntendedUse", "com.linkedin.ml.metadata.IntendedUserType", "com.linkedin.ml.metadata.MLFeatureProperties", "com.linkedin.ml.metadata.MLModelFactorPrompts", "com.linkedin.ml.metadata.MLModelFactors", "com.linkedin.ml.metadata.MLModelProperties", "com.linkedin.ml.metadata.Metrics", "com.linkedin.ml.metadata.QuantitativeAnalyses", "com.linkedin.ml.metadata.ResultsType", "com.linkedin.ml.metadata.SourceCode", "com.linkedin.ml.metadata.SourceCodeUrl", "com.linkedin.ml.metadata.SourceCodeUrlType", "com.linkedin.ml.metadata.TrainingData", "com.linkedin.schema.ArrayType", "com.linkedin.schema.BinaryJsonSchema", "com.linkedin.schema.BooleanType", "com.linkedin.schema.BytesType", "com.linkedin.schema.DatasetFieldForeignKey", "com.linkedin.schema.DatasourceFieldForeignKey", "com.linkedin.schema.DateType", "com.linkedin.schema.EditableSchemaFieldInfo", "com.linkedin.schema.EditableSchemaMetadata", "com.linkedin.schema.EnumType", "com.linkedin.schema.EspressoSchema", "com.linkedin.schema.FixedType", "com.linkedin.schema.ForeignKeySpec", "com.linkedin.schema.KafkaSchema", "com.linkedin.schema.KeyValueSchema", "com.linkedin.schema.MapType", "com.linkedin.schema.MySqlDDL", "com.linkedin.schema.NullType", "com.linkedin.schema.NumberType", "com.linkedin.schema.OracleDDL", "com.linkedin.schema.OrcSchema", "com.linkedin.schema.OtherSchema", "com.linkedin.schema.PrestoDDL", "com.linkedin.schema.RecordType", "com.linkedin.schema.SchemaField", "com.linkedin.schema.SchemaFieldDataType", "com.linkedin.schema.SchemaMetadata", "com.linkedin.schema.SchemaMetadataKey", "com.linkedin.schema.Schemaless", "com.linkedin.schema.StringType", "com.linkedin.schema.TimeType", "com.linkedin.schema.UnionType", "com.linkedin.schema.UrnForeignKey", "com.linkedin.tag.TagProperties" ],
   "schema" : {
     "name" : "aspects",
     "namespace" : "com.linkedin.entity",

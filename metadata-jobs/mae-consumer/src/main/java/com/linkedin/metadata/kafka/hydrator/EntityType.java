@@ -2,6 +2,7 @@ package com.linkedin.metadata.kafka.hydrator;
 
 public enum EntityType {
   DATASET,
+  DATASOURCE,
   CHART,
   DASHBOARD,
   DATA_JOB,

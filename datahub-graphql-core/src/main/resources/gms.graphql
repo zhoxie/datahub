@@ -56,6 +56,10 @@ enum EntityType {
     """
     DATASET
     """
+    The Datasource Entity
+    """
+    DATASOURCE
+    """
     The CorpUser Entity
     """
     CORP_USER
@@ -102,6 +106,11 @@ type Query {
     Fetch a Dataset by primary key
     """
     dataset(urn: String!): Dataset
+
+    """
+    Fetch a Datasource by primary key
+    """
+    datasource(urn: String!): Datasource
 
     """
     Fetch a CorpUser by primary key
@@ -176,6 +185,7 @@ type Query {
 
 type Mutation {
     updateDataset(input: DatasetUpdateInput!): Dataset
+    updateDatasource(input: DatasourceUpdateInput!): Datasource
     updateChart(input: ChartUpdateInput!): Chart
     updateDashboard(input: DashboardUpdateInput!): Dashboard
     updateDataFlow(input: DataFlowUpdateInput!): DataFlow
@@ -308,6 +318,125 @@ type Dataset implements EntityWithRelationships & Entity {
 
     """
     The structured glossary terms associated with the dataset
+    """
+    glossaryTerms: GlossaryTerms
+
+    usageStats(resource: String!, range: TimeRange): UsageQueryResult
+}
+
+type Datasource implements EntityWithRelationships & Entity {
+    """
+    The unique Datasource URN
+    """
+    urn: String!
+
+    """
+    GMS Entity Type
+    """
+    type: EntityType!
+
+    """
+    Standardized platform urn where the datasource is defined
+    """
+    platform: DataPlatform!
+
+    """
+    Datasource native name
+    """
+    name: String!
+
+    """
+    Fabric type where datasource belongs to or where it was generated
+    """
+    origin: FabricType!
+
+    """
+    Human readable description for datasource
+    """
+    description: String
+
+    """
+    The native format for the data platform
+    """
+    platformNativeType: PlatformNativeType
+
+    """
+    Native Datasource Uri. Uri should not include any environment specific properties
+    """
+    uri: String
+
+    """
+    Tags used for searching datasource
+    """
+    tags: [String!]!
+
+    """
+    A list of platform-specific metadata tuples
+    """
+    properties: [StringMapEntry!]
+
+    """
+    A list of editable platform-specific metadata tuples
+    """
+    editableProperties: DatasourceEditableProperties
+
+    """
+    External URL associated with the Datasource
+    """
+    externalUrl: String
+
+    """
+    Ownership metadata of the datasource
+    """
+    ownership: Ownership
+
+    """
+    The datasource deprecation status
+    """
+    deprecation: DatasourceDeprecation
+
+    """
+    References to internal resources related to the datasource
+    """
+    institutionalMemory: InstitutionalMemory
+
+    """
+    Schema metadata of the datasource
+    """
+    schema: Schema @deprecated(reason: "Use `schemaMetadata`")
+
+    """
+    Schema metadata of the datasource
+    """
+    schemaMetadata(version: Long): SchemaMetadata
+
+    """
+    Editable schema metadata of the datasource
+    """
+    editableSchemaMetadata: EditableSchemaMetadata
+
+    """
+    Status metadata of the datasource
+    """
+    status: Status
+
+    """
+    Entities upstream of the given entity
+    """
+    upstreamLineage: UpstreamEntityRelationships
+
+    """
+    Entities downstream of the given entity
+    """
+    downstreamLineage: DownstreamEntityRelationships
+
+    """
+    The structured tags associated with the datasource
+    """
+    globalTags: GlobalTags
+
+    """
+    The structured glossary terms associated with the datasource
     """
     glossaryTerms: GlossaryTerms
 
@@ -494,6 +623,28 @@ type DatasetDeprecation {
 
     """
     Additional information about the dataset deprecation plan
+    """
+    note: String!
+
+    """
+    The user who will be credited for modifying this deprecation content
+    """
+    actor: String
+}
+
+type DatasourceDeprecation {
+    """
+    Whether the datasource has been deprecated by owner
+    """
+    deprecated: Boolean!
+
+    """
+    The time user plan to decommission this datasource
+    """
+    decommissionTime: Long
+
+    """
+    Additional information about the datasource deprecation plan
     """
     note: String!
 
@@ -725,6 +876,12 @@ type DatasetEditableProperties {
     """
     description: String
 }
+type DatasourceEditableProperties {
+    """
+    Description
+    """
+    description: String
+}
 type ChartEditableProperties {
     """
     Description
@@ -788,11 +945,40 @@ type DownstreamLineage {
     downstreams: [RelatedDataset!]!
 }
 
+type DSUpstreamLineage {
+    """
+    List of upstream datasources
+    """
+    upstreams: [RelatedDatasource!]!
+}
+
+type DSDownstreamLineage {
+    """
+    List of downstream datasources
+    """
+    downstreams: [RelatedDatasource!]!
+}
+
 type RelatedDataset {
     """
     The upstream dataset the lineage points to
     """
     dataset: Dataset!
+    """
+    The type of the lineage
+    """
+    type: DatasetLineageType!
+    """
+    When the lineage was created
+    """
+    created: AuditStamp!
+}
+
+type RelatedDatasource {
+    """
+    The upstream datasource the lineage points to
+    """
+    dataset: Datasource!
     """
     The type of the lineage
     """
@@ -1559,6 +1745,43 @@ input DatasetUpdateInput {
     editableProperties: DatasetEditablePropertiesUpdate
 }
 
+input DatasourceUpdateInput {
+    """
+    The datasource urn
+    """
+    urn: String!
+
+    """
+    Update to ownership
+    """
+    ownership: OwnershipUpdate
+
+    """
+    Update to deprecation status
+    """
+    deprecation: DatasourceDeprecationUpdate
+
+    """
+    Update to institutional memory, ie documentation
+    """
+    institutionalMemory: InstitutionalMemoryUpdate
+
+    """
+    Update to global tags
+    """
+    globalTags: GlobalTagsUpdate
+
+    """
+    Update to editable schema metadata of the dataset
+    """
+    editableSchemaMetadata: EditableSchemaMetadataUpdate
+
+    """
+    Update to editable properties
+    """
+    editableProperties: DatasourceEditablePropertiesUpdate
+}
+
 input EditableSchemaMetadataUpdate {
     editableSchemaFieldInfo: [EditableSchemaFieldInfoUpdate!]!
 }
@@ -1581,6 +1804,13 @@ input EditableSchemaFieldInfoUpdate {
 }
 
 input DatasetEditablePropertiesUpdate {
+    """
+    Description
+    """
+    description: String!
+}
+
+input DatasourceEditablePropertiesUpdate {
     """
     Description
     """
@@ -1671,6 +1901,23 @@ input DatasetDeprecationUpdate {
 
     """
     Additional information about the dataset deprecation plan
+    """
+    note: String!
+}
+
+input DatasourceDeprecationUpdate {
+    """
+    Whether the datasource is deprecated
+    """
+    deprecated: Boolean!
+
+    """
+    The time user plan to decommission this datasource
+    """
+    decommissionTime: Long
+
+    """
+    Additional information about the datasource deprecation plan
     """
     note: String!
 }

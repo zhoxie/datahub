@@ -24,6 +24,7 @@ public class EntityHydrator {
   private final DataFlowHydrator _dataFlowHydrator = new DataFlowHydrator();
   private final DataJobHydrator _dataJobHydrator = new DataJobHydrator();
   private final DatasetHydrator _datasetHydrator = new DatasetHydrator();
+  private final DatasourceHydrator _datasourceHydrator = new DatasourceHydrator();
 
   public Optional<ObjectNode> getHydratedEntity(String urn) {
     final ObjectNode document = JsonNodeFactory.instance.objectNode();
@@ -58,6 +59,8 @@ public class EntityHydrator {
       _dataJobHydrator.hydrateFromSnapshot(document, snapshot.getDataJobSnapshot());
     } else if (snapshot.isDatasetSnapshot()) {
       _datasetHydrator.hydrateFromSnapshot(document, snapshot.getDatasetSnapshot());
+    } else if (snapshot.isDatasourceSnapshot()) {
+      _datasourceHydrator.hydrateFromSnapshot(document, snapshot.getDatasourceSnapshot());
     }
     return Optional.of(document);
   }

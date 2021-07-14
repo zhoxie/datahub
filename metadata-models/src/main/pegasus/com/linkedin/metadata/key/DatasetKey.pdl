@@ -20,7 +20,7 @@ record DatasetKey {
   platform: Urn
 
   /**
-  * Dataset native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>
+  * Dataset native name e.g. db.table, /dir/subdir/name, or name
   */
   @Searchable = {
     "fieldType": "TEXT_PARTIAL",

@@ -40,4 +40,12 @@ public class EventSpec {
     fullValueType = schemaFullName;
     valueType = SchemaGeneratorUtil.stripNamespace(schemaFullName);
   }
+
+  public String getSpecType() {
+    return specType;
+  }
+
+  public Set<String> getUrnSet() {
+    return urnSet;
+  }
 }

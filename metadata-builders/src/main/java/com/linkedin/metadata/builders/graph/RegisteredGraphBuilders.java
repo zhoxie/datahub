@@ -27,6 +27,7 @@ public class RegisteredGraphBuilders {
           add(new DataJobGraphBuilder());
           add(new DataProcessGraphBuilder());
           add(new DatasetGraphBuilder());
+          add(new DatasourceGraphBuilder());
           add(new MLModelGraphBuilder());
           add(new TagGraphBuilder());
         }

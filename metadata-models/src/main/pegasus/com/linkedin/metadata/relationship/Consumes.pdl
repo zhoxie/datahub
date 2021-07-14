@@ -6,6 +6,9 @@ namespace com.linkedin.metadata.relationship
 @pairings = [ {
   "destination" : "com.linkedin.common.urn.DatasetUrn",
   "source" : "com.linkedin.common.urn.DataJobUrn"
-} ]
+},{
+    "destination" : "com.linkedin.common.urn.DatasourceUrn",
+    "source" : "com.linkedin.common.urn.DataJobUrn"
+  } ]
 record Consumes includes BaseRelationship {
 }

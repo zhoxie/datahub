@@ -4,6 +4,8 @@ import com.linkedin.metadata.key.DatasourceKey
 import com.linkedin.datasource.DatasourceDeprecation
 import com.linkedin.datasource.DatasourceProperties
 import com.linkedin.datasource.EditableDatasourceProperties
+import com.linkedin.datasource.DatasourceUpstreamLineage
+import com.linkedin.datasource.DSUpstreamLineage
 import com.linkedin.schema.SchemaMetadata
 import com.linkedin.schema.EditableSchemaMetadata
 import com.linkedin.common.InstitutionalMemory
@@ -21,6 +23,8 @@ typeref DatasourceAspect = union[
   DatasourceProperties,
   EditableDatasourceProperties,
   DatasourceDeprecation,
+  DatasourceUpstreamLineage
+  DSUpstreamLineage,
   InstitutionalMemory,
   Ownership,
   Status,

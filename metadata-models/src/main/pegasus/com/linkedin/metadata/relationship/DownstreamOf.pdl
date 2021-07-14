@@ -11,7 +11,13 @@ import com.linkedin.dataset.DatasetLineageType
 }, {
   "destination" : "com.linkedin.common.urn.DatasetUrn",
   "source" : "com.linkedin.common.urn.ChartUrn"
-} ]
+}, {
+   "destination" : "com.linkedin.common.urn.DatasourceUrn",
+   "source" : "com.linkedin.common.urn.DatasourceUrn"
+ }, {
+    "destination" : "com.linkedin.common.urn.DatasourceUrn",
+    "source" : "com.linkedin.common.urn.ChartUrn"
+  } ]
 record DownstreamOf includes BaseRelationship {
 
   /**

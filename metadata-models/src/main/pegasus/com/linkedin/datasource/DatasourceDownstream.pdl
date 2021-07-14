@@ -1,0 +1,26 @@
+namespace com.linkedin.datasource
+
+import com.linkedin.common.AuditStamp
+import com.linkedin.common.DatasourceUrn
+import com.linkedin.dataset.DatasetLineageType
+
+/**
+ * Downstream lineage information about a datasource including the source reporting the lineage
+ */
+record DatasourceDownstream {
+
+  /**
+   * Audit stamp containing who reported the lineage and when
+   */
+  auditStamp: AuditStamp
+
+  /**
+   * The downstream datasource the lineage points to
+   */
+  datasource: DatasourceUrn
+
+  /**
+   * The type of the lineage
+   */
+  type: DatasetLineageType
+}

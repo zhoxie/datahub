@@ -30,6 +30,7 @@ public class Browse extends Controller {
   private static final String REQUEST_URN = "urn";
 
   private static final String DATASET_ENTITY_TYPE = "dataset";
+  private static final String DATASOURCE_ENTITY_TYPE = "datasource";
 
   private static final String DEFAULT_PATH = "";
   private static final int DEFAULT_START_VALUE = 0;
@@ -50,6 +51,7 @@ public class Browse extends Controller {
   public Browse() {
     _browseDAOMap = ImmutableMap.<String, BrowseDAO>builder()
         .put(DATASET_ENTITY_TYPE, DaoFactory.getDatasetBrowseDAO())
+        .put(DATASOURCE_ENTITY_TYPE, DaoFactory.getDatasourceBrowseDAO())
         .build();
   }
 

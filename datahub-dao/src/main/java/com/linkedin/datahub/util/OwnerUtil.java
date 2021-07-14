@@ -7,6 +7,7 @@ import com.linkedin.common.Owner;
 import com.linkedin.common.OwnershipType;
 import com.linkedin.common.urn.Urn;
 import com.linkedin.datahub.models.view.DatasetOwner;
+import com.linkedin.datahub.models.view.DatasourceOwner;
 import com.linkedin.identity.CorpUser;
 import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
@@ -58,6 +59,12 @@ public class OwnerUtil {
   public static Owner toTmsOwner(@Nonnull DatasetOwner dsOwner) throws URISyntaxException {
     return new Owner().setOwner(new Urn(dsOwner.getNamespace() + ":" + dsOwner.getUserName()))
         .setType(OWNER_CATEGORY_MAP.get(dsOwner.getType()));
+  }
+
+  @Nonnull
+  public static Owner toTmsOwner(@Nonnull DatasourceOwner dsOwner) throws URISyntaxException {
+    return new Owner().setOwner(new Urn(dsOwner.getNamespace() + ":" + dsOwner.getUserName()))
+            .setType(OWNER_CATEGORY_MAP.get(dsOwner.getType()));
   }
 
   /**

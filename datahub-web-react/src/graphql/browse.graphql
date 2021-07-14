@@ -27,6 +27,24 @@ query getBrowseResults($input: BrowseInput!) {
                     ...globalTagsFields
                 }
             }
+            ... on Datasource {
+                name
+                origin
+                description
+                platform {
+                    name
+                    info {
+                        logoUrl
+                    }
+                }
+                tags
+                ownership {
+                    ...ownershipFields
+                }
+                globalTags {
+                    ...globalTagsFields
+                }
+            }
             ... on Dashboard {
                 urn
                 type

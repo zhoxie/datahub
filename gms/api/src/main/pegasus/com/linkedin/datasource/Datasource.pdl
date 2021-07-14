@@ -121,6 +121,11 @@ record Datasource includes DatasourceKey, ChangeAuditStamps, VersionTag {
   status: optional Status
 
   /**
+   * Upstream lineage metadata of the datasource
+   */
+  upstreamLineage: optional DSUpstreamLineage
+
+  /**
    * List of global tags applied to the datasource
    */
   globalTags: optional GlobalTags

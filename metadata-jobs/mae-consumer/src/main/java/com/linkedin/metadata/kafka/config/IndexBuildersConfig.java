@@ -10,6 +10,7 @@ import com.linkedin.metadata.builders.search.DataFlowIndexBuilder;
 import com.linkedin.metadata.builders.search.DataJobIndexBuilder;
 import com.linkedin.metadata.builders.search.DataProcessIndexBuilder;
 import com.linkedin.metadata.builders.search.DatasetIndexBuilder;
+import com.linkedin.metadata.builders.search.DatasourceIndexBuilder;
 import com.linkedin.metadata.builders.search.MLModelIndexBuilder;
 import com.linkedin.metadata.builders.search.TagIndexBuilder;
 import com.linkedin.metadata.builders.search.GlossaryTermInfoIndexBuilder;
@@ -51,6 +52,7 @@ public class IndexBuildersConfig {
     builders.add(new CorpUserInfoIndexBuilder());
     builders.add(new ChartIndexBuilder());
     builders.add(new DatasetIndexBuilder());
+    builders.add(new DatasourceIndexBuilder());
     builders.add(new DataFlowIndexBuilder());
     builders.add(new DataJobIndexBuilder());
     builders.add(new DataProcessIndexBuilder());

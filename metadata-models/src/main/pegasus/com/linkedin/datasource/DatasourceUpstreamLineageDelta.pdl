@@ -1,0 +1,12 @@
+namespace com.linkedin.datasource
+
+/**
+ * Describes a delta change to a datasource upstream lineage
+ */
+record DatasourceUpstreamLineageDelta {
+
+  /**
+   * The list of upstream lineages to be updated for a datasource
+   */
+  upstreamsToUpdate: array[DatasourceUpstream]
+}

@@ -24,6 +24,7 @@ public class DaoFactory {
   private static DocumentSearchDao corpUserDocumentSearchDao;
   private static CorpUserViewDao corpUserViewDao;
   private static BrowseDAO datasetBrowseDao;
+  private static BrowseDAO datasourceBrowseDao;
   private static OwnerViewDao ownerViewDao;
   private static DatasetViewDao datasetViewDao;
   private static DatasetOwnerDao datasetOwnerDao;
@@ -63,6 +64,13 @@ public class DaoFactory {
       datasetBrowseDao = new BrowseDAO<>(getGmsDao().get_datasets());
     }
     return datasetBrowseDao;
+  }
+
+  public static BrowseDAO getDatasourceBrowseDAO() {
+    if (datasourceBrowseDao == null) {
+      datasourceBrowseDao = new BrowseDAO<>(getGmsDao().get_datasources());
+    }
+    return datasourceBrowseDao;
   }
 
   public static CorpUserViewDao getCorpUserViewDao() {

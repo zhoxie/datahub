@@ -1,0 +1,15 @@
+namespace com.linkedin.datasource
+
+/**
+ * Upstream lineage of a datasource
+ */
+@Aspect = {
+  "name": "dsUpstreamLineage"
+}
+record DSUpstreamLineage {
+
+  /**
+   * List of upstream datasource lineage information
+   */
+  upstreams: array[DatasourceUpstream]
+}

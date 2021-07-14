@@ -59,6 +59,16 @@ record DatasourceDocument includes BaseDocument {
   hasSchema: optional boolean
 
   /**
+   * Lineage information represented by the number of immediate downstream datasources of this datasource.
+   */
+  numDownstreamDatasources: optional long
+
+  /**
+   * List of upstreams for this datasource
+   */
+  upstreams: optional array[DatasourceUrn]
+
+  /**
    * List of tags for this datasource
    */
   tags: optional array[string]

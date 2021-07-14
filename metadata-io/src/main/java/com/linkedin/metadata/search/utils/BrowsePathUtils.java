@@ -6,6 +6,7 @@ import com.linkedin.common.urn.DashboardUrn;
 import com.linkedin.common.urn.DataFlowUrn;
 import com.linkedin.common.urn.DataJobUrn;
 import com.linkedin.common.urn.DatasetUrn;
+import com.linkedin.common.urn.DatasourceUrn;
 import com.linkedin.common.urn.Urn;
 import com.linkedin.data.template.RecordTemplate;
 import com.linkedin.data.template.StringArray;
@@ -20,11 +21,14 @@ import com.linkedin.metadata.aspect.DataJobAspect;
 import com.linkedin.metadata.aspect.DataJobAspectArray;
 import com.linkedin.metadata.aspect.DatasetAspect;
 import com.linkedin.metadata.aspect.DatasetAspectArray;
+import com.linkedin.metadata.aspect.DatasourceAspect;
+import com.linkedin.metadata.aspect.DatasourceAspectArray;
 import com.linkedin.metadata.builders.search.ChartIndexBuilder;
 import com.linkedin.metadata.builders.search.DashboardIndexBuilder;
 import com.linkedin.metadata.builders.search.DataFlowIndexBuilder;
 import com.linkedin.metadata.builders.search.DataJobIndexBuilder;
 import com.linkedin.metadata.builders.search.DatasetIndexBuilder;
+import com.linkedin.metadata.builders.search.DatasourceIndexBuilder;
 import com.linkedin.metadata.dao.utils.RecordUtils;
 import com.linkedin.metadata.snapshot.Snapshot;
 import java.net.URISyntaxException;
@@ -51,6 +55,8 @@ public class BrowsePathUtils {
     switch (urn.getEntityType()) {
       case "dataset":
         return DatasetIndexBuilder.buildBrowsePath(DatasetUrn.createFromUrn(urn));
+      case "datasource":
+        return DatasourceIndexBuilder.buildBrowsePath(DatasourceUrn.createFromUrn(urn));
       case "chart":
         return ChartIndexBuilder.buildBrowsePath(ChartUrn.createFromUrn(urn));
       case "dashboard":
@@ -83,6 +89,20 @@ public class BrowsePathUtils {
       }
       if (!hasBrowse) {
         aspects.add(DatasetAspect.create(defaultBrowsePaths));
+      }
+    }
+    if (urn.getEntityType().equals("datasource")) {
+      final DatasourceAspectArray aspects = snapshot.getDatasourceSnapshot().getAspects();
+      boolean hasBrowse = false;
+      if (browsePathEntity != null) {
+        final DatasourceAspectArray aspectsWithExistingBrowse = browsePathEntity.getValue().getDatasourceSnapshot().getAspects();
+        hasBrowse = aspects.stream()
+                .filter(datasourceAspect -> datasourceAspect.isBrowsePaths()).findFirst().isPresent()
+                || aspectsWithExistingBrowse.stream()
+                .filter(datasourceAspect -> datasourceAspect.isBrowsePaths()).findFirst().isPresent();
+      }
+      if (!hasBrowse) {
+        aspects.add(DatasourceAspect.create(defaultBrowsePaths));
       }
     }
     if (urn.getEntityType().equals("chart")) {

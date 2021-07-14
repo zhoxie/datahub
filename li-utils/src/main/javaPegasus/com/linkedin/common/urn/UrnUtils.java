@@ -27,6 +27,19 @@ public class UrnUtils {
     }
 
     /**
+     * Convert platform + datasource + origin into DatasourceUrn
+     * @param platformName String, e.g. hdfs, oracle
+     * @param datasourceName String, e.g. /jobs/xxx, ABOOK.ADDRESS
+     * @param origin PROD, CORP, EI, DEV
+     * @return DatasourceUrn
+     */
+    @Nonnull
+    public static DatasourceUrn toDatasourceUrn(@Nonnull String platformName, @Nonnull String datasourceName,
+                                          @Nonnull String origin) {
+        return new DatasourceUrn(new DataPlatformUrn(platformName), datasourceName, toFabricType(origin));
+    }
+
+    /**
      * Convert fabric String to FabricType
      * @param fabric PROD, CORP, EI, DEV, LIT, PRIME
      * @return FabricType

@@ -1,0 +1,28 @@
+namespace com.linkedin.common
+
+/**
+ * Standardized datasource field information identifier.
+ */
+@java.class = "com.linkedin.common.urn.DatasourceFieldUrn"
+@validate.`com.linkedin.common.validator.TypedUrnValidator` = {
+  "accessible" : true,
+  "owningTeam" : "urn:li:internalTeam:datahub",
+  "entityType" : "datasourceField",
+  "constructable" : true,
+  "namespace" : "li",
+  "name" : "DatasourceField",
+  "doc" : "Standardized datasource field information identifier",
+  "owners" : [ "urn:li:corpuser:fbar", "urn:li:corpuser:bfoo" ],
+  "fields" : [ {
+    "type" : "com.linkedin.common.urn.DatasourceUrn",
+    "name" : "datasource",
+    "doc" : "Datasource that this datasource field belongs to."
+  }, {
+    "name" : "fieldPath",
+    "doc" : "Datasource field path",
+    "type" : "string",
+    "maxLength" : 500
+  } ],
+  "maxLength" : 807
+}
+typeref DatasourceFieldUrn = string

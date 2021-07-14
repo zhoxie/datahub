@@ -8,5 +8,5 @@ record ForeignKeySpec {
   /**
    * Foreign key definition in metadata schema.
    */
-  foreignKey: union[DatasetFieldForeignKey, UrnForeignKey]
+  foreignKey: union[DatasetFieldForeignKey, DatasourceFieldForeignKey, UrnForeignKey]
 }

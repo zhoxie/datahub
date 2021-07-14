@@ -20,7 +20,7 @@ record DatasourceKey {
   platform: Urn
 
   /**
-  * Datasource native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>
+  * Datasource native name e.g. db.table, /dir/subdir/name, or name
   */
   @Searchable = {
     "fieldType": "TEXT_PARTIAL",
