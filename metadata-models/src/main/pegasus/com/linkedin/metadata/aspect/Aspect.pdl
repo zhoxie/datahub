@@ -27,8 +27,6 @@ import com.linkedin.datasource.DatasourceDeprecation
 import com.linkedin.datasource.DatasourceProperties
 import com.linkedin.dataset.DatasetUpstreamLineage
 import com.linkedin.dataset.UpstreamLineage
-import com.linkedin.datasource.DatasourceUpstreamLineage
-import com.linkedin.datasource.DSUpstreamLineage
 import com.linkedin.schema.SchemaMetadata
 import com.linkedin.schema.EditableSchemaMetadata
 import com.linkedin.common.InstitutionalMemory
@@ -76,7 +74,6 @@ typeref Aspect = union[
     DatasourceDeprecation,
     DatasourceProperties,
     UpstreamLineage,
-    DSUpstreamLineage
     SchemaMetadata,
     EditableSchemaMetadata,
     InstitutionalMemory,

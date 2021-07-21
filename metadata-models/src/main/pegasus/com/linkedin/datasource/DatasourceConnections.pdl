@@ -1,0 +1,13 @@
+namespace com.linkedin.datasource
+
+@Aspect = {
+  "name": "datasourceConnections"
+}
+record DatasourceConnections {
+
+  category: string
+
+  dataCenter: string
+
+  connections: array[DatasourceConnInfo]
+}

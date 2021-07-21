@@ -1,8 +1,0 @@
-namespace com.linkedin.datasource
-
-import com.linkedin.common.DatasourceFieldUrn
-
-/**
- * Upstreams of a datasource field.
- */
-typeref DatasourceFieldUpstream = union[DatasourceFieldUrn]

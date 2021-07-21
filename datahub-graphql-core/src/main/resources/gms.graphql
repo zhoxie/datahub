@@ -324,7 +324,7 @@ type Dataset implements EntityWithRelationships & Entity {
     usageStats(resource: String!, range: TimeRange): UsageQueryResult
 }
 
-type Datasource implements EntityWithRelationships & Entity {
+type Datasource implements Entity {
     """
     The unique Datasource URN
     """
@@ -401,34 +401,14 @@ type Datasource implements EntityWithRelationships & Entity {
     institutionalMemory: InstitutionalMemory
 
     """
-    Schema metadata of the datasource
-    """
-    schema: Schema @deprecated(reason: "Use `schemaMetadata`")
-
-    """
-    Schema metadata of the datasource
-    """
-    schemaMetadata(version: Long): SchemaMetadata
-
-    """
-    Editable schema metadata of the datasource
-    """
-    editableSchemaMetadata: EditableSchemaMetadata
-
-    """
     Status metadata of the datasource
     """
     status: Status
 
     """
-    Entities upstream of the given entity
+    Connection information of the datasource
     """
-    upstreamLineage: UpstreamEntityRelationships
-
-    """
-    Entities downstream of the given entity
-    """
-    downstreamLineage: DownstreamEntityRelationships
+    connections: DatasourceConnections
 
     """
     The structured tags associated with the datasource
@@ -517,6 +497,65 @@ type DataPlatform implements Entity {
     Metadata associated with a dataplatform
     """
     info: DataPlatformInfo
+}
+
+type DatasourceConnections {
+
+    """
+    datasource category
+    """
+    category: String
+
+    """
+    datasource data center
+    """
+    dataCenter: String
+
+    """
+    the connections of the datasource
+    """
+    connections: [DatasourceConnInfo]
+}
+
+type DatasourceConnInfo {
+
+  """
+  cluster
+  """
+  cluster: DatasourceCluster
+
+  """
+  connection driver
+  """
+  driver: String
+
+  """
+  connection username
+  """
+  username: String
+
+  """
+  connection password
+  """
+  password: String
+
+  """
+  connection url
+  """
+  url: String
+}
+
+enum DatasourceCluster {
+
+  """
+  primary cluster of the datasource
+  """
+  PRIMARY
+
+  """
+  GSB cluster of the datasource
+  """
+  GSB
 }
 
 type DataPlatformInfo {
@@ -945,40 +984,11 @@ type DownstreamLineage {
     downstreams: [RelatedDataset!]!
 }
 
-type DSUpstreamLineage {
-    """
-    List of upstream datasources
-    """
-    upstreams: [RelatedDatasource!]!
-}
-
-type DSDownstreamLineage {
-    """
-    List of downstream datasources
-    """
-    downstreams: [RelatedDatasource!]!
-}
-
 type RelatedDataset {
     """
     The upstream dataset the lineage points to
     """
     dataset: Dataset!
-    """
-    The type of the lineage
-    """
-    type: DatasetLineageType!
-    """
-    When the lineage was created
-    """
-    created: AuditStamp!
-}
-
-type RelatedDatasource {
-    """
-    The upstream datasource the lineage points to
-    """
-    dataset: Datasource!
     """
     The type of the lineage
     """
@@ -1770,11 +1780,6 @@ input DatasourceUpdateInput {
     Update to global tags
     """
     globalTags: GlobalTagsUpdate
-
-    """
-    Update to editable schema metadata of the dataset
-    """
-    editableSchemaMetadata: EditableSchemaMetadataUpdate
 
     """
     Update to editable properties

@@ -24,7 +24,7 @@
             "name" : "platform",
             "type" : "com.linkedin.common.urn.DataPlatformUrn"
           }, {
-            "doc" : "Dataset native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+            "doc" : "Dataset native name e.g. db.table>, /dir/subdir/name, or name",
             "maxLength" : 210,
             "name" : "datasetName",
             "type" : "string"
@@ -472,7 +472,7 @@
           "name" : "platform",
           "type" : "com.linkedin.common.urn.DataPlatformUrn"
         }, {
-          "doc" : "Datasource native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+          "doc" : "Datasource native name e.g. db.table, /dir/subdir/name, or name",
           "maxLength" : 210,
           "name" : "datasourceName",
           "type" : "string"
@@ -1209,48 +1209,6 @@
     }
   }, {
     "type" : "record",
-    "name" : "DSUpstreamLineage",
-    "namespace" : "com.linkedin.datasource",
-    "doc" : "Upstream lineage of a datasource",
-    "fields" : [ {
-      "name" : "upstreams",
-      "type" : {
-        "type" : "array",
-        "items" : {
-          "type" : "record",
-          "name" : "DatasourceUpstream",
-          "doc" : "Upstream lineage information about a datasource including the source reporting the lineage",
-          "fields" : [ {
-            "name" : "auditStamp",
-            "type" : "com.linkedin.common.AuditStamp",
-            "doc" : "Audit stamp containing who reported the lineage and when"
-          }, {
-            "name" : "datasource",
-            "type" : "com.linkedin.common.DatasourceUrn",
-            "doc" : "The upstream datasource the lineage points to",
-            "Relationship" : {
-              "entityTypes" : [ "datasource" ],
-              "name" : "DownstreamOf"
-            },
-            "Searchable" : {
-              "fieldName" : "datasourceUpstreams",
-              "fieldType" : "URN",
-              "queryByDefault" : false
-            }
-          }, {
-            "name" : "type",
-            "type" : "com.linkedin.dataset.DatasetLineageType",
-            "doc" : "The type of the lineage"
-          } ]
-        }
-      },
-      "doc" : "List of upstream datasource lineage information"
-    } ],
-    "Aspect" : {
-      "name" : "dsUpstreamLineage"
-    }
-  }, {
-    "type" : "record",
     "name" : "DatasourceDeprecation",
     "namespace" : "com.linkedin.datasource",
     "doc" : "Datasource deprecation status",
@@ -1314,7 +1272,7 @@
     "Aspect" : {
       "name" : "datasourceProperties"
     }
-  }, "com.linkedin.datasource.DatasourceUpstream", {
+  }, {
     "type" : "record",
     "name" : "GlossaryNodeInfo",
     "namespace" : "com.linkedin.glossary",
@@ -1714,7 +1672,7 @@
       "Aspect" : {
         "name" : "dataJobKey"
       }
-    }, "com.linkedin.datajob.DataJobInfo", "com.linkedin.datajob.DataJobInputOutput", "com.linkedin.dataset.DatasetDeprecation", "com.linkedin.dataset.DatasetProperties", "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.datasource.DatasourceProperties", "com.linkedin.dataset.UpstreamLineage", "com.linkedin.datasource.DSUpstreamLineage", {
+    }, "com.linkedin.datajob.DataJobInfo", "com.linkedin.datajob.DataJobInputOutput", "com.linkedin.dataset.DatasetDeprecation", "com.linkedin.dataset.DatasetProperties", "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.datasource.DatasourceProperties", "com.linkedin.dataset.UpstreamLineage", {
       "type" : "record",
       "name" : "SchemaMetadata",
       "namespace" : "com.linkedin.schema",

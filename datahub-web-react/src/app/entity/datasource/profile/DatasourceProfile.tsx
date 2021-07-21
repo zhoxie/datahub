@@ -6,7 +6,6 @@ import {
     GetDatasourceDocument,
 } from '../../../../graphql/datasource.generated';
 import { Ownership as OwnershipView } from '../../shared/Ownership';
-import SchemaView from './schema/Schema';
 import { EntityProfile } from '../../../shared/EntityProfile';
 import { Datasource, EntityType, GlobalTags, GlossaryTerms } from '../../../../types.generated';
 import LineageView from './Lineage';
@@ -24,7 +23,7 @@ import QueriesTab from './QueriesTab';
 export enum TabType {
     Ownership = 'Ownership',
     Schema = 'Schema',
-    Lineage = 'Lineage',
+    Lineage = 'Connection',
     Properties = 'Properties',
     Documents = 'Documents',
     Queries = 'Queries',
@@ -71,38 +70,9 @@ export const DatasourceProfile = ({ urn }: { urn: string }): JSX.Element => {
     );
 
     const getTabs = (datasource: Datasource) => {
-        const {
-            ownership,
-            upstreamLineage,
-            downstreamLineage,
-            properties,
-            institutionalMemory,
-            schema,
-            editableSchemaMetadata,
-        } = datasource;
+        const { ownership, properties, institutionalMemory } = datasource;
 
         return [
-            {
-                name: TabType.Schema,
-                path: TabType.Schema.toLowerCase(),
-                content: (
-                    <SchemaView
-                        urn={urn}
-                        schema={schema}
-                        usageStats={datasource.usageStats}
-                        editableSchemaMetadata={editableSchemaMetadata}
-                        updateEditableSchema={(update) => {
-                            analytics.event({
-                                type: EventType.EntityActionEvent,
-                                actionType: EntityActionType.UpdateSchemaDescription,
-                                entityType: EntityType.Datasource,
-                                entityUrn: urn,
-                            });
-                            return updateDatasource({ variables: { input: { urn, editableSchemaMetadata: update } } });
-                        }}
-                    />
-                ),
-            },
             {
                 name: TabType.Ownership,
                 path: TabType.Ownership.toLowerCase(),
@@ -125,7 +95,7 @@ export const DatasourceProfile = ({ urn }: { urn: string }): JSX.Element => {
             {
                 name: TabType.Lineage,
                 path: TabType.Lineage.toLowerCase(),
-                content: <LineageView upstreamLineage={upstreamLineage} downstreamLineage={downstreamLineage} />,
+                content: <LineageView datasource={datasource} />,
             },
             {
                 name: TabType.Queries,

@@ -24,7 +24,7 @@
             "name" : "platform",
             "type" : "com.linkedin.common.urn.DataPlatformUrn"
           }, {
-            "doc" : "Dataset native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+            "doc" : "Dataset native name e.g. db.table>, /dir/subdir/name, or name",
             "maxLength" : 210,
             "name" : "datasetName",
             "type" : "string"
@@ -642,38 +642,6 @@
     }
   }, "com.linkedin.common.DatasetUrn", {
     "type" : "typeref",
-    "name" : "DatasourceFieldUrn",
-    "namespace" : "com.linkedin.common",
-    "doc" : "Standardized datasource field information identifier.",
-    "ref" : "string",
-    "java" : {
-      "class" : "com.linkedin.common.urn.DatasourceFieldUrn"
-    },
-    "validate" : {
-      "com.linkedin.common.validator.TypedUrnValidator" : {
-        "accessible" : true,
-        "constructable" : true,
-        "doc" : "Standardized datasource field information identifier",
-        "entityType" : "datasourceField",
-        "fields" : [ {
-          "doc" : "Datasource that this datasource field belongs to.",
-          "name" : "datasource",
-          "type" : "com.linkedin.common.urn.DatasourceUrn"
-        }, {
-          "doc" : "Datasource field path",
-          "maxLength" : 500,
-          "name" : "fieldPath",
-          "type" : "string"
-        } ],
-        "maxLength" : 807,
-        "name" : "DatasourceField",
-        "namespace" : "li",
-        "owners" : [ "urn:li:corpuser:fbar", "urn:li:corpuser:bfoo" ],
-        "owningTeam" : "urn:li:internalTeam:datahub"
-      }
-    }
-  }, {
-    "type" : "typeref",
     "name" : "DatasourceUrn",
     "namespace" : "com.linkedin.common",
     "doc" : "Standardized datasource identifier.",
@@ -692,7 +660,7 @@
           "name" : "platform",
           "type" : "com.linkedin.common.urn.DataPlatformUrn"
         }, {
-          "doc" : "Datasource native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+          "doc" : "Datasource native name e.g. db.table, /dir/subdir/name, or name",
           "maxLength" : 210,
           "name" : "datasourceName",
           "type" : "string"
@@ -1716,46 +1684,60 @@
       "name" : "upstreamLineage"
     }
   }, {
-    "type" : "record",
-    "name" : "DSUpstreamLineage",
+    "type" : "enum",
+    "name" : "DatasourceCluster",
     "namespace" : "com.linkedin.datasource",
-    "doc" : "Upstream lineage of a datasource",
+    "doc" : "The various types of support datasource cluster",
+    "symbols" : [ "PRIMARY", "GSB" ]
+  }, {
+    "type" : "record",
+    "name" : "DatasourceConnInfo",
+    "namespace" : "com.linkedin.datasource",
+    "doc" : "Information about a datasource connection",
+    "include" : [ "com.linkedin.common.CustomProperties", "com.linkedin.common.ExternalReference" ],
     "fields" : [ {
-      "name" : "upstreams",
-      "type" : {
-        "type" : "array",
-        "items" : {
-          "type" : "record",
-          "name" : "DatasourceUpstream",
-          "doc" : "Upstream lineage information about a datasource including the source reporting the lineage",
-          "fields" : [ {
-            "name" : "auditStamp",
-            "type" : "com.linkedin.common.AuditStamp",
-            "doc" : "Audit stamp containing who reported the lineage and when"
-          }, {
-            "name" : "datasource",
-            "type" : "com.linkedin.common.DatasourceUrn",
-            "doc" : "The upstream datasource the lineage points to",
-            "Relationship" : {
-              "entityTypes" : [ "datasource" ],
-              "name" : "DownstreamOf"
-            },
-            "Searchable" : {
-              "fieldName" : "datasourceUpstreams",
-              "fieldType" : "URN",
-              "queryByDefault" : false
-            }
-          }, {
-            "name" : "type",
-            "type" : "com.linkedin.dataset.DatasetLineageType",
-            "doc" : "The type of the lineage"
-          } ]
-        }
-      },
-      "doc" : "List of upstream datasource lineage information"
+      "name" : "cluster",
+      "type" : [ "DatasourceCluster" ],
+      "doc" : "cluster"
+    }, {
+      "name" : "driver",
+      "type" : "string",
+      "doc" : "connection driver"
+    }, {
+      "name" : "username",
+      "type" : "string",
+      "doc" : "connection username"
+    }, {
+      "name" : "password",
+      "type" : "string",
+      "doc" : "connection password"
+    }, {
+      "name" : "url",
+      "type" : "string",
+      "doc" : "connection url"
     } ],
     "Aspect" : {
-      "name" : "dsUpstreamLineage"
+      "name" : "DatasourceConnInfo"
+    }
+  }, {
+    "type" : "record",
+    "name" : "DatasourceConnections",
+    "namespace" : "com.linkedin.datasource",
+    "fields" : [ {
+      "name" : "category",
+      "type" : "string"
+    }, {
+      "name" : "dataCenter",
+      "type" : "string"
+    }, {
+      "name" : "connections",
+      "type" : {
+        "type" : "array",
+        "items" : "DatasourceConnInfo"
+      }
+    } ],
+    "Aspect" : {
+      "name" : "datasourceConnections"
     }
   }, {
     "type" : "record",
@@ -1792,29 +1774,6 @@
     }
   }, {
     "type" : "record",
-    "name" : "DatasourceFieldMapping",
-    "namespace" : "com.linkedin.datasource",
-    "doc" : "Representation of mapping between fields in source datasource to the field in destination datasource",
-    "include" : [ "com.linkedin.common.BaseFieldMapping" ],
-    "fields" : [ {
-      "name" : "sourceFields",
-      "type" : {
-        "type" : "array",
-        "items" : {
-          "type" : "typeref",
-          "name" : "DatasourceFieldUpstream",
-          "doc" : "Upstreams of a datasource field.",
-          "ref" : [ "com.linkedin.common.DatasourceFieldUrn" ]
-        }
-      },
-      "doc" : "Source fields from which the fine grained lineage is derived"
-    }, {
-      "name" : "destinationField",
-      "type" : "com.linkedin.common.DatasourceFieldUrn",
-      "doc" : "Destination field which is derived from source fields"
-    } ]
-  }, "com.linkedin.datasource.DatasourceFieldUpstream", {
-    "type" : "record",
     "name" : "DatasourceProperties",
     "namespace" : "com.linkedin.datasource",
     "doc" : "Properties associated with a Datasource",
@@ -1844,22 +1803,6 @@
     } ],
     "Aspect" : {
       "name" : "datasourceProperties"
-    }
-  }, "com.linkedin.datasource.DatasourceUpstream", {
-    "type" : "record",
-    "name" : "DatasourceUpstreamLineage",
-    "namespace" : "com.linkedin.datasource",
-    "doc" : "Fine Grained upstream lineage for fields in a datasource",
-    "fields" : [ {
-      "name" : "fieldMappings",
-      "type" : {
-        "type" : "array",
-        "items" : "DatasourceFieldMapping"
-      },
-      "doc" : "Upstream to downstream field level lineage mappings"
-    } ],
-    "Aspect" : {
-      "name" : "datasourceUpstreamLineage"
     }
   }, {
     "type" : "record",
@@ -2408,7 +2351,7 @@
                   }, {
                     "name" : "name",
                     "type" : "string",
-                    "doc" : "Dataset native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+                    "doc" : "Dataset native name e.g. db.table, /dir/subdir/name, or name",
                     "Searchable" : {
                       "boostScore" : 10.0,
                       "enableAutocomplete" : true,
@@ -2905,7 +2848,7 @@
                   }, {
                     "name" : "name",
                     "type" : "string",
-                    "doc" : "Datasource native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+                    "doc" : "Datasource native name e.g. db.table, /dir/subdir/name, or name",
                     "Searchable" : {
                       "boostScore" : 10.0,
                       "enableAutocomplete" : true,
@@ -2924,7 +2867,7 @@
                   "Aspect" : {
                     "name" : "datasourceKey"
                   }
-                }, "com.linkedin.datasource.DatasourceProperties", "com.linkedin.datasource.EditableDatasourceProperties", "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.datasource.DatasourceUpstreamLineage", "com.linkedin.datasource.DSUpstreamLineage", "com.linkedin.common.InstitutionalMemory", "com.linkedin.common.Ownership", "com.linkedin.common.Status", "com.linkedin.schema.SchemaMetadata", "com.linkedin.schema.EditableSchemaMetadata", "com.linkedin.common.GlobalTags", "com.linkedin.common.GlossaryTerms", "com.linkedin.common.BrowsePaths" ]
+                }, "com.linkedin.datasource.DatasourceProperties", "com.linkedin.datasource.EditableDatasourceProperties", "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.common.InstitutionalMemory", "com.linkedin.common.Ownership", "com.linkedin.common.Status", "com.linkedin.datasource.DatasourceConnections", "com.linkedin.common.GlobalTags", "com.linkedin.common.GlossaryTerms", "com.linkedin.common.BrowsePaths" ]
               }
             },
             "doc" : "The list of metadata aspects associated with the datasource. Depending on the use case, this can either be all, or a selection, of supported aspects."

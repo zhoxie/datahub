@@ -9,6 +9,7 @@ from .....schema_classes import BinaryJsonSchemaClass
 from .....schema_classes import BooleanTypeClass
 from .....schema_classes import BytesTypeClass
 from .....schema_classes import DatasetFieldForeignKeyClass
+from .....schema_classes import DatasourceFieldForeignKeyClass
 from .....schema_classes import DateTypeClass
 from .....schema_classes import EditableSchemaFieldInfoClass
 from .....schema_classes import EditableSchemaMetadataClass
@@ -42,6 +43,7 @@ BinaryJsonSchema = BinaryJsonSchemaClass
 BooleanType = BooleanTypeClass
 BytesType = BytesTypeClass
 DatasetFieldForeignKey = DatasetFieldForeignKeyClass
+DatasourceFieldForeignKey = DatasourceFieldForeignKeyClass
 DateType = DateTypeClass
 EditableSchemaFieldInfo = EditableSchemaFieldInfoClass
 EditableSchemaMetadata = EditableSchemaMetadataClass

@@ -177,13 +177,6 @@ public class DatasourceType implements SearchableEntityType<Datasource>, Browsab
             partialDatasource.getDeprecation().setActor(actor, SetMode.IGNORE_NULL);
         }
 
-        if (partialDatasource.hasEditableSchemaMetadata()) {
-            partialDatasource.getEditableSchemaMetadata().setLastModified(auditStamp);
-            if (!partialDatasource.getEditableSchemaMetadata().hasCreated()) {
-                partialDatasource.getEditableSchemaMetadata().setCreated(auditStamp);
-            }
-        }
-
         if (partialDatasource.hasEditableProperties()) {
             partialDatasource.getEditableProperties().setLastModified(auditStamp);
             if (!partialDatasource.getEditableProperties().hasCreated()) {

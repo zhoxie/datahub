@@ -1,0 +1,38 @@
+namespace com.linkedin.datasource
+
+import com.linkedin.common.CustomProperties
+import com.linkedin.common.ExternalReference
+
+/**
+ * Information about a datasource connection
+ */
+@Aspect = {
+  "name": "DatasourceConnInfo"
+}
+record DatasourceConnInfo includes CustomProperties, ExternalReference {
+
+  /**
+   * cluster
+   */
+  cluster: union[DatasourceCluster]
+
+  /**
+   * connection driver
+   */
+  driver: string
+
+  /**
+   * connection username
+   */
+  username: string
+
+  /**
+   * connection password
+   */
+  password: string
+
+  /**
+   * connection url
+   */
+  url: string
+}

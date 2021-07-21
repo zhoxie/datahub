@@ -1,24 +1,12 @@
 mutation updateDatasource($input: DatasourceUpdateInput!) {
     updateDatasource(input: $input) {
         ...nonRecursiveDatasourceFields
-        downstreamLineage {
-            ...downstreamRelationshipFields
-        }
-        upstreamLineage {
-            ...upstreamRelationshipFields
-        }
     }
 }
 
 query getDatasource($urn: String!) {
     datasource(urn: $urn) {
         ...nonRecursiveDatasourceFields
-        downstreamLineage {
-            ...downstreamRelationshipFields
-        }
-        upstreamLineage {
-            ...upstreamRelationshipFields
-        }
         usageStats(resource: $urn, range: MONTH) {
             buckets {
                 bucket

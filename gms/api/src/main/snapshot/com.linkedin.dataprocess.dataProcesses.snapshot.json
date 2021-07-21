@@ -87,7 +87,7 @@
           "name" : "platform",
           "type" : "com.linkedin.common.urn.DataPlatformUrn"
         }, {
-          "doc" : "Dataset native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+          "doc" : "Dataset native name e.g. db.table>, /dir/subdir/name, or name",
           "maxLength" : 210,
           "name" : "datasetName",
           "type" : "string"

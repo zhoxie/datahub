@@ -1,0 +1,11 @@
+namespace com.linkedin.datasource
+
+/**
+ * The various types of support datasource cluster
+ */
+enum DatasourceCluster {
+
+  PRIMARY
+
+  GSB
+}

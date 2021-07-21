@@ -8,8 +8,6 @@ import com.linkedin.common.Status
 import com.linkedin.common.Uri
 import com.linkedin.common.Url
 import com.linkedin.common.VersionTag
-import com.linkedin.schema.SchemaMetadata
-import com.linkedin.schema.EditableSchemaMetadata
 import com.linkedin.common.GlobalTags
 import com.linkedin.common.GlossaryTerms
 
@@ -106,24 +104,14 @@ record Datasource includes DatasourceKey, ChangeAuditStamps, VersionTag {
   ownership: optional Ownership
 
   /**
-   * Schema metadata of the datasource
-   */
-  schemaMetadata: optional SchemaMetadata
-
-  /**
-   * Editable schema metadata of the datasource
-   */
-  editableSchemaMetadata: optional EditableSchemaMetadata
-
-  /**
    * Status metadata of the datasource
    */
   status: optional Status
 
   /**
-   * Upstream lineage metadata of the datasource
+   * Connection information of the datasource
    */
-  upstreamLineage: optional DSUpstreamLineage
+  connections: DatasourceConnections
 
   /**
    * List of global tags applied to the datasource
@@ -139,4 +127,5 @@ record Datasource includes DatasourceKey, ChangeAuditStamps, VersionTag {
    * Related business terms of the datasource
    */
   glossaryTerms: optional GlossaryTerms
+
 }

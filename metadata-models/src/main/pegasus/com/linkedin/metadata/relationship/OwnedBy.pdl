@@ -12,6 +12,9 @@ import com.linkedin.common.OwnershipType
    "destination" : "com.linkedin.common.urn.CorpuserUrn",
    "source" : "com.linkedin.common.urn.DataProcessUrn"
 }, {
+    "destination" : "com.linkedin.common.urn.CorpuserUrn",
+    "source" : "com.linkedin.common.urn.DatasourceUrn"
+}, {
    "destination" : "com.linkedin.common.urn.CorpuserUrn",
    "source" : "com.linkedin.common.urn.MLModelUrn"
  }, {

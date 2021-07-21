@@ -11,9 +11,6 @@ import com.linkedin.datahub.graphql.types.tag.mappers.TagAssociationUpdateMapper
 import com.linkedin.datasource.Datasource;
 import com.linkedin.datasource.DatasourceDeprecation;
 import com.linkedin.datasource.EditableDatasourceProperties;
-import com.linkedin.schema.EditableSchemaFieldInfo;
-import com.linkedin.schema.EditableSchemaFieldInfoArray;
-import com.linkedin.schema.EditableSchemaMetadata;
 
 import javax.annotation.Nonnull;
 import java.util.stream.Collectors;
@@ -63,17 +60,6 @@ public class DatasourceUpdateInputMapper implements InputModelMapper<DatasourceU
             result.setGlobalTags(globalTags);
         }
 
-        if (datasourceUpdateInput.getEditableSchemaMetadata() != null) {
-            final EditableSchemaMetadata editableSchemaMetadata = new EditableSchemaMetadata();
-            editableSchemaMetadata.setEditableSchemaFieldInfo(
-                    new EditableSchemaFieldInfoArray(
-                            datasourceUpdateInput.getEditableSchemaMetadata().getEditableSchemaFieldInfo().stream().map(
-                                    element -> mapSchemaFieldInfo(element)
-                            ).collect(Collectors.toList())));
-            result.setEditableSchemaMetadata(editableSchemaMetadata);
-
-        }
-
         if (datasourceUpdateInput.getEditableProperties() != null) {
             final EditableDatasourceProperties editableDatasourceProperties = new EditableDatasourceProperties();
             editableDatasourceProperties.setDescription(datasourceUpdateInput.getEditableProperties().getDescription());
@@ -83,23 +69,4 @@ public class DatasourceUpdateInputMapper implements InputModelMapper<DatasourceU
         return result;
     }
 
-    private EditableSchemaFieldInfo mapSchemaFieldInfo(
-            final com.linkedin.datahub.graphql.generated.EditableSchemaFieldInfoUpdate schemaFieldInfo
-    ) {
-        final EditableSchemaFieldInfo output = new EditableSchemaFieldInfo();
-
-        if (schemaFieldInfo.getDescription() != null) {
-            output.setDescription(schemaFieldInfo.getDescription());
-        }
-        output.setFieldPath(schemaFieldInfo.getFieldPath());
-
-        if (schemaFieldInfo.getGlobalTags() != null) {
-            final GlobalTags globalTags = new GlobalTags();
-            globalTags.setTags(new TagAssociationArray(schemaFieldInfo.getGlobalTags().getTags().stream().map(
-                    element -> TagAssociationUpdateMapper.map(element)).collect(Collectors.toList())));
-            output.setGlobalTags(globalTags);
-        }
-
-        return output;
-    }
 }

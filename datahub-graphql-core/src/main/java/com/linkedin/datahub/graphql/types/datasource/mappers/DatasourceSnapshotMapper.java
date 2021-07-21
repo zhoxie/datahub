@@ -15,13 +15,12 @@ import com.linkedin.datahub.graphql.types.common.mappers.StatusMapper;
 import com.linkedin.datahub.graphql.types.common.mappers.StringMapMapper;
 import com.linkedin.datahub.graphql.types.mappers.ModelMapper;
 import com.linkedin.datahub.graphql.types.tag.mappers.GlobalTagsMapper;
+import com.linkedin.datasource.DatasourceConnections;
 import com.linkedin.datasource.DatasourceDeprecation;
 import com.linkedin.datasource.DatasourceProperties;
 import com.linkedin.datasource.EditableDatasourceProperties;
 import com.linkedin.metadata.dao.utils.ModelUtils;
 import com.linkedin.metadata.snapshot.DatasourceSnapshot;
-import com.linkedin.schema.EditableSchemaMetadata;
-import com.linkedin.schema.SchemaMetadata;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -72,21 +71,17 @@ public class DatasourceSnapshotMapper implements ModelMapper<DatasourceSnapshot,
                 result.setInstitutionalMemory(InstitutionalMemoryMapper.map((InstitutionalMemory) aspect));
             } else if (aspect instanceof Ownership) {
                 result.setOwnership(OwnershipMapper.map((Ownership) aspect));
-            } else if (aspect instanceof SchemaMetadata) {
-                result.setSchema(
-                    SchemaMapper.map((SchemaMetadata) aspect)
-                );
             } else if (aspect instanceof Status) {
               result.setStatus(StatusMapper.map((Status) aspect));
             } else if (aspect instanceof GlobalTags) {
               result.setGlobalTags(GlobalTagsMapper.map((GlobalTags) aspect));
-            } else if (aspect instanceof EditableSchemaMetadata) {
-              result.setEditableSchemaMetadata(EditableSchemaMetadataMapper.map((EditableSchemaMetadata) aspect));
             } else if (aspect instanceof EditableDatasourceProperties) {
                 final EditableDatasourceProperties editableDatasourceProperties = (EditableDatasourceProperties) aspect;
                 final DatasourceEditableProperties editableProperties = new DatasourceEditableProperties();
                 editableProperties.setDescription(editableDatasourceProperties.getDescription());
                 result.setEditableProperties(editableProperties);
+            } else if (aspect instanceof DatasourceConnections) {
+                result.setConnections(DatasourceConnectiosMapper.map((DatasourceConnections) aspect));
             }
         });
 
