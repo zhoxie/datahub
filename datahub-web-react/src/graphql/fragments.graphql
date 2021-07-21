@@ -185,6 +185,14 @@ fragment nonRecursiveDatasetFields on Dataset {
     }
 }
 
+fragment nonRecursiveDatasourceConnInfoFields on DatasourceConnInfo {
+    cluster
+    driver
+    username
+    password
+    url
+}
+
 fragment nonRecursiveDatasourceFields on Datasource {
     urn
     name
@@ -209,6 +217,13 @@ fragment nonRecursiveDatasourceFields on Datasource {
     }
     ownership {
         ...ownershipFields
+    }
+    connections {
+        category
+        dataCenter
+        connections {
+            ...nonRecursiveDatasourceConnInfoFields
+        }
     }
     institutionalMemory {
         elements {

@@ -1752,7 +1752,7 @@
                       {
                         "name": "name",
                         "type": "string",
-                        "doc": "Dataset native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+                        "doc": "Dataset native name e.g. db.table, /dir/subdir/name, or name",
                         "Searchable": {
                           "boostScore": 10.0,
                           "enableAutocomplete": true,
@@ -2670,6 +2670,34 @@
                                     },
                                     {
                                       "type": "record",
+                                      "name": "DatasourceFieldForeignKey",
+                                      "doc": "For non-urn based foregin keys.",
+                                      "fields": [
+                                        {
+                                          "name": "parentDatasource",
+                                          "type": "string",
+                                          "doc": "datasource that stores the resource.",
+                                          "java": {
+                                            "class": "com.linkedin.pegasus2avro.common.urn.DatasourceUrn"
+                                          }
+                                        },
+                                        {
+                                          "name": "currentFieldPaths",
+                                          "type": {
+                                            "type": "array",
+                                            "items": "string"
+                                          },
+                                          "doc": "List of fields in hosting(current) SchemaMetadata that conform a foreign key. List can contain a single entry or multiple entries if several entries in hosting schema conform a foreign key in a single parent datasource."
+                                        },
+                                        {
+                                          "name": "parentField",
+                                          "type": "string",
+                                          "doc": "SchemaField@fieldPath that uniquely identify field in parent datasource that this field references."
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "record",
                                       "name": "UrnForeignKey",
                                       "doc": "If SchemaMetadata fields make any external references and references are of type com.linkedin.pegasus2avro.common.Urn or any children, this models can be used to mark it.",
                                       "fields": [
@@ -2826,7 +2854,7 @@
                       {
                         "name": "name",
                         "type": "string",
-                        "doc": "Datasource native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+                        "doc": "Datasource native name e.g. db.table, /dir/subdir/name, or name",
                         "Searchable": {
                           "boostScore": 10.0,
                           "enableAutocomplete": true,
@@ -3009,8 +3037,97 @@
                   "com.linkedin.pegasus2avro.common.InstitutionalMemory",
                   "com.linkedin.pegasus2avro.common.Ownership",
                   "com.linkedin.pegasus2avro.common.Status",
-                  "com.linkedin.pegasus2avro.schema.SchemaMetadata",
-                  "com.linkedin.pegasus2avro.schema.EditableSchemaMetadata",
+                  {
+                    "type": "record",
+                    "name": "DatasourceConnections",
+                    "namespace": "com.linkedin.pegasus2avro.datasource",
+                    "fields": [
+                      {
+                        "name": "category",
+                        "type": "string"
+                      },
+                      {
+                        "name": "dataCenter",
+                        "type": "string"
+                      },
+                      {
+                        "name": "connections",
+                        "type": {
+                          "type": "array",
+                          "items": {
+                            "type": "record",
+                            "name": "DatasourceConnInfo",
+                            "doc": "Information about a datasource connection",
+                            "fields": [
+                              {
+                                "name": "customProperties",
+                                "type": {
+                                  "type": "map",
+                                  "values": "string"
+                                },
+                                "doc": "Custom property bag.",
+                                "default": {}
+                              },
+                              {
+                                "name": "externalUrl",
+                                "type": [
+                                  "null",
+                                  "string"
+                                ],
+                                "doc": "URL where the reference exist",
+                                "default": null,
+                                "java": {
+                                  "class": "com.linkedin.pegasus2avro.common.url.Url",
+                                  "coercerClass": "com.linkedin.pegasus2avro.common.url.UrlCoercer"
+                                }
+                              },
+                              {
+                                "name": "cluster",
+                                "type": [
+                                  {
+                                    "type": "enum",
+                                    "name": "DatasourceCluster",
+                                    "doc": "The various types of support datasource cluster",
+                                    "symbols": [
+                                      "PRIMARY",
+                                      "GSB"
+                                    ]
+                                  }
+                                ],
+                                "doc": "cluster"
+                              },
+                              {
+                                "name": "driver",
+                                "type": "string",
+                                "doc": "connection driver"
+                              },
+                              {
+                                "name": "username",
+                                "type": "string",
+                                "doc": "connection username"
+                              },
+                              {
+                                "name": "password",
+                                "type": "string",
+                                "doc": "connection password"
+                              },
+                              {
+                                "name": "url",
+                                "type": "string",
+                                "doc": "connection url"
+                              }
+                            ],
+                            "Aspect": {
+                              "name": "DatasourceConnInfo"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "Aspect": {
+                      "name": "datasourceConnections"
+                    }
+                  },
                   "com.linkedin.pegasus2avro.common.GlobalTags",
                   "com.linkedin.pegasus2avro.common.GlossaryTerms",
                   "com.linkedin.pegasus2avro.common.BrowsePaths"

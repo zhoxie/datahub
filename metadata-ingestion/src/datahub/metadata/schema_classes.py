@@ -2935,6 +2935,204 @@ class UpstreamLineageClass(DictWrapper):
         self._inner_dict['upstreams'] = value
     
     
+class DatasourceClusterClass(object):
+    """The various types of support datasource cluster"""
+    
+    PRIMARY = "PRIMARY"
+    GSB = "GSB"
+    
+    
+class DatasourceConnInfoClass(DictWrapper):
+    """Information about a datasource connection"""
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.datasource.DatasourceConnInfo")
+    def __init__(self,
+        cluster: Union[str, "DatasourceClusterClass"],
+        driver: str,
+        username: str,
+        password: str,
+        url: str,
+        customProperties: Optional[Dict[str, str]]=None,
+        externalUrl: Union[None, str]=None,
+    ):
+        super().__init__()
+        
+        if customProperties is None:
+            self.customProperties = {}
+        else:
+            self.customProperties = customProperties
+        self.externalUrl = externalUrl
+        self.cluster = cluster
+        self.driver = driver
+        self.username = username
+        self.password = password
+        self.url = url
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "DatasourceConnInfoClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.customProperties = dict()
+        self.externalUrl = self.RECORD_SCHEMA.field_map["externalUrl"].default
+        self.cluster = DatasourceClusterClass.PRIMARY
+        self.driver = str()
+        self.username = str()
+        self.password = str()
+        self.url = str()
+    
+    
+    @property
+    def customProperties(self) -> Dict[str, str]:
+        """Getter: Custom property bag."""
+        return self._inner_dict.get('customProperties')  # type: ignore
+    
+    
+    @customProperties.setter
+    def customProperties(self, value: Dict[str, str]) -> None:
+        """Setter: Custom property bag."""
+        self._inner_dict['customProperties'] = value
+    
+    
+    @property
+    def externalUrl(self) -> Union[None, str]:
+        """Getter: URL where the reference exist"""
+        return self._inner_dict.get('externalUrl')  # type: ignore
+    
+    
+    @externalUrl.setter
+    def externalUrl(self, value: Union[None, str]) -> None:
+        """Setter: URL where the reference exist"""
+        self._inner_dict['externalUrl'] = value
+    
+    
+    @property
+    def cluster(self) -> Union[str, "DatasourceClusterClass"]:
+        """Getter: cluster"""
+        return self._inner_dict.get('cluster')  # type: ignore
+    
+    
+    @cluster.setter
+    def cluster(self, value: Union[str, "DatasourceClusterClass"]) -> None:
+        """Setter: cluster"""
+        self._inner_dict['cluster'] = value
+    
+    
+    @property
+    def driver(self) -> str:
+        """Getter: connection driver"""
+        return self._inner_dict.get('driver')  # type: ignore
+    
+    
+    @driver.setter
+    def driver(self, value: str) -> None:
+        """Setter: connection driver"""
+        self._inner_dict['driver'] = value
+    
+    
+    @property
+    def username(self) -> str:
+        """Getter: connection username"""
+        return self._inner_dict.get('username')  # type: ignore
+    
+    
+    @username.setter
+    def username(self, value: str) -> None:
+        """Setter: connection username"""
+        self._inner_dict['username'] = value
+    
+    
+    @property
+    def password(self) -> str:
+        """Getter: connection password"""
+        return self._inner_dict.get('password')  # type: ignore
+    
+    
+    @password.setter
+    def password(self, value: str) -> None:
+        """Setter: connection password"""
+        self._inner_dict['password'] = value
+    
+    
+    @property
+    def url(self) -> str:
+        """Getter: connection url"""
+        return self._inner_dict.get('url')  # type: ignore
+    
+    
+    @url.setter
+    def url(self, value: str) -> None:
+        """Setter: connection url"""
+        self._inner_dict['url'] = value
+    
+    
+class DatasourceConnectionsClass(DictWrapper):
+    # No docs available.
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.datasource.DatasourceConnections")
+    def __init__(self,
+        category: str,
+        dataCenter: str,
+        connections: List["DatasourceConnInfoClass"],
+    ):
+        super().__init__()
+        
+        self.category = category
+        self.dataCenter = dataCenter
+        self.connections = connections
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "DatasourceConnectionsClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.category = str()
+        self.dataCenter = str()
+        self.connections = list()
+    
+    
+    @property
+    def category(self) -> str:
+        # No docs available.
+        return self._inner_dict.get('category')  # type: ignore
+    
+    
+    @category.setter
+    def category(self, value: str) -> None:
+        # No docs available.
+        self._inner_dict['category'] = value
+    
+    
+    @property
+    def dataCenter(self) -> str:
+        # No docs available.
+        return self._inner_dict.get('dataCenter')  # type: ignore
+    
+    
+    @dataCenter.setter
+    def dataCenter(self, value: str) -> None:
+        # No docs available.
+        self._inner_dict['dataCenter'] = value
+    
+    
+    @property
+    def connections(self) -> List["DatasourceConnInfoClass"]:
+        # No docs available.
+        return self._inner_dict.get('connections')  # type: ignore
+    
+    
+    @connections.setter
+    def connections(self, value: List["DatasourceConnInfoClass"]) -> None:
+        # No docs available.
+        self._inner_dict['connections'] = value
+    
+    
 class DatasourceDeprecationClass(DictWrapper):
     """Datasource deprecation status"""
     
@@ -4127,13 +4325,13 @@ class DatasetKeyClass(DictWrapper):
     
     @property
     def name(self) -> str:
-        """Getter: Dataset native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>"""
+        """Getter: Dataset native name e.g. db.table, /dir/subdir/name, or name"""
         return self._inner_dict.get('name')  # type: ignore
     
     
     @name.setter
     def name(self, value: str) -> None:
-        """Setter: Dataset native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>"""
+        """Setter: Dataset native name e.g. db.table, /dir/subdir/name, or name"""
         self._inner_dict['name'] = value
     
     
@@ -4191,13 +4389,13 @@ class DatasourceKeyClass(DictWrapper):
     
     @property
     def name(self) -> str:
-        """Getter: Datasource native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>"""
+        """Getter: Datasource native name e.g. db.table, /dir/subdir/name, or name"""
         return self._inner_dict.get('name')  # type: ignore
     
     
     @name.setter
     def name(self, value: str) -> None:
-        """Setter: Datasource native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>"""
+        """Setter: Datasource native name e.g. db.table, /dir/subdir/name, or name"""
         self._inner_dict['name'] = value
     
     
@@ -4973,7 +5171,7 @@ class DatasourceSnapshotClass(DictWrapper):
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.metadata.snapshot.DatasourceSnapshot")
     def __init__(self,
         urn: str,
-        aspects: List[Union["DatasourceKeyClass", "DatasourcePropertiesClass", "EditableDatasourcePropertiesClass", "DatasourceDeprecationClass", "InstitutionalMemoryClass", "OwnershipClass", "StatusClass", "SchemaMetadataClass", "EditableSchemaMetadataClass", "GlobalTagsClass", "GlossaryTermsClass", "BrowsePathsClass"]],
+        aspects: List[Union["DatasourceKeyClass", "DatasourcePropertiesClass", "EditableDatasourcePropertiesClass", "DatasourceDeprecationClass", "InstitutionalMemoryClass", "OwnershipClass", "StatusClass", "DatasourceConnectionsClass", "GlobalTagsClass", "GlossaryTermsClass", "BrowsePathsClass"]],
     ):
         super().__init__()
         
@@ -5005,13 +5203,13 @@ class DatasourceSnapshotClass(DictWrapper):
     
     
     @property
-    def aspects(self) -> List[Union["DatasourceKeyClass", "DatasourcePropertiesClass", "EditableDatasourcePropertiesClass", "DatasourceDeprecationClass", "InstitutionalMemoryClass", "OwnershipClass", "StatusClass", "SchemaMetadataClass", "EditableSchemaMetadataClass", "GlobalTagsClass", "GlossaryTermsClass", "BrowsePathsClass"]]:
+    def aspects(self) -> List[Union["DatasourceKeyClass", "DatasourcePropertiesClass", "EditableDatasourcePropertiesClass", "DatasourceDeprecationClass", "InstitutionalMemoryClass", "OwnershipClass", "StatusClass", "DatasourceConnectionsClass", "GlobalTagsClass", "GlossaryTermsClass", "BrowsePathsClass"]]:
         """Getter: The list of metadata aspects associated with the datasource. Depending on the use case, this can either be all, or a selection, of supported aspects."""
         return self._inner_dict.get('aspects')  # type: ignore
     
     
     @aspects.setter
-    def aspects(self, value: List[Union["DatasourceKeyClass", "DatasourcePropertiesClass", "EditableDatasourcePropertiesClass", "DatasourceDeprecationClass", "InstitutionalMemoryClass", "OwnershipClass", "StatusClass", "SchemaMetadataClass", "EditableSchemaMetadataClass", "GlobalTagsClass", "GlossaryTermsClass", "BrowsePathsClass"]]) -> None:
+    def aspects(self, value: List[Union["DatasourceKeyClass", "DatasourcePropertiesClass", "EditableDatasourcePropertiesClass", "DatasourceDeprecationClass", "InstitutionalMemoryClass", "OwnershipClass", "StatusClass", "DatasourceConnectionsClass", "GlobalTagsClass", "GlossaryTermsClass", "BrowsePathsClass"]]) -> None:
         """Setter: The list of metadata aspects associated with the datasource. Depending on the use case, this can either be all, or a selection, of supported aspects."""
         self._inner_dict['aspects'] = value
     
@@ -6744,6 +6942,70 @@ class DatasetFieldForeignKeyClass(DictWrapper):
         self._inner_dict['parentField'] = value
     
     
+class DatasourceFieldForeignKeyClass(DictWrapper):
+    """For non-urn based foregin keys."""
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.schema.DatasourceFieldForeignKey")
+    def __init__(self,
+        parentDatasource: str,
+        currentFieldPaths: List[str],
+        parentField: str,
+    ):
+        super().__init__()
+        
+        self.parentDatasource = parentDatasource
+        self.currentFieldPaths = currentFieldPaths
+        self.parentField = parentField
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "DatasourceFieldForeignKeyClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.parentDatasource = str()
+        self.currentFieldPaths = list()
+        self.parentField = str()
+    
+    
+    @property
+    def parentDatasource(self) -> str:
+        """Getter: datasource that stores the resource."""
+        return self._inner_dict.get('parentDatasource')  # type: ignore
+    
+    
+    @parentDatasource.setter
+    def parentDatasource(self, value: str) -> None:
+        """Setter: datasource that stores the resource."""
+        self._inner_dict['parentDatasource'] = value
+    
+    
+    @property
+    def currentFieldPaths(self) -> List[str]:
+        """Getter: List of fields in hosting(current) SchemaMetadata that conform a foreign key. List can contain a single entry or multiple entries if several entries in hosting schema conform a foreign key in a single parent datasource."""
+        return self._inner_dict.get('currentFieldPaths')  # type: ignore
+    
+    
+    @currentFieldPaths.setter
+    def currentFieldPaths(self, value: List[str]) -> None:
+        """Setter: List of fields in hosting(current) SchemaMetadata that conform a foreign key. List can contain a single entry or multiple entries if several entries in hosting schema conform a foreign key in a single parent datasource."""
+        self._inner_dict['currentFieldPaths'] = value
+    
+    
+    @property
+    def parentField(self) -> str:
+        """Getter: SchemaField@fieldPath that uniquely identify field in parent datasource that this field references."""
+        return self._inner_dict.get('parentField')  # type: ignore
+    
+    
+    @parentField.setter
+    def parentField(self, value: str) -> None:
+        """Setter: SchemaField@fieldPath that uniquely identify field in parent datasource that this field references."""
+        self._inner_dict['parentField'] = value
+    
+    
 class DateTypeClass(DictWrapper):
     """Date field type."""
     
@@ -7002,7 +7264,7 @@ class ForeignKeySpecClass(DictWrapper):
     
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.schema.ForeignKeySpec")
     def __init__(self,
-        foreignKey: Union["DatasetFieldForeignKeyClass", "UrnForeignKeyClass"],
+        foreignKey: Union["DatasetFieldForeignKeyClass", "DatasourceFieldForeignKeyClass", "UrnForeignKeyClass"],
     ):
         super().__init__()
         
@@ -7020,13 +7282,13 @@ class ForeignKeySpecClass(DictWrapper):
     
     
     @property
-    def foreignKey(self) -> Union["DatasetFieldForeignKeyClass", "UrnForeignKeyClass"]:
+    def foreignKey(self) -> Union["DatasetFieldForeignKeyClass", "DatasourceFieldForeignKeyClass", "UrnForeignKeyClass"]:
         """Getter: Foreign key definition in metadata schema."""
         return self._inner_dict.get('foreignKey')  # type: ignore
     
     
     @foreignKey.setter
-    def foreignKey(self, value: Union["DatasetFieldForeignKeyClass", "UrnForeignKeyClass"]) -> None:
+    def foreignKey(self, value: Union["DatasetFieldForeignKeyClass", "DatasourceFieldForeignKeyClass", "UrnForeignKeyClass"]) -> None:
         """Setter: Foreign key definition in metadata schema."""
         self._inner_dict['foreignKey'] = value
     
@@ -8318,6 +8580,9 @@ __SCHEMA_TYPES = {
     'com.linkedin.pegasus2avro.dataset.EditableDatasetProperties': EditableDatasetPropertiesClass,
     'com.linkedin.pegasus2avro.dataset.Upstream': UpstreamClass,
     'com.linkedin.pegasus2avro.dataset.UpstreamLineage': UpstreamLineageClass,
+    'com.linkedin.pegasus2avro.datasource.DatasourceCluster': DatasourceClusterClass,
+    'com.linkedin.pegasus2avro.datasource.DatasourceConnInfo': DatasourceConnInfoClass,
+    'com.linkedin.pegasus2avro.datasource.DatasourceConnections': DatasourceConnectionsClass,
     'com.linkedin.pegasus2avro.datasource.DatasourceDeprecation': DatasourceDeprecationClass,
     'com.linkedin.pegasus2avro.datasource.DatasourceProperties': DatasourcePropertiesClass,
     'com.linkedin.pegasus2avro.datasource.EditableDatasourceProperties': EditableDatasourcePropertiesClass,
@@ -8386,6 +8651,7 @@ __SCHEMA_TYPES = {
     'com.linkedin.pegasus2avro.schema.BooleanType': BooleanTypeClass,
     'com.linkedin.pegasus2avro.schema.BytesType': BytesTypeClass,
     'com.linkedin.pegasus2avro.schema.DatasetFieldForeignKey': DatasetFieldForeignKeyClass,
+    'com.linkedin.pegasus2avro.schema.DatasourceFieldForeignKey': DatasourceFieldForeignKeyClass,
     'com.linkedin.pegasus2avro.schema.DateType': DateTypeClass,
     'com.linkedin.pegasus2avro.schema.EditableSchemaFieldInfo': EditableSchemaFieldInfoClass,
     'com.linkedin.pegasus2avro.schema.EditableSchemaMetadata': EditableSchemaMetadataClass,
@@ -8469,6 +8735,9 @@ __SCHEMA_TYPES = {
     'EditableDatasetProperties': EditableDatasetPropertiesClass,
     'Upstream': UpstreamClass,
     'UpstreamLineage': UpstreamLineageClass,
+    'DatasourceCluster': DatasourceClusterClass,
+    'DatasourceConnInfo': DatasourceConnInfoClass,
+    'DatasourceConnections': DatasourceConnectionsClass,
     'DatasourceDeprecation': DatasourceDeprecationClass,
     'DatasourceProperties': DatasourcePropertiesClass,
     'EditableDatasourceProperties': EditableDatasourcePropertiesClass,
@@ -8537,6 +8806,7 @@ __SCHEMA_TYPES = {
     'BooleanType': BooleanTypeClass,
     'BytesType': BytesTypeClass,
     'DatasetFieldForeignKey': DatasetFieldForeignKeyClass,
+    'DatasourceFieldForeignKey': DatasourceFieldForeignKeyClass,
     'DateType': DateTypeClass,
     'EditableSchemaFieldInfo': EditableSchemaFieldInfoClass,
     'EditableSchemaMetadata': EditableSchemaMetadataClass,

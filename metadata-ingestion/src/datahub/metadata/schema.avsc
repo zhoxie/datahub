@@ -1771,7 +1771,7 @@
                           },
                           "type": "string",
                           "name": "name",
-                          "doc": "Dataset native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>"
+                          "doc": "Dataset native name e.g. db.table, /dir/subdir/name, or name"
                         },
                         {
                           "Searchable": {
@@ -2713,6 +2713,35 @@
                                       },
                                       {
                                         "type": "record",
+                                        "name": "DatasourceFieldForeignKey",
+                                        "namespace": "com.linkedin.pegasus2avro.schema",
+                                        "fields": [
+                                          {
+                                            "java": {
+                                              "class": "com.linkedin.pegasus2avro.common.urn.DatasourceUrn"
+                                            },
+                                            "type": "string",
+                                            "name": "parentDatasource",
+                                            "doc": "datasource that stores the resource."
+                                          },
+                                          {
+                                            "type": {
+                                              "type": "array",
+                                              "items": "string"
+                                            },
+                                            "name": "currentFieldPaths",
+                                            "doc": "List of fields in hosting(current) SchemaMetadata that conform a foreign key. List can contain a single entry or multiple entries if several entries in hosting schema conform a foreign key in a single parent datasource."
+                                          },
+                                          {
+                                            "type": "string",
+                                            "name": "parentField",
+                                            "doc": "SchemaField@fieldPath that uniquely identify field in parent datasource that this field references."
+                                          }
+                                        ],
+                                        "doc": "For non-urn based foregin keys."
+                                      },
+                                      {
+                                        "type": "record",
                                         "name": "UrnForeignKey",
                                         "namespace": "com.linkedin.pegasus2avro.schema",
                                         "fields": [
@@ -2879,7 +2908,7 @@
                           },
                           "type": "string",
                           "name": "name",
-                          "doc": "Datasource native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>"
+                          "doc": "Datasource native name e.g. db.table, /dir/subdir/name, or name"
                         },
                         {
                           "Searchable": {
@@ -3055,8 +3084,99 @@
                     "com.linkedin.pegasus2avro.common.InstitutionalMemory",
                     "com.linkedin.pegasus2avro.common.Ownership",
                     "com.linkedin.pegasus2avro.common.Status",
-                    "com.linkedin.pegasus2avro.schema.SchemaMetadata",
-                    "com.linkedin.pegasus2avro.schema.EditableSchemaMetadata",
+                    {
+                      "type": "record",
+                      "Aspect": {
+                        "name": "datasourceConnections"
+                      },
+                      "name": "DatasourceConnections",
+                      "namespace": "com.linkedin.pegasus2avro.datasource",
+                      "fields": [
+                        {
+                          "type": "string",
+                          "name": "category"
+                        },
+                        {
+                          "type": "string",
+                          "name": "dataCenter"
+                        },
+                        {
+                          "type": {
+                            "type": "array",
+                            "items": {
+                              "type": "record",
+                              "Aspect": {
+                                "name": "DatasourceConnInfo"
+                              },
+                              "name": "DatasourceConnInfo",
+                              "namespace": "com.linkedin.pegasus2avro.datasource",
+                              "fields": [
+                                {
+                                  "type": {
+                                    "type": "map",
+                                    "values": "string"
+                                  },
+                                  "name": "customProperties",
+                                  "default": {},
+                                  "doc": "Custom property bag."
+                                },
+                                {
+                                  "java": {
+                                    "class": "com.linkedin.pegasus2avro.common.url.Url",
+                                    "coercerClass": "com.linkedin.pegasus2avro.common.url.UrlCoercer"
+                                  },
+                                  "type": [
+                                    "null",
+                                    "string"
+                                  ],
+                                  "name": "externalUrl",
+                                  "default": null,
+                                  "doc": "URL where the reference exist"
+                                },
+                                {
+                                  "type": [
+                                    {
+                                      "type": "enum",
+                                      "name": "DatasourceCluster",
+                                      "namespace": "com.linkedin.pegasus2avro.datasource",
+                                      "symbols": [
+                                        "PRIMARY",
+                                        "GSB"
+                                      ],
+                                      "doc": "The various types of support datasource cluster"
+                                    }
+                                  ],
+                                  "name": "cluster",
+                                  "doc": "cluster"
+                                },
+                                {
+                                  "type": "string",
+                                  "name": "driver",
+                                  "doc": "connection driver"
+                                },
+                                {
+                                  "type": "string",
+                                  "name": "username",
+                                  "doc": "connection username"
+                                },
+                                {
+                                  "type": "string",
+                                  "name": "password",
+                                  "doc": "connection password"
+                                },
+                                {
+                                  "type": "string",
+                                  "name": "url",
+                                  "doc": "connection url"
+                                }
+                              ],
+                              "doc": "Information about a datasource connection"
+                            }
+                          },
+                          "name": "connections"
+                        }
+                      ]
+                    },
                     "com.linkedin.pegasus2avro.common.GlobalTags",
                     "com.linkedin.pegasus2avro.common.GlossaryTerms",
                     "com.linkedin.pegasus2avro.common.BrowsePaths"

@@ -7,7 +7,7 @@ import {
 } from '../../../../graphql/datasource.generated';
 import { Ownership as OwnershipView } from '../../shared/Ownership';
 import { EntityProfile } from '../../../shared/EntityProfile';
-import { Datasource, EntityType, GlobalTags, GlossaryTerms } from '../../../../types.generated';
+import { Datasource, DatasourceConnections, EntityType, GlobalTags, GlossaryTerms } from '../../../../types.generated';
 import LineageView from './Lineage';
 import { Properties as PropertiesView } from '../../shared/Properties';
 import DocumentsView from './Documentation';
@@ -70,9 +70,14 @@ export const DatasourceProfile = ({ urn }: { urn: string }): JSX.Element => {
     );
 
     const getTabs = (datasource: Datasource) => {
-        const { ownership, properties, institutionalMemory } = datasource;
+        const { ownership, properties, institutionalMemory, connections } = datasource;
 
         return [
+            {
+                name: TabType.Lineage,
+                path: TabType.Lineage.toLowerCase(),
+                content: <LineageView datasource={datasource} connections={connections as DatasourceConnections} />,
+            },
             {
                 name: TabType.Ownership,
                 path: TabType.Ownership.toLowerCase(),
@@ -91,11 +96,6 @@ export const DatasourceProfile = ({ urn }: { urn: string }): JSX.Element => {
                         }}
                     />
                 ),
-            },
-            {
-                name: TabType.Lineage,
-                path: TabType.Lineage.toLowerCase(),
-                content: <LineageView datasource={datasource} />,
             },
             {
                 name: TabType.Queries,
