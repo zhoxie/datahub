@@ -7,7 +7,6 @@ import com.linkedin.dataset.client.InstitutionalMemory;
 import com.linkedin.dataset.client.Lineages;
 import com.linkedin.dataset.client.Ownerships;
 import com.linkedin.dataset.client.Schemas;
-import com.linkedin.datasource.client.Datasources;
 import com.linkedin.identity.client.CorpUsers;
 import com.linkedin.metadata.restli.DefaultRestliClientFactory;
 import com.linkedin.restli.client.Client;
@@ -20,7 +19,6 @@ public class GmsDao {
 
   private final CorpUsers _corpUsers;
   private final Datasets _datasets;
-  private final Datasources _datasources;
   private final Ownerships _ownerships;
   private final InstitutionalMemory _institutionalMemory;
   private final Deprecations _deprecations;
@@ -31,7 +29,6 @@ public class GmsDao {
   public GmsDao(@Nonnull Client restClient) {
     _corpUsers = new CorpUsers(restClient);
     _datasets = new Datasets(restClient);
-    _datasources = new Datasources(restClient);
     _ownerships = new Ownerships(restClient);
     _institutionalMemory = new InstitutionalMemory(restClient);
     _deprecations = new Deprecations(restClient);
