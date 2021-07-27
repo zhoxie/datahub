@@ -1,9 +1,9 @@
-import { Button, Space, Typography, Table, Card, Row, Col } from 'antd';
+import { Button, Space, Typography, Card, Row, Col } from 'antd';
 import React from 'react';
-import { ColumnsType } from 'antd/es/table';
+// import { ColumnsType } from 'antd/es/table';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { Datasource, DatasourceConnections, StringMapEntry } from '../../../../types.generated';
+import { Datasource, DatasourceConnections } from '../../../../types.generated';
 import { navigateToLineageUrl } from '../../../lineage/utils/navigateToLineageUrl';
 
 export type Props = {
@@ -16,43 +16,43 @@ const ViewRawButtonContainer = styled.div`
     justify-content: flex-end;
 `;
 
-export default function Lineage({ datasource, connections }: Props) {
+export default function Lineage({ datasource }: Props) {
     const history = useHistory();
     const location = useLocation();
 
-    const datasourceInfoColumns: ColumnsType<StringMapEntry> = [
-        {
-            title: 'Name',
-            dataIndex: 'name',
-        },
-        {
-            title: 'Type',
-            dataIndex: 'type',
-        },
-        {
-            title: 'Category',
-            dataIndex: 'category',
-        },
-        {
-            title: 'Data Center',
-            dataIndex: 'dataCenter',
-        },
-    ];
+    // const datasourceInfoColumns: ColumnsType<StringMapEntry> = [
+    //     {
+    //         title: 'Name',
+    //         dataIndex: 'name',
+    //     },
+    //     {
+    //         title: 'Type',
+    //         dataIndex: 'type',
+    //     },
+    //     {
+    //         title: 'Category',
+    //         dataIndex: 'category',
+    //     },
+    //     {
+    //         title: 'Data Center',
+    //         dataIndex: 'dataCenter',
+    //     },
+    // ];
 
-    const datasourceDemoValues = [
-        {
-            key: '1',
-            name: datasource.name,
-            type: datasource.platform.name,
-            category: connections.category,
-            dataCenter: connections.dataCenter,
-        },
-    ];
+    // const datasourceDemoValues = [
+    //     {
+    //         key: '1',
+    //         name: datasource.name,
+    //         type: datasource.platform.name,
+    //         category: connections.category,
+    //         dataCenter: connections.dataCenter,
+    //     },
+    // ];
 
     return (
         <>
             <Space direction="vertical" style={{ width: '100%' }} size="large">
-                <Table pagination={false} columns={datasourceInfoColumns} dataSource={datasourceDemoValues} />
+                {/* <Table pagination={false} columns={datasourceInfoColumns} dataSource={datasourceDemoValues} /> */}
                 {datasource.connections?.connections?.map((item) => {
                     return (
                         <Card title="Connection Information" style={{ width: '100%' }}>

@@ -1,0 +1,46 @@
+{
+    "entity": {
+        "value": {
+            "com.linkedin.metadata.snapshot.DatasourceSnapshot": {
+                "aspects": [
+                    {
+                        "com.linkedin.metadata.key.DatasourceKey": {
+                            "name": "testDS7",
+                            "origin": "PROD",
+                            "platform": "urn:li:dataPlatform:oracle"
+                        }
+                    },
+                    {
+                        "com.linkedin.datasource.DatasourceConnections": {
+                            "category": "category",
+                            "dataCenter": "SJC",
+                            "connections": [
+                                {
+                                    "cluster": {
+                                        "com.linkedin.datasource.DatasourceCluster": "PRIMARY"
+                                    },
+                                    "password": "test1",
+                                    "customProperties": {},
+                                    "driver": "org.oracle.Driver",
+                                    "url": "jdbc:oracle://10.100.13.100/test",
+                                    "username": "zhoxie"
+                                },
+                                {
+                                    "cluster": {
+                                        "com.linkedin.datasource.DatasourceCluster": "GSB"
+                                    },
+                                    "password": "test7",
+                                    "customProperties": {},
+                                    "driver": "org.oracle.Driver",
+                                    "url": "jdbc:oracle://10.100.13.100/test",
+                                    "username": "zhoxie"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "urn": "urn:li:datasource:(urn:li:dataPlatform:oracle,testDS7,PROD)"
+            }
+        }
+    }
+}
