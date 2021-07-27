@@ -1,13 +1,11 @@
-import * as React from 'react';
-
-import { Col, Row, Divider, Layout, Card, Typography } from 'antd';
-import { LayoutProps } from 'antd/lib/layout';
-import styled from 'styled-components';
 import { TagOutlined } from '@ant-design/icons';
+import { Card, Col, Divider, Layout, Row, Typography } from 'antd';
+import { LayoutProps } from 'antd/lib/layout';
+import * as React from 'react';
 import { Link } from 'react-router-dom';
-
-import { RoutedTabs } from './RoutedTabs';
+import styled from 'styled-components';
 import CompactContext from './CompactContext';
+import { RoutedTabs } from './RoutedTabs';
 
 export interface EntityProfileProps {
     title: string;
@@ -20,6 +18,7 @@ export interface EntityProfileProps {
         content: React.ReactNode;
     }>;
     titleLink?: string;
+    edit?: React.ReactNode;
     onTabChange?: (selectedTab: string) => void;
 }
 
@@ -71,6 +70,7 @@ export const EntityProfile = ({
     titleLink,
     onTabChange,
     tagCardHeader,
+    edit,
 }: EntityProfileProps) => {
     const isCompact = React.useContext(CompactContext);
     const defaultTabPath = tabs && tabs?.length > 0 ? tabs[0].path : '';
@@ -81,15 +81,16 @@ export const EntityProfile = ({
                 <Col md={isCompact ? 24 : 16} sm={24} xs={24}>
                     <LayoutDiv isCompact={isCompact}>
                         <Row style={{ padding: '20px 0px 10px 0px' }}>
-                            <Col span={24}>
+                            <Col span={edit ? 18 : 24}>
                                 {titleLink ? (
                                     <Link to={titleLink}>
                                         <h1>{title}</h1>
                                     </Link>
                                 ) : (
-                                    <h1>{title}</h1>
+                                    <span>{title}</span>
                                 )}
                             </Col>
+                            {edit && <Col span={6}>{edit}</Col>}
                         </Row>
                         {header}
                     </LayoutDiv>
