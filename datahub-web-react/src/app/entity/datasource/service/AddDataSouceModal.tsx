@@ -7,6 +7,8 @@ import { FormField, IDataSourceConnection, IFormConnectionData, IFormData } from
 type AddDataSourceModalProps = {
     visible: boolean;
     onClose: () => void;
+    title: string;
+    originData?: any;
 };
 
 const { Option } = Select;
@@ -15,9 +17,9 @@ const layout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 20 },
 };
-export default function AddDataSourceModal({ visible, onClose }: AddDataSourceModalProps) {
+export default function AddDataSourceModal({ visible, onClose, title, originData }: AddDataSourceModalProps) {
     let count = 1;
-    const initData: IFormData = {
+    const initData: IFormData = originData ?? {
         sourceName: '',
         sourceType: '',
         category: '',
@@ -53,10 +55,12 @@ export default function AddDataSourceModal({ visible, onClose }: AddDataSourceMo
         if (status === 200) {
             msg = 'Success';
             onClose();
+            showMessageByNotification(msg);
+            window.location.reload();
         } else {
             msg = `Error for ${status}`;
+            showMessageByNotification(msg);
         }
-        showMessageByNotification(msg);
     };
 
     const sendDataSourceSaveReq = (data) => {
@@ -107,7 +111,9 @@ export default function AddDataSourceModal({ visible, onClose }: AddDataSourceMo
         };
         const connections: IDataSourceConnection[] = formData.connections?.map((conn) => {
             return {
-                ...conn,
+                driver: conn.driver,
+                url: conn.url,
+                customProperties: {},
                 cluster: {
                     'com.linkedin.datasource.DatasourceCluster': conn.cluster,
                 },
@@ -206,47 +212,37 @@ export default function AddDataSourceModal({ visible, onClose }: AddDataSourceMo
         return (
             <Card title="Data Source">
                 <Form.Item
-                    name="name"
+                    name="sourceName"
                     label="Name"
                     rules={[{ required: true, message: 'Please input DataSource Name!' }]}
                 >
                     <Input
                         autoComplete="off"
-                        value={formData.sourceName}
+                        defaultValue={formData.sourceName}
                         onChange={(e) => updateDataSourceBasicInfo(e.target.value, FormField.sourceName)}
                     />
                 </Form.Item>
                 <Form.Item
-                    name="type"
+                    name="sourceType"
                     label="Type"
                     rules={[{ required: true, message: 'Please input DataSource Type!' }]}
                 >
                     <Input
                         autoComplete="off"
-                        value={formData.sourceType}
+                        defaultValue={formData.sourceType}
                         onChange={(e) => updateDataSourceBasicInfo(e.target.value, FormField.sourceType)}
                     />
-                    {/* <Select
-                        placeholder="Select a option"
-                        onChange={(e) => updateDataSourceBasicInfo(e, FormField.sourceType)}
-                        allowClear
-                        value={formData.sourceType}
-                    >
-                        <Option value="oracle">Oracle</Option>
-                        <Option value="postgresql">Postgresql</Option>
-                    </Select> */}
                 </Form.Item>
                 <Form.Item
                     name="category"
                     label="Category"
                     rules={[{ required: true, message: 'Please input DataSource Category!' }]}
                 >
-                    {' '}
                     <Select
                         placeholder="Select a option"
                         onChange={(e) => updateDataSourceBasicInfo(e, FormField.category)}
                         allowClear
-                        value={formData.category}
+                        defaultValue={formData.category}
                     >
                         <Option value="category-1">Category-1</Option>
                         <Option value="category-2">Category-2</Option>
@@ -257,12 +253,11 @@ export default function AddDataSourceModal({ visible, onClose }: AddDataSourceMo
                     label="Data Center"
                     rules={[{ required: true, message: 'Please input DataSource DataCenter!' }]}
                 >
-                    {' '}
                     <Select
                         placeholder="Select a option"
                         onChange={(e) => updateDataSourceBasicInfo(e, FormField.dataCenter)}
                         allowClear
-                        value={formData.dataCenter}
+                        defaultValue={formData.dataCenter}
                     >
                         <Option value="DFW">DFW</Option>
                         <Option value="SJC">SJC</Option>
@@ -291,7 +286,7 @@ export default function AddDataSourceModal({ visible, onClose }: AddDataSourceMo
                         >
                             <Select
                                 placeholder="Select a option"
-                                value={info.cluster}
+                                defaultValue={info.cluster}
                                 onChange={(e) => updateDataSourceConnections(e, FormField.cluster, index)}
                                 allowClear
                             >
@@ -300,7 +295,7 @@ export default function AddDataSourceModal({ visible, onClose }: AddDataSourceMo
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="userName"
+                            name="connName"
                             label="userName"
                             rules={[{ required: true, message: 'Please Choose DataSource UserName!' }]}
                         >
@@ -308,19 +303,19 @@ export default function AddDataSourceModal({ visible, onClose }: AddDataSourceMo
                             <Input
                                 type="text"
                                 autoComplete="off"
-                                value={info.connName}
+                                defaultValue={info.connName}
                                 onChange={(e) => updateDataSourceConnections(e.target.value, FormField.connName, index)}
                             />
                         </Form.Item>
                         <Form.Item
-                            name="password"
+                            name="connPwd"
                             label="Password"
                             rules={[{ required: true, message: 'Please Choose DataSource Password!' }]}
                         >
                             <Input
                                 type="text"
                                 autoComplete="off"
-                                value={info.connPwd}
+                                defaultValue={info.connPwd}
                                 onChange={(e) => updateDataSourceConnections(e.target.value, FormField.connPwd, index)}
                             />
                         </Form.Item>
@@ -331,7 +326,7 @@ export default function AddDataSourceModal({ visible, onClose }: AddDataSourceMo
                         >
                             <Select
                                 placeholder="Select a option"
-                                value={info.driver}
+                                defaultValue={info.driver}
                                 onChange={(e) => updateDataSourceConnections(e, FormField.driver, index)}
                                 allowClear
                             >
@@ -348,7 +343,7 @@ export default function AddDataSourceModal({ visible, onClose }: AddDataSourceMo
                             <Input
                                 type="text"
                                 autoComplete="off"
-                                value={info.url}
+                                defaultValue={info.url}
                                 onChange={(e) => updateDataSourceConnections(e.target.value, FormField.url, index)}
                             />
                         </Form.Item>
@@ -360,7 +355,7 @@ export default function AddDataSourceModal({ visible, onClose }: AddDataSourceMo
 
     return (
         <Modal
-            title="Add DataSource"
+            title={title}
             visible={visible}
             onCancel={onClose}
             width={800}

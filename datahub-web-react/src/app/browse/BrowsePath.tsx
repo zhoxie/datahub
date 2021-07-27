@@ -104,6 +104,7 @@ export const BrowsePath = ({ type, path, lineageSupported, isProfilePage, isBrow
             {showAddModal && (
                 <AddDataSourceModal
                     visible
+                    title="Add DataSource"
                     onClose={() => {
                         setShowAddModal(false);
                     }}
