@@ -42,12 +42,14 @@
         "apollo-link": "^1.2.14",
         "apollo-link-error": "^1.1.13",
         "apollo-link-http": "^1.5.17",
+        "axios": "^0.21.1",
         "craco-antd": "^1.19.0",
         "d3-scale": "^3.3.0",
         "d3-time-format": "^3.0.0",
         "dotenv": "^8.2.0",
         "graphql": "^15.4.0",
         "history": "^5.0.0",
+        "http-proxy-middleware": "^2.0.1",
         "js-cookie": "^2.2.1",
         "lodash.debounce": "^4.0.8",
         "query-string": "^6.13.8",
@@ -120,7 +122,6 @@
         "eslint-plugin-react": "^7.23.2",
         "prettier": "^2.3.0"
     },
-    "proxy": "http://localhost:9002",
     "resolutions": {
         "@ant-design/colors": "5.0.0"
     }

@@ -1,42 +1,41 @@
-import { Badge, Image, Popover, Space, Typography } from 'antd';
 import { FetchResult, MutationFunctionOptions } from '@apollo/client';
-import styled from 'styled-components';
+import { Badge, Popover, Space, Table, Typography } from 'antd';
+import { ColumnsType } from 'antd/es/table';
 import React from 'react';
-
-import { Datasource } from '../../../../types.generated';
-import { useEntityRegistry } from '../../../useEntityRegistry';
+import { Datasource, StringMapEntry } from '../../../../types.generated';
 import { AvatarsGroup } from '../../../shared/avatar';
-import CompactContext from '../../../shared/CompactContext';
 import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';
+import CompactContext from '../../../shared/CompactContext';
+import { useEntityRegistry } from '../../../useEntityRegistry';
 import UpdatableDescription from '../../shared/UpdatableDescription';
-import UsageFacepile from './UsageFacepile';
 
 export type Props = {
     datasource: Datasource;
     updateDatasource: (options?: MutationFunctionOptions<any, any> | undefined) => Promise<FetchResult>;
 };
 
-const HeaderInfoItem = styled.div`
-    display: inline-block;
-    text-align: left;
-    width: 125px;
-    vertical-align: top;
-`;
+// const HeaderInfoItem = styled.div`
+//     display: inline-block;
+//     text-align: left;
+//     width: 125px;
+//     vertical-align: top;
+// `;
 
-const HeaderInfoItems = styled.div`
-    display: inline-block;
-    margin-top: -16px;
-    vertical-align: top;
-`;
-const PreviewImage = styled(Image)`
-    max-height: 20px;
-    padding-top: 3px;
-    width: auto;
-    object-fit: contain;
-`;
+// const HeaderInfoItems = styled.div`
+//     display: inline-block;
+//     margin-top: -16px;
+//     vertical-align: top;
+// `;
+// const PreviewImage = styled(Image)`
+//     max-height: 20px;
+//     padding-top: 3px;
+//     width: auto;
+//     object-fit: contain;
+// `;
 
 export default function DatasourceHeader({
     datasource: {
+        name,
         urn,
         type,
         description: originalDesc,
@@ -44,19 +43,54 @@ export default function DatasourceHeader({
         deprecation,
         platform,
         editableProperties,
-        usageStats,
+        // usageStats,
+        connections,
     },
     updateDatasource,
 }: Props) {
     const entityRegistry = useEntityRegistry();
     const isCompact = React.useContext(CompactContext);
     const platformName = capitalizeFirstLetter(platform.name);
-    const platformLogoUrl = platform.info?.logoUrl;
+    // const platformLogoUrl = platform.info?.logoUrl;
+    const category = connections?.category;
+    const dataCenter = connections?.dataCenter;
+
+    console.log(platform);
+
+    const datasourceInfoColumns: ColumnsType<StringMapEntry> = [
+        {
+            title: 'Name',
+            dataIndex: 'name',
+        },
+        {
+            title: 'Type',
+            dataIndex: 'type',
+        },
+        {
+            title: 'Category',
+            dataIndex: 'category',
+        },
+        {
+            title: 'Data Center',
+            dataIndex: 'dataCenter',
+        },
+    ];
+
+    const datasourceDemoValues = [
+        {
+            key: '1',
+            name,
+            type: platformName,
+            category,
+            dataCenter,
+        },
+    ];
 
     return (
         <>
-            <Space direction="vertical" size="middle">
-                <HeaderInfoItems>
+            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+                <Table pagination={false} columns={datasourceInfoColumns} dataSource={datasourceDemoValues} />
+                {/* <HeaderInfoItems>
                     <HeaderInfoItem>
                         <div>
                             <Typography.Text strong type="secondary" style={{ fontSize: 11 }}>
@@ -68,6 +102,22 @@ export default function DatasourceHeader({
                                 <PreviewImage preview={false} src={platformLogoUrl} placeholder alt={platformName} />
                             )}
                             <Typography.Text style={{ fontSize: 16 }}>{platformName}</Typography.Text>
+                        </Space>
+                        <div>
+                            <Typography.Text strong type="secondary" style={{ fontSize: 11 }}>
+                                category
+                            </Typography.Text>
+                        </div>
+                        <Space direction="horizontal">
+                            <Typography.Text style={{ fontSize: 16 }}>{category}</Typography.Text>
+                        </Space>
+                        <div>
+                            <Typography.Text strong type="secondary" style={{ fontSize: 11 }}>
+                                dataCenter
+                            </Typography.Text>
+                        </div>
+                        <Space direction="horizontal">
+                            <Typography.Text style={{ fontSize: 16 }}>{dataCenter}</Typography.Text>
                         </Space>
                     </HeaderInfoItem>
                     {usageStats?.aggregations?.totalSqlQueries && (
@@ -96,7 +146,7 @@ export default function DatasourceHeader({
                             </div>
                         </HeaderInfoItem>
                     )}
-                </HeaderInfoItems>
+                </HeaderInfoItems> */}
                 <UpdatableDescription
                     isCompact={isCompact}
                     updateEntity={updateDatasource}
