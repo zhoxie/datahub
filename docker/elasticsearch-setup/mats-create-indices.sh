@@ -123,14 +123,14 @@ function create_datahub_usage_event_datastream() {
   if [ $(curl --netrc-file $AUTH_FILE -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_ilm/policy/datahub_usage_event_policy") -eq 404 ]
   then
     echo -e "\ncreating datahub_usage_event_policy"
-    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH$ELASTICSEARCH_PATH/_ilm/policy/datahub_usage_event_policy" -H 'Content-Type: application/json' --data @/index/usage-event/policy.json
+    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH$ELASTICSEARCH_PATH/_ilm/policy/datahub_usage_event_policy" -H 'Content-Type: application/json' --data @index/usage-event/policy.json
   else
     echo -e "\ndatahub_usage_event_policy exists"
   fi
   if [ $(curl --netrc-file $AUTH_FILE -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_index_template/datahub_usage_event_index_template") -eq 404 ]
   then
     echo -e "\ncreating datahub_usage_event_index_template"
-    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_index_template/datahub_usage_event_index_template" -H 'Content-Type: application/json' --data @/index/usage-event/index_template.json
+    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_index_template/datahub_usage_event_index_template" -H 'Content-Type: application/json' --data @index/usage-event/index_template.json
   else
     echo -e "\ndatahub_usage_event_index_template exists"
   fi
@@ -140,14 +140,14 @@ function create_datahub_usage_event_aws_elasticsearch() {
   if [ $(curl --netrc-file $AUTH_FILE -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_opendistro/_ism/policies/datahub_usage_event_policy") -eq 404 ]
   then
     echo -e "\ncreating datahub_usage_event_policy"
-    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_opendistro/_ism/policies/datahub_usage_event_policy" -H 'Content-Type: application/json' --data @/index/usage-event/aws_es_ism_policy.json
+    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_opendistro/_ism/policies/datahub_usage_event_policy" -H 'Content-Type: application/json' --data @index/usage-event/aws_es_ism_policy.json
   else
     echo -e "\ndatahub_usage_event_policy exists"
   fi
   if [ $(curl --netrc-file $AUTH_FILE -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_template/datahub_usage_event_index_template") -eq 404 ]
   then
     echo -e "\ncreating datahub_usage_event_index_template"
-    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_template/datahub_usage_event_index_template" -H 'Content-Type: application/json' --data @/index/usage-event/aws_es_index_template.json
+    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_template/datahub_usage_event_index_template" -H 'Content-Type: application/json' --data @index/usage-event/aws_es_index_template.json
     curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/datahub_usage_event-000001"  -H 'Content-Type: application/json' --data "{\"aliases\":{\"datahub_usage_event\":{\"is_write_index\":true}}}"
   else
     echo -e "\ndatahub_usage_event_index_template exists"
