@@ -12,6 +12,8 @@ GET           /config                                                         co
 GET           /deps                                                           controllers.Application.printDeps()
 GET           /login                                                          controllers.Application.login()
 GET           /logout                                                         controllers.Application.logout()
+POST          /entities                                                       controllers.EntitiesProxy.entitiesProxy()
+
 
 GET           /api/v1/owner/types                                             controllers.api.v1.Dataset.getDatasetOwnerTypes()
 GET           /api/v1/party/employees                                         controllers.api.v1.User.getAllCompanyUsers()
