@@ -2,10 +2,10 @@ import { Divider, Image, Row, Space, Tag, Typography } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { GlobalTags, Owner, GlossaryTerms } from '../../types.generated';
-import { useEntityRegistry } from '../useEntityRegistry';
+import { GlobalTags, GlossaryTerms, Owner } from '../../types.generated';
 import AvatarsGroup from '../shared/avatar/AvatarsGroup';
 import TagTermGroup from '../shared/tags/TagTermGroup';
+import { useEntityRegistry } from '../useEntityRegistry';
 
 interface Props {
     name: string;
@@ -21,6 +21,7 @@ interface Props {
     snippet?: React.ReactNode;
     glossaryTerms?: GlossaryTerms;
     dataTestID?: string;
+    itemBtns?: React.ReactNode;
 }
 
 const DescriptionParagraph = styled(Typography.Paragraph)`
@@ -60,6 +61,7 @@ export default function DefaultPreviewCard({
     snippet,
     glossaryTerms,
     dataTestID,
+    itemBtns,
 }: Props) {
     const entityRegistry = useEntityRegistry();
 
@@ -79,6 +81,7 @@ export default function DefaultPreviewCard({
                                     <Typography.Text>{type}</Typography.Text>
                                     <Typography.Text strong>{platform}</Typography.Text>
                                     {qualifier && <Tag>{qualifier}</Tag>}
+                                    {itemBtns}
                                 </Space>
                             )}
                         </Space>
