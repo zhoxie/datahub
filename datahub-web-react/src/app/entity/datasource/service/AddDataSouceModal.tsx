@@ -280,7 +280,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 >
                     <Space direction="vertical" style={{ width: '100%', marginTop: 0 }}>
                         <Form.Item
-                            name="cluster"
+                            name={`cluster_${info.id}`}
                             label="Cluster"
                             rules={[{ required: true, message: 'Please Choose DataSource Cluster!' }]}
                         >
@@ -295,7 +295,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="connName"
+                            name={`connName_${info.id}`}
                             label="userName"
                             rules={[{ required: true, message: 'Please Choose DataSource UserName!' }]}
                         >
@@ -308,7 +308,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                             />
                         </Form.Item>
                         <Form.Item
-                            name="connPwd"
+                            name={`connPwd_${info.id}`}
                             label="Password"
                             rules={[{ required: true, message: 'Please Choose DataSource Password!' }]}
                         >
@@ -320,7 +320,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                             />
                         </Form.Item>
                         <Form.Item
-                            name="driver"
+                            name={`driver_${info.id}`}
                             label="Driver"
                             rules={[{ required: true, message: 'Please Choose DataSource Driver!' }]}
                         >
@@ -336,7 +336,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="url"
+                            name={`url_${info.id}`}
                             label="URL"
                             rules={[{ required: true, message: 'Please Choose DataSource URL!' }]}
                         >
