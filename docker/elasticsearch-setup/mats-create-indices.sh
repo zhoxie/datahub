@@ -9,6 +9,7 @@ set -e
 : ${ELASTICSEARCH_HOST_URL:=esaas-dfw02-sjc02-mats.webex.com}
 : ${ELASTICSEARCH_PORT:=443}
 : ${ELASTICSEARCH_PATH:='esapi'}
+: ${AUTH_FILE:=dfwesps}
 
 function get_index_name() {
   if [[ -z "$INDEX_PREFIX" ]]; then
@@ -26,10 +27,10 @@ function generate_index_file() {
 }
 
 function check_reindex() {
-    initial_documents=$(curl -XGET "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$1/_count" -H 'Content-Type: application/json' | jq '.count')
+    initial_documents=$(curl --netrc-file $AUTH_FILE  -XGET "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$1/_count" -H 'Content-Type: application/json' | jq '.count')
     for i in $(seq 30); do
       echo $i
-      reindexed_documents=$(curl -XGET "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$2/_count" -H 'Content-Type: application/json' | jq '.count')
+      reindexed_documents=$(curl --netrc-file $AUTH_FILE -XGET "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$2/_count" -H 'Content-Type: application/json' | jq '.count')
       if [[ $reindexed_documents == "$initial_documents" ]]; then
         echo -e "\nPost-reindex document reconcialiation completed. doc_source_index_count: $initial_documents; doc_target_index_count: $reindexed_documents"
         return 0
@@ -47,33 +48,33 @@ function reindex() {
   target_index="$1_$(date +%s)"
 
   #create target index with latest index config
-  curl -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$target_index" -H 'Content-Type: application/json' --data @/tmp/data
+  curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$target_index" -H 'Content-Type: application/json' --data @/tmp/data
 
   #reindex the documents in source index to target index.
   # One of the assumption here is that we only add properties to document when index-config is evolved.
   # In case a property is deleted from document, it will still be reindexed in target index as default behaviour and
   # it is not breaking the code. If still needs to be purged from target index, use "removed" property in POST data.
-  curl -XPOST "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_reindex?pretty" -H 'Content-Type: application/json' \
+  curl --netrc-file $AUTH_FILE -XPOST "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_reindex?pretty" -H 'Content-Type: application/json' \
     -d "{\"source\":{\"index\":\"$source_index\"},\"dest\":{\"index\":\"$target_index\"}}"
 
   if check_reindex "$source_index" "$target_index"
   then
     #checking if source index is concrete index or alias
-    if [ $(curl -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_alias/$source_index") -eq 404 ]
+    if [ $(curl --netrc-file $AUTH_FILE -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_alias/$source_index") -eq 404 ]
     then
-      curl -XDELETE "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$source_index"
+      curl --netrc-file $AUTH_FILE -XDELETE "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$source_index"
     else
-      concrete_index_name=$(curl -XGET "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_alias/$source_index" | jq 'keys[]' | head -1 | tr -d \")
-      curl -XDELETE "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$concrete_index_name"
+      concrete_index_name=$(curl --netrc-file $AUTH_FILE -XGET "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_alias/$source_index" | jq 'keys[]' | head -1 | tr -d \")
+      curl --netrc-file $AUTH_FILE -XDELETE "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$concrete_index_name"
     fi
 
-    curl -XPOST "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_aliases" -H 'Content-Type: application/json' \
+    curl --netrc-file $AUTH_FILE -XPOST "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_aliases" -H 'Content-Type: application/json' \
       -d "{\"actions\":[{\"remove\":{\"index\":\"*\",\"alias\":\"$source_index\"}},{\"add\":{\"index\":\"$target_index\",\"alias\":\"$source_index\"}}]}"
 
     echo -e "\nReindexing to $target_index succeded"
     return 0
   else
-    curl -XDELETE "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$target_index"
+    curl --netrc-file $AUTH_FILE -XDELETE "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$target_index"
     echo -e "\nReindexing to $target_index failed"
     return 1
   fi
@@ -83,22 +84,22 @@ function create_index() {
   generate_index_file "index/$2" "index/$3" /tmp/data
 
   #checking if index(or alias) exists
-  if [ $(curl -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$1") -eq 404 ]
+  if [ $(curl --netrc-file $AUTH_FILE -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$1") -eq 404 ]
   then
     echo -e '\ncreating index' "$1"
 
-    curl -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$1" -H 'Content-Type: application/json' --data @/tmp/data
+    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$1" -H 'Content-Type: application/json' --data @/tmp/data
     return 0
   else
     echo -e '\ncomparing with existing version of index' "$1"
 
     setting_keys_regex=$(jq '.index | keys[]' "index/$2" | xargs | sed 's/ /|/g')
-    curl -XGET "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$1/_settings" | \
+    curl --netrc-file $AUTH_FILE -XGET "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$1/_settings" | \
       jq '.. | .settings? | select(. != null)' | \
       jq --arg KEYS_REGEX "$setting_keys_regex" '.index | with_entries(select(.key | match($KEYS_REGEX))) | {"index":.}' \
       > /tmp/existing_setting
 
-    curl -XGET "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$1/_mapping" | \
+    curl --netrc-file $AUTH_FILE -XGET "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/$1/_mapping" | \
       jq '.. | .mappings? | select(. != null)' \
       > /tmp/existing_mapping
 
@@ -119,35 +120,35 @@ function create_index() {
 }
 
 function create_datahub_usage_event_datastream() {
-  if [ $(curl -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_ilm/policy/datahub_usage_event_policy") -eq 404 ]
+  if [ $(curl --netrc-file $AUTH_FILE -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_ilm/policy/datahub_usage_event_policy") -eq 404 ]
   then
     echo -e "\ncreating datahub_usage_event_policy"
-    curl -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH$ELASTICSEARCH_PATH/_ilm/policy/datahub_usage_event_policy" -H 'Content-Type: application/json' --data @/index/usage-event/policy.json
+    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH$ELASTICSEARCH_PATH/_ilm/policy/datahub_usage_event_policy" -H 'Content-Type: application/json' --data @/index/usage-event/policy.json
   else
     echo -e "\ndatahub_usage_event_policy exists"
   fi
-  if [ $(curl -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_index_template/datahub_usage_event_index_template") -eq 404 ]
+  if [ $(curl --netrc-file $AUTH_FILE -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_index_template/datahub_usage_event_index_template") -eq 404 ]
   then
     echo -e "\ncreating datahub_usage_event_index_template"
-    curl -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_index_template/datahub_usage_event_index_template" -H 'Content-Type: application/json' --data @/index/usage-event/index_template.json
+    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_index_template/datahub_usage_event_index_template" -H 'Content-Type: application/json' --data @/index/usage-event/index_template.json
   else
     echo -e "\ndatahub_usage_event_index_template exists"
   fi
 }
 
 function create_datahub_usage_event_aws_elasticsearch() {
-  if [ $(curl -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_opendistro/_ism/policies/datahub_usage_event_policy") -eq 404 ]
+  if [ $(curl --netrc-file $AUTH_FILE -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_opendistro/_ism/policies/datahub_usage_event_policy") -eq 404 ]
   then
     echo -e "\ncreating datahub_usage_event_policy"
-    curl -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_opendistro/_ism/policies/datahub_usage_event_policy" -H 'Content-Type: application/json' --data @/index/usage-event/aws_es_ism_policy.json
+    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_opendistro/_ism/policies/datahub_usage_event_policy" -H 'Content-Type: application/json' --data @/index/usage-event/aws_es_ism_policy.json
   else
     echo -e "\ndatahub_usage_event_policy exists"
   fi
-  if [ $(curl -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_template/datahub_usage_event_index_template") -eq 404 ]
+  if [ $(curl --netrc-file $AUTH_FILE -o /dev/null -s -w "%{http_code}" "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_template/datahub_usage_event_index_template") -eq 404 ]
   then
     echo -e "\ncreating datahub_usage_event_index_template"
-    curl -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_template/datahub_usage_event_index_template" -H 'Content-Type: application/json' --data @/index/usage-event/aws_es_index_template.json
-    curl -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/datahub_usage_event-000001"  -H 'Content-Type: application/json' --data "{\"aliases\":{\"datahub_usage_event\":{\"is_write_index\":true}}}"
+    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/_template/datahub_usage_event_index_template" -H 'Content-Type: application/json' --data @/index/usage-event/aws_es_index_template.json
+    curl --netrc-file $AUTH_FILE -XPUT "$ELASTICSEARCH_PROTOCOL://$ELASTICSEARCH_HOST_URL:$ELASTICSEARCH_PORT/$ELASTICSEARCH_PATH/datahub_usage_event-000001"  -H 'Content-Type: application/json' --data "{\"aliases\":{\"datahub_usage_event\":{\"is_write_index\":true}}}"
   else
     echo -e "\ndatahub_usage_event_index_template exists"
   fi
