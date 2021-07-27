@@ -23,9 +23,6 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 
@@ -42,7 +39,7 @@ public class ElasticSearchServiceTest {
   private static final int HTTP_PORT = 9200;
   private static final String ENTITY_NAME = "testEntity";
 
-  @BeforeTest
+//  @BeforeTest
   public void setup() {
     _entityRegistry = new SnapshotEntityRegistry(new Snapshot());
     _indexConvention = new IndexConventionImpl(null);
@@ -74,12 +71,12 @@ public class ElasticSearchServiceTest {
     return new ElasticSearchService(indexBuilders, searchDAO, browseDAO, writeDAO);
   }
 
-  @AfterTest
+//  @AfterTest
   public void tearDown() {
     _elasticsearchContainer.stop();
   }
 
-  @Test
+//  @Test
   public void testElasticSearchService() throws InterruptedException {
     _elasticSearchService.configure();
 
