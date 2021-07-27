@@ -1,8 +1,9 @@
 import React from 'react';
-import { EntityType, FabricType, Owner, GlobalTags, GlossaryTerms } from '../../../../types.generated';
+import { EntityType, FabricType, GlobalTags, GlossaryTerms, Owner } from '../../../../types.generated';
 import DefaultPreviewCard from '../../../preview/DefaultPreviewCard';
-import { useEntityRegistry } from '../../../useEntityRegistry';
 import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';
+import { useEntityRegistry } from '../../../useEntityRegistry';
+import DatasourceDelete from './DatasourceDelete';
 
 export const Preview = ({
     urn,
@@ -42,6 +43,7 @@ export const Preview = ({
             owners={owners}
             snippet={snippet}
             glossaryTerms={glossaryTerms || undefined}
+            itemBtns={<DatasourceDelete urn={urn} />}
         />
     );
 };

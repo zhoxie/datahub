@@ -1,23 +1,25 @@
-import React from 'react';
 import { Alert } from 'antd';
+import React from 'react';
 import {
-    useGetDatasourceQuery,
-    useUpdateDatasourceMutation,
     GetDatasourceDocument,
+    useGetDatasourceQuery,
+    // eslint-disable-next-line prettier/prettier
+    useUpdateDatasourceMutation
 } from '../../../../graphql/datasource.generated';
-import { Ownership as OwnershipView } from '../../shared/Ownership';
-import { EntityProfile } from '../../../shared/EntityProfile';
 import { Datasource, DatasourceConnections, EntityType, GlobalTags, GlossaryTerms } from '../../../../types.generated';
-import LineageView from './Lineage';
-import { Properties as PropertiesView } from '../../shared/Properties';
-import DocumentsView from './Documentation';
-import DatasourceHeader from './DatasourceHeader';
+import analytics, { EntityActionType, EventType } from '../../../analytics';
+import useIsLineageMode from '../../../lineage/utils/useIsLineageMode';
+import { EntityProfile } from '../../../shared/EntityProfile';
 import { Message } from '../../../shared/Message';
 import TagTermGroup from '../../../shared/tags/TagTermGroup';
-import useIsLineageMode from '../../../lineage/utils/useIsLineageMode';
 import { useEntityRegistry } from '../../../useEntityRegistry';
 import { useGetAuthenticatedUser } from '../../../useGetAuthenticatedUser';
-import analytics, { EventType, EntityActionType } from '../../../analytics';
+import { Ownership as OwnershipView } from '../../shared/Ownership';
+import { Properties as PropertiesView } from '../../shared/Properties';
+import DatasourceEdit from './DatasourceEdit';
+import DatasourceHeader from './DatasourceHeader';
+import DocumentsView from './Documentation';
+import LineageView from './Lineage';
 import QueriesTab from './QueriesTab';
 
 export enum TabType {
@@ -68,6 +70,8 @@ export const DatasourceProfile = ({ urn }: { urn: string }): JSX.Element => {
     const getHeader = (datasource: Datasource) => (
         <DatasourceHeader datasource={datasource} updateDatasource={updateDatasource} />
     );
+
+    const getEdit = (datasource: Datasource) => <DatasourceEdit datasource={datasource} />;
 
     const getTabs = (datasource: Datasource) => {
         const { ownership, properties, institutionalMemory, connections } = datasource;
@@ -159,6 +163,7 @@ export const DatasourceProfile = ({ urn }: { urn: string }): JSX.Element => {
                     tagCardHeader={data.datasource?.glossaryTerms ? 'Tags & Terms' : 'Tags'}
                     tabs={getTabs(data.datasource as Datasource)}
                     header={getHeader(data.datasource as Datasource)}
+                    edit={getEdit(data.datasource as Datasource)}
                     onTabChange={(tab: string) => {
                         analytics.event({
                             type: EventType.EntitySectionViewEvent,
