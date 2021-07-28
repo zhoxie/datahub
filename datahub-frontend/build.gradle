@@ -47,3 +47,8 @@ graphqlCodegen {
 tasks.withType(Checkstyle) {
   exclude "**/generated/**"
 }
+
+dependencies {
+  compile externalDependency.mysqlConnector
+  compile externalDependency.postgresql
+}

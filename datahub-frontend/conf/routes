@@ -13,6 +13,7 @@ GET           /deps                                                           co
 GET           /login                                                          controllers.Application.login()
 GET           /logout                                                         controllers.Application.logout()
 POST          /entities                                                       controllers.EntitiesProxy.entitiesProxy()
+POST          /testconnection                                                 controllers.DatasourceTestConn.testConn()
 
 
 GET           /api/v1/owner/types                                             controllers.api.v1.Dataset.getDatasetOwnerTypes()
