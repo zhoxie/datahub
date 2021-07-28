@@ -11,8 +11,20 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DatasourceTestConn extends Controller {
+
+    private enum TYPE{
+        MYSQL, POSTGRES
+    }
+
+    private static Map<TYPE, String> testConnSQLMap = new HashMap<>();
+    static {
+        testConnSQLMap.put(TYPE.MYSQL, "select 1+1");
+        testConnSQLMap.put(TYPE.POSTGRES, "select 1+1");
+    }
 
     public Result testConn() throws IOException {
 
@@ -26,8 +38,10 @@ public class DatasourceTestConn extends Controller {
             String password = json.get("password").textValue();
 
             if("mysql".equalsIgnoreCase(type)){
-                return mysqlTest(driver, url, username, password);
-            } else {
+                return test(TYPE.MYSQL, driver, url, username, password);
+            } else if("postgresql".equalsIgnoreCase(type)) {
+                return test(TYPE.POSTGRES, driver, url, username, password);
+            }else {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode j = mapper.readTree("{\"result\":400,\"message\":\""+type+" not support yet.\"}");
                 return status(400, j);
@@ -41,37 +55,33 @@ public class DatasourceTestConn extends Controller {
         }
     }
 
-    private Result mysqlTest(String driver, String url, String username, String password) throws IOException {
-            try {
-                Class.forName(driver);
+    private Result test(TYPE type, String driver, String url, String username, String password) throws IOException {
+        try {
+            Class.forName(driver);
 
-            } catch (ClassNotFoundException e){
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode j = mapper.readTree("{\"result\":400,\"message\":\"driver class not found.\"}");
-                return status(400, j);
-            }
+        } catch (ClassNotFoundException e){
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode j = mapper.readTree("{\"result\":400,\"message\":\"driver class not found.\"}");
+            return status(400, j);
+        }
 
-            try (Connection conn = DriverManager.getConnection(url, username, password);
-                 PreparedStatement prstat =conn.prepareStatement("select 1+1");
-                 ResultSet rs = prstat.executeQuery();){
-                if(rs.next()  && rs.getInt(1) == 2){
-                    ObjectMapper mapper = new ObjectMapper();
-                    JsonNode j = mapper.readTree("{\"result\":200,\"message\":\"success.\"}");
-                    return ok(j);
-                } else {
-                    ObjectMapper mapper = new ObjectMapper();
-                    JsonNode j = mapper.readTree("{\"result\":500,\"message\":\"failed.\"}");
-                    return status(500, j);
-                }
-            } catch (SQLException e){
+        try (Connection conn = DriverManager.getConnection(url, username, password);
+             PreparedStatement prstat =conn.prepareStatement(testConnSQLMap.get(type));
+             ResultSet rs = prstat.executeQuery()){
+            if(rs.next()  && rs.getInt(1) == 2){
                 ObjectMapper mapper = new ObjectMapper();
-                JsonNode j = mapper.readTree("{\"result\":500,\"message\":\""+e.getMessage()+"\"}");
+                JsonNode j = mapper.readTree("{\"result\":200,\"message\":\"success.\"}");
+                return ok(j);
+            } else {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode j = mapper.readTree("{\"result\":500,\"message\":\"failed.\"}");
                 return status(500, j);
             }
-
-
-
-
+        } catch (SQLException e){
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode j = mapper.readTree("{\"result\":500,\"message\":\""+e.getMessage()+"\"}");
+            return status(500, j);
+        }
     }
 
 }

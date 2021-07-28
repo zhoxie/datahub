@@ -26,7 +26,7 @@ dependencies {
     play('com.typesafe.akka:akka-actor_2.11:2.5.16')
     play('net.minidev:json-smart:2.4.1')
     play('mysql:mysql-connector-java:8.0.20')
-
+    play('org.postgresql:postgresql:42.2.14')
   }
   play project(":datahub-dao")
   play project(":datahub-graphql-core")
@@ -44,6 +44,7 @@ dependencies {
   play externalDependency.playCache
 
   play externalDependency.mysqlConnector
+  play externalDependency.postgresql
 
   play externalDependency.kafkaClients
 
