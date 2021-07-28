@@ -7,7 +7,7 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { PageRoutes } from '../../conf/Global';
 import { EntityType } from '../../types.generated';
-import AddDataSourceModal from '../entity/datasource/service/AddDataSouceModal';
+import AddDataSourceModal from '../entity/datasource/profile/AddDataSouceModal';
 import { navigateToLineageUrl } from '../lineage/utils/navigateToLineageUrl';
 import useIsLineageMode from '../lineage/utils/useIsLineageMode';
 import { useEntityRegistry } from '../useEntityRegistry';
