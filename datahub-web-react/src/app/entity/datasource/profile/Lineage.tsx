@@ -29,6 +29,17 @@ export default function Lineage({ datasource, btns }: Props) {
             </Button>
         );
     };
+
+    const getPassword = (pwd: string) => {
+        if (!pwd) {
+            return '';
+        }
+        const arr: string[] = [];
+        for (let i = 0; i < pwd.length; i++) {
+            arr.push('*');
+        }
+        return arr.join('');
+    };
     return (
         <>
             <Space direction="vertical" style={{ width: '100%' }} size="large">
@@ -55,7 +66,9 @@ export default function Lineage({ datasource, btns }: Props) {
                                         Password
                                     </Typography.Text>
                                     <br />
-                                    <Typography.Text style={{ fontSize: 16 }}>{item?.password}</Typography.Text>
+                                    <Typography.Text style={{ fontSize: 16 }}>
+                                        {getPassword(item?.password || '')}
+                                    </Typography.Text>
                                 </Col>
                             </Row>
                             <Row>
