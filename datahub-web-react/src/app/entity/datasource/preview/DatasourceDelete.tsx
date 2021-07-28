@@ -9,8 +9,6 @@ export type Props = {
 };
 
 export default function DatasourceDelete({ urn }: Props) {
-    console.log(`DatasourceDelete urn .... ${urn}`);
-
     const sendDataSourceSaveReq = (data) => {
         axios
             .post('/entities?action=ingest', data, {

@@ -9,15 +9,17 @@ const showMessageByNotification = (msg: string, level: string = NotificationLeve
     });
 };
 
-const showRequestResult = (status: number, tip?: string) => {
+const showRequestResult = (status: number, tip?: string, stopRefresh?: boolean) => {
     let msg;
     if (status === 200) {
         msg = tip || 'Success';
         showMessageByNotification(msg, NotificationLevel.SUCCESS);
-        const timer = setTimeout(() => {
-            clearTimeout(timer);
-            window.location.reload();
-        }, 1000);
+        if (!stopRefresh) {
+            const timer = setTimeout(() => {
+                clearTimeout(timer);
+                window.location.reload();
+            }, 1000);
+        }
     } else {
         msg = tip || `Error for ${status}`;
         showMessageByNotification(msg, NotificationLevel.ERROR);

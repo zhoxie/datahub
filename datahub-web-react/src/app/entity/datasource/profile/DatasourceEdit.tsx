@@ -32,8 +32,6 @@ export default function DatasourceEdit({ datasource: { name, urn, type, platform
         dataCenter,
     };
 
-    console.log(platform, category, type, urn, name, platformName);
-
     return (
         <>
             <Button type="link" onClick={() => setShowEditModal(true)}>
