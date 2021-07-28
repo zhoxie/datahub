@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import React, { useState } from 'react';
 import { Datasource } from '../../../../types.generated';
 import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';
-import AddDataSourceModal from '../service/AddDataSouceModal';
+import AddDataSourceModal from './AddDataSouceModal';
 
 export type Props = {
     datasource: Datasource;
@@ -31,8 +31,6 @@ export default function DatasourceEdit({ datasource: { name, urn, type, platform
         category,
         dataCenter,
     };
-
-    console.log(platform, category, type, urn, name, platformName);
 
     return (
         <>

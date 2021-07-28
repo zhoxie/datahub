@@ -43,7 +43,6 @@ export const BrowseResults = ({
     groups,
     onChangePage,
 }: Props) => {
-    console.log('result page ....', groups, entities);
     const entityRegistry = useEntityRegistry();
 
     const onGroupClick = (group: BrowseResultGroup) => {

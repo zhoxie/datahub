@@ -18,6 +18,7 @@ import { Ownership as OwnershipView } from '../../shared/Ownership';
 import { Properties as PropertiesView } from '../../shared/Properties';
 import DatasourceEdit from './DatasourceEdit';
 import DatasourceHeader from './DatasourceHeader';
+import DatasourceVertify from './DatasourceVertify';
 import DocumentsView from './Documentation';
 import LineageView from './Lineage';
 import QueriesTab from './QueriesTab';
@@ -73,6 +74,10 @@ export const DatasourceProfile = ({ urn }: { urn: string }): JSX.Element => {
 
     const getEdit = (datasource: Datasource) => <DatasourceEdit datasource={datasource} />;
 
+    const getTestConnection = (datasource: Datasource, id: number) => (
+        <DatasourceVertify datasource={datasource} id={id} />
+    );
+
     const getTabs = (datasource: Datasource) => {
         const { ownership, properties, institutionalMemory, connections } = datasource;
 
@@ -80,7 +85,13 @@ export const DatasourceProfile = ({ urn }: { urn: string }): JSX.Element => {
             {
                 name: TabType.Lineage,
                 path: TabType.Lineage.toLowerCase(),
-                content: <LineageView datasource={datasource} connections={connections as DatasourceConnections} />,
+                content: (
+                    <LineageView
+                        datasource={datasource}
+                        btns={getTestConnection}
+                        connections={connections as DatasourceConnections}
+                    />
+                ),
             },
             {
                 name: TabType.Ownership,

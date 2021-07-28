@@ -1,35 +1,14 @@
 import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Modal, notification } from 'antd';
+import { Button, Modal } from 'antd';
 import axios from 'axios';
 import React from 'react';
+import { showRequestResult } from '../service/NotificationUtil';
 
 export type Props = {
     urn: string;
 };
 
 export default function DatasourceDelete({ urn }: Props) {
-    console.log(`DatasourceDelete urn .... ${urn}`);
-
-    const showMessageByNotification = (msg: string) => {
-        notification.open({
-            message: 'Notification',
-            description: msg,
-            onClick: () => {},
-        });
-    };
-
-    const showRequestResult = (status: number) => {
-        let msg;
-        if (status === 200) {
-            msg = 'Success';
-            showMessageByNotification(msg);
-            window.location.reload();
-        } else {
-            msg = `Error for ${status}`;
-            showMessageByNotification(msg);
-        }
-    };
-
     const sendDataSourceSaveReq = (data) => {
         axios
             .post('/entities?action=ingest', data, {

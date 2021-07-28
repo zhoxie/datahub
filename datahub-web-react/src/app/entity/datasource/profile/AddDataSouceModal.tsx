@@ -1,8 +1,10 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Modal, notification, Select, Space } from 'antd';
+import { Button, Card, Form, Input, Modal, Select, Space } from 'antd';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { FormField, IDataSourceConnection, IFormConnectionData, IFormData } from './dataSouceType';
+import { FormField, IDataSourceConnection, IFormConnectionData, IFormData } from '../service/DataSouceType';
+import { initCategory, initCluster, initDataCenter, initDriver } from '../service/FormInitValue';
+import { showMessageByNotification, showRequestResult } from '../service/NotificationUtil';
 
 type AddDataSourceModalProps = {
     visible: boolean;
@@ -35,32 +37,12 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             },
         ],
     };
+
     const [formData, updateDataSourceFormData] = useState(initData);
     const [form] = Form.useForm();
 
-    const showMessageByNotification = (msg: string) => {
-        notification.open({
-            message: 'Notification',
-            description: msg,
-            onClick: () => {},
-        });
-    };
-
     const showValidateMsg = (msg) => {
         showMessageByNotification(msg);
-    };
-
-    const showRequestResult = (status: number) => {
-        let msg;
-        if (status === 200) {
-            msg = 'Success';
-            onClose();
-            showMessageByNotification(msg);
-            window.location.reload();
-        } else {
-            msg = `Error for ${status}`;
-            showMessageByNotification(msg);
-        }
     };
 
     const sendDataSourceSaveReq = (data) => {
@@ -69,8 +51,11 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 headers: { 'Content-Type': 'application/json' },
             })
             .then((res) => {
-                console.log(res);
-                showRequestResult(res.status);
+                const status = res?.status;
+                if (status === 200) {
+                    onClose();
+                }
+                showRequestResult(status);
             })
             .catch((error) => {
                 console.error(error);
@@ -98,7 +83,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     const onSaveBtnClick = () => {
         const isReady = checkFormData();
         if (!isReady) {
-            showValidateMsg('Exist Require Msg Missing , Pls Add/Choose ');
+            showValidateMsg('Exist some required value missing from form items !');
             return;
         }
         const urn = `urn:li:datasource:(urn:li:dataPlatform:${formData.sourceType},${formData.sourceName},PROD)`;
@@ -214,9 +199,10 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 <Form.Item
                     name="sourceName"
                     label="Name"
-                    rules={[{ required: true, message: 'Please input DataSource Name!' }]}
+                    rules={[{ required: true, message: 'Please input dataSource name!' }]}
                 >
                     <Input
+                        placeholder="Please input dataSource name"
                         autoComplete="off"
                         defaultValue={formData.sourceName}
                         onChange={(e) => updateDataSourceBasicInfo(e.target.value, FormField.sourceName)}
@@ -225,9 +211,10 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 <Form.Item
                     name="sourceType"
                     label="Type"
-                    rules={[{ required: true, message: 'Please input DataSource Type!' }]}
+                    rules={[{ required: true, message: 'Please input dataSource type!' }]}
                 >
                     <Input
+                        placeholder="Please input dataSource type"
                         autoComplete="off"
                         defaultValue={formData.sourceType}
                         onChange={(e) => updateDataSourceBasicInfo(e.target.value, FormField.sourceType)}
@@ -236,31 +223,33 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 <Form.Item
                     name="category"
                     label="Category"
-                    rules={[{ required: true, message: 'Please input DataSource Category!' }]}
+                    rules={[{ required: true, message: 'Please choose dataSource category!' }]}
                 >
                     <Select
-                        placeholder="Select a option"
+                        placeholder="Select an option for category"
                         onChange={(e) => updateDataSourceBasicInfo(e, FormField.category)}
                         allowClear
                         defaultValue={formData.category}
                     >
-                        <Option value="category-1">Category-1</Option>
-                        <Option value="category-2">Category-2</Option>
+                        {initCategory?.map((item) => {
+                            return <Option value={item.value}>{item.label}</Option>;
+                        })}
                     </Select>
                 </Form.Item>
                 <Form.Item
                     name="dataCenter"
                     label="Data Center"
-                    rules={[{ required: true, message: 'Please input DataSource DataCenter!' }]}
+                    rules={[{ required: true, message: 'Please choose dataSource dataCenter!' }]}
                 >
                     <Select
-                        placeholder="Select a option"
+                        placeholder="Select an option for data center"
                         onChange={(e) => updateDataSourceBasicInfo(e, FormField.dataCenter)}
                         allowClear
                         defaultValue={formData.dataCenter}
                     >
-                        <Option value="DFW">DFW</Option>
-                        <Option value="SJC">SJC</Option>
+                        {initDataCenter?.map((item) => {
+                            return <Option value={item.value}>{item.label}</Option>;
+                        })}
                     </Select>
                 </Form.Item>
             </Card>
@@ -282,26 +271,28 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                         <Form.Item
                             name={`cluster_${info.id}`}
                             label="Cluster"
-                            rules={[{ required: true, message: 'Please Choose DataSource Cluster!' }]}
+                            rules={[{ required: true, message: 'Please choose connection cluster!' }]}
                         >
                             <Select
-                                placeholder="Select a option"
+                                placeholder="Select an option for cluster"
                                 defaultValue={info.cluster}
                                 onChange={(e) => updateDataSourceConnections(e, FormField.cluster, index)}
                                 allowClear
                             >
-                                <Option value="PRIMARY">PRIMARY</Option>
-                                <Option value="GSB">GSB</Option>
+                                {initCluster?.map((item) => {
+                                    return <Option value={item.value}>{item.label}</Option>;
+                                })}
                             </Select>
                         </Form.Item>
                         <Form.Item
                             name={`connName_${info.id}`}
                             label="userName"
-                            rules={[{ required: true, message: 'Please Choose DataSource UserName!' }]}
+                            rules={[{ required: true, message: 'Please input connection userName!' }]}
                         >
                             {/* username as value ,will input issue */}
                             <Input
                                 type="text"
+                                placeholder="Please input connection username"
                                 autoComplete="off"
                                 defaultValue={info.connName}
                                 onChange={(e) => updateDataSourceConnections(e.target.value, FormField.connName, index)}
@@ -310,10 +301,10 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                         <Form.Item
                             name={`connPwd_${info.id}`}
                             label="Password"
-                            rules={[{ required: true, message: 'Please Choose DataSource Password!' }]}
+                            rules={[{ required: true, message: 'Please input connection password!' }]}
                         >
-                            <Input
-                                type="text"
+                            <Input.Password
+                                placeholder="Please input connection password"
                                 autoComplete="off"
                                 defaultValue={info.connPwd}
                                 onChange={(e) => updateDataSourceConnections(e.target.value, FormField.connPwd, index)}
@@ -322,17 +313,17 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                         <Form.Item
                             name={`driver_${info.id}`}
                             label="Driver"
-                            rules={[{ required: true, message: 'Please Choose DataSource Driver!' }]}
+                            rules={[{ required: true, message: 'Please choose connection driver!' }]}
                         >
                             <Select
-                                placeholder="Select a option"
+                                placeholder="Select an option for driver"
                                 defaultValue={info.driver}
                                 onChange={(e) => updateDataSourceConnections(e, FormField.driver, index)}
                                 allowClear
                             >
-                                <Option value="com.mysql.jdbc.Driver">com.mysql.jdbc.Driver</Option>
-                                <Option value="oracle.jdbc.driver.OracleDriver">oracle.jdbc.driver.OracleDriver</Option>
-                                <Option value="org.postgresql.Driver">org.postgresql.Driver</Option>
+                                {initDriver?.map((item) => {
+                                    return <Option value={item.value}>{item.label}</Option>;
+                                })}
                             </Select>
                         </Form.Item>
                         <Form.Item
@@ -342,6 +333,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                         >
                             <Input
                                 type="text"
+                                placeholder="Please input connection url"
                                 autoComplete="off"
                                 defaultValue={info.url}
                                 onChange={(e) => updateDataSourceConnections(e.target.value, FormField.url, index)}

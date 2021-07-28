@@ -36,8 +36,6 @@ export default function DatasourceHeader({
     const category = connections?.category;
     const dataCenter = connections?.dataCenter;
 
-    console.log(platform);
-
     const datasourceInfoColumns: ColumnsType<StringMapEntry> = [
         {
             title: 'Name',

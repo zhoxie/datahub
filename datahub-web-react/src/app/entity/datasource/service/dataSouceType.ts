@@ -52,3 +52,10 @@ export interface IDataSourceConnection {
     url: string;
     username: string;
 }
+
+export enum NotificationLevel {
+    SUCCESS = 'success',
+    INFO = 'info',
+    WARNING = 'warning',
+    ERROR = 'error',
+}

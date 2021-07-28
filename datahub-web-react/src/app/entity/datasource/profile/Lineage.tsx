@@ -8,6 +8,7 @@ import { navigateToLineageUrl } from '../../../lineage/utils/navigateToLineageUr
 export type Props = {
     datasource: Datasource;
     connections: DatasourceConnections;
+    btns?: (datasource: Datasource, id: number) => any;
 };
 
 const ViewRawButtonContainer = styled.div`
@@ -15,16 +16,25 @@ const ViewRawButtonContainer = styled.div`
     justify-content: flex-end;
 `;
 
-export default function Lineage({ datasource }: Props) {
+export default function Lineage({ datasource, btns }: Props) {
     const history = useHistory();
     const location = useLocation();
-
+    const getBtns = (id: number) => {
+        if (btns) {
+            return btns(datasource, id);
+        }
+        return (
+            <Button onClick={() => navigateToLineageUrl({ location, history, isLineageMode: true })}>
+                Test Lineage Url
+            </Button>
+        );
+    };
     return (
         <>
             <Space direction="vertical" style={{ width: '100%' }} size="large">
-                {datasource.connections?.connections?.map((item) => {
+                {datasource.connections?.connections?.map((item, ix: number) => {
                     return (
-                        <Card title="Connection Information" style={{ width: '100%' }}>
+                        <Card title="Connection Information" key={item?.url} style={{ width: '100%' }}>
                             <Row>
                                 <Col span={8}>
                                     <Typography.Text strong type="secondary" style={{ fontSize: 11 }}>
@@ -66,15 +76,7 @@ export default function Lineage({ datasource }: Props) {
                             </Row>
                             <Row>
                                 <Col span={24}>
-                                    <ViewRawButtonContainer>
-                                        <Button
-                                            onClick={() =>
-                                                navigateToLineageUrl({ location, history, isLineageMode: true })
-                                            }
-                                        >
-                                            Test Connection
-                                        </Button>
-                                    </ViewRawButtonContainer>
+                                    <ViewRawButtonContainer>{getBtns(ix)}</ViewRawButtonContainer>
                                 </Col>
                             </Row>
                         </Card>
