@@ -49,6 +49,6 @@ tasks.withType(Checkstyle) {
 }
 
 dependencies {
-  compile externalDependency.mysqlConnector
+  compile 'mysql:mysql-connector-java:8.0.20'
   compile externalDependency.postgresql
 }

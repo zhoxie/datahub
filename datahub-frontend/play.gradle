@@ -25,6 +25,8 @@ dependencies {
     play('com.nimbusds:nimbus-jose-jwt:7.9')
     play('com.typesafe.akka:akka-actor_2.11:2.5.16')
     play('net.minidev:json-smart:2.4.1')
+    play('mysql:mysql-connector-java:8.0.20')
+
   }
   play project(":datahub-dao")
   play project(":datahub-graphql-core")
@@ -40,6 +42,8 @@ dependencies {
   play externalDependency.playPac4j
   play externalDependency.shiroCore
   play externalDependency.playCache
+
+  play externalDependency.mysqlConnector
 
   play externalDependency.kafkaClients
 

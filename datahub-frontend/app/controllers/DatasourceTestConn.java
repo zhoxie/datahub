@@ -51,10 +51,9 @@ public class DatasourceTestConn extends Controller {
                 return status(400, j);
             }
 
-            try {
-                Connection conn = DriverManager.getConnection(url, username, password);
-                PreparedStatement prstat =conn.prepareStatement("select 1+1");
-                ResultSet rs = prstat.executeQuery();
+            try (Connection conn = DriverManager.getConnection(url, username, password);
+                 PreparedStatement prstat =conn.prepareStatement("select 1+1");
+                 ResultSet rs = prstat.executeQuery();){
                 if(rs.next()  && rs.getInt(1) == 2){
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode j = mapper.readTree("{\"result\":200,\"message\":\"success.\"}");
