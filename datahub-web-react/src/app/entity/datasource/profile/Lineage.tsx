@@ -1,4 +1,4 @@
-import { Button, Card, Col, Row, Space, Typography } from 'antd';
+import { Button, Card, Col, Input, Row, Space, Typography } from 'antd';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -29,17 +29,6 @@ export default function Lineage({ datasource, btns }: Props) {
             </Button>
         );
     };
-
-    const getPassword = (pwd: string) => {
-        if (!pwd) {
-            return '';
-        }
-        const arr: string[] = [];
-        for (let i = 0; i < pwd.length; i++) {
-            arr.push('*');
-        }
-        return arr.join('');
-    };
     return (
         <>
             <Space direction="vertical" style={{ width: '100%' }} size="large">
@@ -67,7 +56,7 @@ export default function Lineage({ datasource, btns }: Props) {
                                     </Typography.Text>
                                     <br />
                                     <Typography.Text style={{ fontSize: 16 }}>
-                                        {getPassword(item?.password || '')}
+                                        <Input.Password bordered={false} defaultValue={item?.password || ''} readOnly />
                                     </Typography.Text>
                                 </Col>
                             </Row>
