@@ -3129,12 +3129,22 @@
                         {
                           "type": "com.linkedin.pegasus2avro.common.AuditStamp",
                           "name": "created",
-                          "doc": "An AuditStamp corresponding to the creation of this resource/association/sub-resource"
+                          "default": {
+                            "actor": "urn:li:corpuser:unknown",
+                            "impersonator": null,
+                            "time": 0
+                          },
+                          "doc": "An AuditStamp corresponding to the creation of this resource/association/sub-resource. A value of 0 for time indicates missing data."
                         },
                         {
                           "type": "com.linkedin.pegasus2avro.common.AuditStamp",
                           "name": "lastModified",
-                          "doc": "An AuditStamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+                          "default": {
+                            "actor": "urn:li:corpuser:unknown",
+                            "impersonator": null,
+                            "time": 0
+                          },
+                          "doc": "An AuditStamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created. A value of 0 for time indicates missing data."
                         },
                         {
                           "type": [
