@@ -56,7 +56,7 @@ ip-192-168-8-126.us-west-2.compute.internal   Ready    <none>   3h    v1.18.9-ek
 ## Setup DataHub using Helm
 
 Once the kubernetes cluster has been set up, you can deploy DataHub and it’s prerequisites using helm. Please follow the
-steps in this [guide](../../datahub-kubernetes/README.md)
+steps in this [guide](kubernetes.md)
 
 ## Expose endpoints using a load balancer
 
@@ -245,6 +245,19 @@ You can also allow communication via HTTP (without SSL) by using the settings be
     host: <<elasticsearch-endpoint>>
     port: "80"
     indexPrefix: demo
+```
+
+Lastly, you need to set the following env variable for **elasticsearchSetupJob**. 
+
+```
+  elasticsearchSetupJob:
+    enabled: true
+    image:
+      repository: linkedin/datahub-elasticsearch-setup
+      tag: "***"
+    extraEnvs:
+      - name: USE_AWS_ELASTICSEARCH
+        value: "true"
 ```
 
 Run `helm install datahub datahub/ --values datahub/quickstart-values.yaml` to apply the changes.

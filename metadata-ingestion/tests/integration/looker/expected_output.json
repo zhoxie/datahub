@@ -13,13 +13,13 @@
                         "description": "Some text",
                         "lastModified": {
                             "created": {
-                                "time": 1615443388000,
-                                "actor": "urn:li:corpuser:etl",
+                                "time": 0,
+                                "actor": "urn:li:corpuser:unknown",
                                 "impersonator": null
                             },
                             "lastModified": {
-                                "time": 1615443388000,
-                                "actor": "urn:li:corpuser:etl",
+                                "time": 0,
+                                "actor": "urn:li:corpuser:unknown",
                                 "impersonator": null
                             },
                             "deleted": null
@@ -34,7 +34,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1586847600000,
+        "runId": "looker-test",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -53,13 +58,13 @@
                         ],
                         "lastModified": {
                             "created": {
-                                "time": 1615443388000,
-                                "actor": "urn:li:corpuser:etl",
+                                "time": 0,
+                                "actor": "urn:li:corpuser:unknown",
                                 "impersonator": null
                             },
                             "lastModified": {
-                                "time": 1615443388000,
-                                "actor": "urn:li:corpuser:etl",
+                                "time": 0,
+                                "actor": "urn:li:corpuser:unknown",
                                 "impersonator": null
                             },
                             "deleted": null
@@ -79,8 +84,8 @@
                             }
                         ],
                         "lastModified": {
-                            "time": 1615443388000,
-                            "actor": "urn:li:corpuser:etl",
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
                             "impersonator": null
                         }
                     }
@@ -93,6 +98,11 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1586847600000,
+        "runId": "looker-test",
+        "properties": null
+    }
 }
 ]

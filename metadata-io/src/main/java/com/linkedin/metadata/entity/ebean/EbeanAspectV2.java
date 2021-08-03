@@ -22,6 +22,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "metadata_aspect_v2")
 public class EbeanAspectV2 extends Model {
@@ -37,6 +39,8 @@ public class EbeanAspectV2 extends Model {
   public static final String CREATED_ON_COLUMN = "createdOn";
   public static final String CREATED_BY_COLUMN = "createdBy";
   public static final String CREATED_FOR_COLUMN = "createdFor";
+
+  public static final String SYSTEM_METADATA_COLUMN = "systemmetadata";
 
   /**
    * Key for an aspect in the table.
@@ -85,4 +89,7 @@ public class EbeanAspectV2 extends Model {
 
   @Column(name = CREATED_FOR_COLUMN, nullable = true)
   private String createdFor;
+
+  @Column(name = SYSTEM_METADATA_COLUMN, nullable = true)
+  protected String systemMetadata;
 }
