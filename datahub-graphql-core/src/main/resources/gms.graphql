@@ -362,6 +362,12 @@ type Dataset implements EntityWithRelationships & Entity {
     glossaryTerms: GlossaryTerms
 
     usageStats(resource: String!, range: TimeRange): UsageQueryResult
+
+    """
+    Profile Stats resource. Get the events in a previous unit of time in descending order.
+    If no start / end time are provided, the most recent events will be returned.
+    """
+    datasetProfiles(startTimeMillis: Long, endTimeMillis: Long, limit: Int): [DatasetProfile!]
 }
 
 type Datasource implements Entity {
@@ -464,12 +470,6 @@ type Datasource implements Entity {
     Statistics about how this Dataset is used
     """
     usageStats(resource: String!, range: TimeRange): UsageQueryResult
-
-    """
-    Profile Stats resource. Get the events in a previous unit of time in descending order.
-    If no start / end time are provided, the most recent events will be returned.
-    """
-    datasetProfiles(startTimeMillis: Long, endTimeMillis: Long, limit: Int): [DatasetProfile!]
 }
 
 type GlossaryTerm implements Entity {
@@ -3336,4 +3336,3 @@ type DatasetProfile implements TimeSeriesAspect {
   fieldProfiles: [DatasetFieldProfile!]
   partitionSpec: PartitionSpec
 }
-
