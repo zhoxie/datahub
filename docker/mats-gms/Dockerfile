@@ -19,6 +19,7 @@ COPY --from=prod-build /entity-registry.yml /datahub/datahub-gms/resources/entit
 COPY --from=prod-build /start.sh /datahub/datahub-gms/scripts/start.sh
 RUN chmod 777 /datahub/datahub-gms/scripts/start.sh
 RUN chmod 777 /datahub/datahub-gms/bin/war.war
+RUN chmod 777 /datahub/datahub-gms/resources/entity-registry.yml
 
 FROM base as dev-install
 # Dummy stage for development. Assumes code is built on your machine and mounted to this image.
