@@ -8,6 +8,7 @@ import com.linkedin.datahub.graphql.generated.Dashboard;
 import com.linkedin.datahub.graphql.generated.DataFlow;
 import com.linkedin.datahub.graphql.generated.DataJob;
 import com.linkedin.datahub.graphql.generated.Dataset;
+import com.linkedin.datahub.graphql.generated.Datasource;
 import com.linkedin.datahub.graphql.generated.GlossaryTerm;
 import com.linkedin.datahub.graphql.generated.Entity;
 import com.linkedin.datahub.graphql.generated.Tag;
@@ -33,6 +34,10 @@ public class UrnToEntityMapper implements ModelMapper<com.linkedin.common.urn.Ur
     if (input.getEntityType().equals("dataset")) {
       partialEntity = new Dataset();
       ((Dataset) partialEntity).setUrn(input.toString());
+    }
+    if (input.getEntityType().equals("datasource")) {
+      partialEntity = new Datasource();
+      ((Datasource) partialEntity).setUrn(input.toString());
     }
     if (input.getEntityType().equals("glossaryTerm")) {
       partialEntity = new GlossaryTerm();
