@@ -1,5 +1,6 @@
 package react.analytics;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -21,6 +22,7 @@ public class ElasticClientFactory {
         final Boolean useSSL,
         final String host,
         final Integer port,
+        final String pathPrefix,
         final Integer threadCount,
         final Integer connectionRequestTimeout,
         final String username,
@@ -29,10 +31,10 @@ public class ElasticClientFactory {
     ) {
         RestClientBuilder restClientBuilder;
         if (useSSL) {
-            restClientBuilder = loadRestHttpsClient(host, port, threadCount, connectionRequestTimeout, sslContext, username,
+            restClientBuilder = loadRestHttpsClient(host, port, pathPrefix, threadCount, connectionRequestTimeout, sslContext, username,
                     password);
         } else {
-            restClientBuilder = loadRestHttpClient(host, port, threadCount, connectionRequestTimeout);
+            restClientBuilder = loadRestHttpClient(host, port, pathPrefix, threadCount, connectionRequestTimeout);
         }
         return new RestHighLevelClient(restClientBuilder);
     }
@@ -40,12 +42,15 @@ public class ElasticClientFactory {
     @Nonnull
     private static RestClientBuilder loadRestHttpClient(@Nonnull String host,
                                                         int port,
+                                                        String pathPrefix,
                                                         int threadCount,
                                                         int connectionRequestTimeout) {
         RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, "http"))
                 .setHttpClientConfigCallback(httpAsyncClientBuilder -> httpAsyncClientBuilder
                         .setDefaultIOReactorConfig(IOReactorConfig.custom().setIoThreadCount(threadCount).build()));
-
+        if(!StringUtils.isEmpty(pathPrefix)){
+            builder.setPathPrefix(pathPrefix);
+        }
         builder.setRequestConfigCallback(
                 requestConfigBuilder -> requestConfigBuilder.setConnectionRequestTimeout(connectionRequestTimeout));
 
@@ -55,11 +60,15 @@ public class ElasticClientFactory {
     @Nonnull
     private static RestClientBuilder loadRestHttpsClient(@Nonnull String host,
                                                          int port,
+                                                         String pathPrefix,
                                                          int threadCount,
                                                          int connectionRequestTimeout,
                                                          @Nonnull SSLContext sslContext, String username, String password) {
 
         final RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, "https"));
+        if(!StringUtils.isEmpty(pathPrefix)){
+            builder.setPathPrefix(pathPrefix);
+        }
         builder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
             public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpAsyncClientBuilder) {
                 httpAsyncClientBuilder.setSSLContext(sslContext).setSSLHostnameVerifier(new NoopHostnameVerifier())

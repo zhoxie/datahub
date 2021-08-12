@@ -28,6 +28,7 @@ public class AnalyticsServiceModule extends AbstractModule {
      */
     private static final String ELASTIC_CLIENT_HOST_PATH = "analytics.elastic.host";
     private static final String ELASTIC_CLIENT_PORT_PATH = "analytics.elastic.port";
+    private static final String ELASTIC_CLIENT_PATHPREFIX_PATH = "analytics.elastic.pathPrefix";
     /*
         Optional Config Paths
      */
@@ -70,6 +71,7 @@ public class AnalyticsServiceModule extends AbstractModule {
                 ConfigUtil.getBoolean(_configs, ELASTIC_CLIENT_USE_SSL_PATH),
                 _configs.getString(ELASTIC_CLIENT_HOST_PATH),
                 _configs.getInt(ELASTIC_CLIENT_PORT_PATH),
+                ConfigUtil.getString(_configs, ELASTIC_CLIENT_PATHPREFIX_PATH, null),
                 ConfigUtil.getInt(_configs, ELASTIC_CLIENT_THREAD_COUNT_PATH, DEFAULT_THREAD_COUNT),
                 ConfigUtil.getInt(_configs, ELASTIC_CLIENT_CONNECTION_REQUEST_TIMEOUT_PATH, DEFAULT_CONNECTION_TIMEOUT),
                 ConfigUtil.getString(_configs, ELASTIC_CLIENT_USERNAME_PATH, null),
