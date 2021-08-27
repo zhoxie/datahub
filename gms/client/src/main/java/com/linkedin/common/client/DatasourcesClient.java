@@ -17,6 +17,6 @@ public abstract class DatasourcesClient extends BaseClient {
         return new DatasourceKey()
                 .setName(urn.getDatasourceNameEntity())
                 .setOrigin(urn.getOriginEntity())
-                .setPlatform(urn.getPlatformEntity());
+                .setCategory(urn.getCategoryEntity());
     }
 }

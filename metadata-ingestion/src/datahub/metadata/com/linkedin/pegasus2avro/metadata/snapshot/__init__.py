@@ -13,6 +13,7 @@ from ......schema_classes import DataJobSnapshotClass
 from ......schema_classes import DataPlatformSnapshotClass
 from ......schema_classes import DataProcessSnapshotClass
 from ......schema_classes import DatasetSnapshotClass
+from ......schema_classes import DatasourceCategorySnapshotClass
 from ......schema_classes import DatasourceSnapshotClass
 from ......schema_classes import GlossaryNodeSnapshotClass
 from ......schema_classes import GlossaryTermSnapshotClass
@@ -34,6 +35,7 @@ DataJobSnapshot = DataJobSnapshotClass
 DataPlatformSnapshot = DataPlatformSnapshotClass
 DataProcessSnapshot = DataProcessSnapshotClass
 DatasetSnapshot = DatasetSnapshotClass
+DatasourceCategorySnapshot = DatasourceCategorySnapshotClass
 DatasourceSnapshot = DatasourceSnapshotClass
 GlossaryNodeSnapshot = GlossaryNodeSnapshotClass
 GlossaryTermSnapshot = GlossaryTermSnapshotClass

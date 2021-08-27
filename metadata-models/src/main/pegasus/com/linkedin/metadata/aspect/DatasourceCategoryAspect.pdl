@@ -1,0 +1,9 @@
+namespace com.linkedin.metadata.aspect
+
+import com.linkedin.metadata.key.DatasourceCategoryKey
+import com.linkedin.datasourcecategory.DatasourceCategoryInfo
+
+/**
+ * A union of all supported metadata aspects for a Datasource Category
+ */
+typeref DatasourceCategoryAspect = union[DatasourceCategoryKey, DatasourceCategoryInfo]

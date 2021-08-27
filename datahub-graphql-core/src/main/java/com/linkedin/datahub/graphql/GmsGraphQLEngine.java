@@ -64,6 +64,8 @@ import com.linkedin.datahub.graphql.resolvers.type.EntityInterfaceTypeResolver;
 import com.linkedin.datahub.graphql.resolvers.type.PlatformSchemaUnionTypeResolver;
 import com.linkedin.datahub.graphql.types.datasource.DatasourceType;
 import com.linkedin.datahub.graphql.types.dataset.mappers.DatasetProfileMapper;
+import com.linkedin.datahub.graphql.types.datasourcecategory.AllDatasourceCategories;
+import com.linkedin.datahub.graphql.types.datasourcecategory.DatasourceCategoryType;
 import com.linkedin.datahub.graphql.types.lineage.DownstreamLineageType;
 import com.linkedin.datahub.graphql.types.lineage.UpstreamLineageType;
 import com.linkedin.datahub.graphql.types.mlmodel.MLFeatureTableType;
@@ -116,6 +118,7 @@ public class GmsGraphQLEngine {
     public static final ChartType CHART_TYPE = new ChartType(GmsClientFactory.getEntitiesClient());
     public static final DashboardType DASHBOARD_TYPE = new DashboardType(GmsClientFactory.getEntitiesClient());
     public static final DataPlatformType DATA_PLATFORM_TYPE = new DataPlatformType(GmsClientFactory.getEntitiesClient());
+    public static final DatasourceCategoryType DATASOURCE_CATEGORY_TYPE = new DatasourceCategoryType(GmsClientFactory.getEntitiesClient());
     public static final DownstreamLineageType DOWNSTREAM_LINEAGE_TYPE = new DownstreamLineageType(
             GmsClientFactory.getLineagesClient()
     );
@@ -136,7 +139,7 @@ public class GmsGraphQLEngine {
     public static final GlossaryTermType GLOSSARY_TERM_TYPE = new GlossaryTermType(GmsClientFactory.getEntitiesClient());
     public static final AspectType ASPECT_TYPE = new AspectType(GmsClientFactory.getAspectsClient());
     public static final UsageType USAGE_TYPE = new UsageType(GmsClientFactory.getUsageClient());
-
+    public static final AllDatasourceCategories DATASOURCE_CATEGORIES = new AllDatasourceCategories(GmsClientFactory.getDatasourceCategories());
 
     /**
      * Configures the graph objects that can be fetched primary key.
@@ -147,6 +150,7 @@ public class GmsGraphQLEngine {
             CORP_USER_TYPE,
             CORP_GROUP_TYPE,
             DATA_PLATFORM_TYPE,
+            DATASOURCE_CATEGORY_TYPE,
             CHART_TYPE,
             DASHBOARD_TYPE,
             TAG_TYPE,
@@ -157,7 +161,8 @@ public class GmsGraphQLEngine {
             ML_PRIMARY_KEY_TYPE,
             DATA_FLOW_TYPE,
             DATA_JOB_TYPE,
-            GLOSSARY_TERM_TYPE
+            GLOSSARY_TERM_TYPE,
+            DATASOURCE_CATEGORIES
     );
 
     /**
@@ -332,6 +337,10 @@ public class GmsGraphQLEngine {
                     new LoadableTypeResolver<>(
                             ML_MODEL_GROUP_TYPE,
                             (env) -> env.getArgument(URN_FIELD_NAME))))
+            .dataFetcher("allDatasourceCategories", new AuthenticatedResolver<>(
+                    new LoadableTypeResolver<>(
+                            DATASOURCE_CATEGORIES,
+                            (env) -> "all")))
         );
     }
 
@@ -441,11 +450,18 @@ public class GmsGraphQLEngine {
      */
     private static void configureDatasourceResolvers(final RuntimeWiring.Builder builder) {
         builder
-                .type("Datasource", typeWiring -> typeWiring
-                        .dataFetcher("platform", new AuthenticatedResolver<>(
+                .type("AllDatasourceCategories", typeWiring -> typeWiring
+                        .dataFetcher("categories", new AuthenticatedResolver<>(
                                 new LoadableTypeResolver<>(
-                                        DATA_PLATFORM_TYPE,
-                                        (env) -> ((Datasource) env.getSource()).getPlatform().getUrn()))
+                                        DATASOURCE_CATEGORY_TYPE,
+                                        (env) -> ((Datasource) env.getSource()).getCategory().getUrn()))
+                        )
+                )
+                .type("Datasource", typeWiring -> typeWiring
+                        .dataFetcher("category", new AuthenticatedResolver<>(
+                                new LoadableTypeResolver<>(
+                                        DATASOURCE_CATEGORY_TYPE,
+                                        (env) -> ((Datasource) env.getSource()).getCategory().getUrn()))
                         )
                         .dataFetcher("downstreamLineage", new AuthenticatedResolver<>(
                                 new LoadableTypeResolver<>(

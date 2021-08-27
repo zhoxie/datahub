@@ -25,7 +25,7 @@ public class DatasourceSearchConfig extends BaseSearchConfigWithConvention<Datas
   @Override
   @Nonnull
   public Set<String> getFacetFields() {
-    return Collections.unmodifiableSet(new HashSet<>(Arrays.asList("origin", "platform")));
+    return Collections.unmodifiableSet(new HashSet<>(Arrays.asList("origin", "category")));
   }
 
   @Nonnull

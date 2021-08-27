@@ -3484,13 +3484,13 @@ class DatasourceConnectionsClass(DictWrapper):
     
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.datasource.DatasourceConnections")
     def __init__(self,
-        category: str,
+        platform: str,
         dataCenter: str,
         connections: List["DatasourceConnInfoClass"],
     ):
         super().__init__()
         
-        self.category = category
+        self.platform = platform
         self.dataCenter = dataCenter
         self.connections = connections
     
@@ -3502,20 +3502,20 @@ class DatasourceConnectionsClass(DictWrapper):
         return self
     
     def _restore_defaults(self) -> None:
-        self.category = str()
+        self.platform = str()
         self.dataCenter = str()
         self.connections = list()
     
     
     @property
-    def category(self) -> str:
-        # No docs available.
-        return self._inner_dict.get('category')  # type: ignore
+    def platform(self) -> str:
+        """Getter: Datasource platform urn associated with the datasource"""
+        return self._inner_dict.get('platform')  # type: ignore
     
-    @category.setter
-    def category(self, value: str) -> None:
-        # No docs available.
-        self._inner_dict['category'] = value
+    @platform.setter
+    def platform(self, value: str) -> None:
+        """Setter: Datasource platform urn associated with the datasource"""
+        self._inner_dict['platform'] = value
     
     
     @property
@@ -3794,6 +3794,53 @@ class EditableDatasourcePropertiesClass(DictWrapper):
     def description(self, value: Union[None, str]) -> None:
         """Setter: Documentation of the datasource"""
         self._inner_dict['description'] = value
+    
+    
+class DatasourceCategoryInfoClass(DictWrapper):
+    """Information about a data platform"""
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.datasourcecategory.DatasourceCategoryInfo")
+    def __init__(self,
+        name: str,
+        displayName: Union[None, str]=None,
+    ):
+        super().__init__()
+        
+        self.name = name
+        self.displayName = displayName
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "DatasourceCategoryInfoClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.name = str()
+        self.displayName = self.RECORD_SCHEMA.field_map["displayName"].default
+    
+    
+    @property
+    def name(self) -> str:
+        """Getter: Name of the data platform"""
+        return self._inner_dict.get('name')  # type: ignore
+    
+    @name.setter
+    def name(self, value: str) -> None:
+        """Setter: Name of the data platform"""
+        self._inner_dict['name'] = value
+    
+    
+    @property
+    def displayName(self) -> Union[None, str]:
+        """Getter: The name that will be used for displaying a platform type."""
+        return self._inner_dict.get('displayName')  # type: ignore
+    
+    @displayName.setter
+    def displayName(self, value: Union[None, str]) -> None:
+        """Setter: The name that will be used for displaying a platform type."""
+        self._inner_dict['displayName'] = value
     
     
 class ChangeTypeClass(object):
@@ -4734,18 +4781,51 @@ class DatasetKeyClass(DictWrapper):
         self._inner_dict['origin'] = value
     
     
+class DatasourceCategoryKeyClass(DictWrapper):
+    """Key for a Datasource Category"""
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.metadata.key.DatasourceCategoryKey")
+    def __init__(self,
+        categoryName: str,
+    ):
+        super().__init__()
+        
+        self.categoryName = categoryName
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "DatasourceCategoryKeyClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.categoryName = str()
+    
+    
+    @property
+    def categoryName(self) -> str:
+        """Getter: Datasource category name"""
+        return self._inner_dict.get('categoryName')  # type: ignore
+    
+    @categoryName.setter
+    def categoryName(self, value: str) -> None:
+        """Setter: Datasource category name"""
+        self._inner_dict['categoryName'] = value
+    
+    
 class DatasourceKeyClass(DictWrapper):
     """Key for a Datasource"""
     
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.metadata.key.DatasourceKey")
     def __init__(self,
-        platform: str,
+        category: str,
         name: str,
         origin: Union[str, "FabricTypeClass"],
     ):
         super().__init__()
         
-        self.platform = platform
+        self.category = category
         self.name = name
         self.origin = origin
     
@@ -4757,20 +4837,20 @@ class DatasourceKeyClass(DictWrapper):
         return self
     
     def _restore_defaults(self) -> None:
-        self.platform = str()
+        self.category = str()
         self.name = str()
         self.origin = FabricTypeClass.DEV
     
     
     @property
-    def platform(self) -> str:
-        """Getter: Data platform urn associated with the datasource"""
-        return self._inner_dict.get('platform')  # type: ignore
+    def category(self) -> str:
+        """Getter: Datasource category urn associated with the datasource"""
+        return self._inner_dict.get('category')  # type: ignore
     
-    @platform.setter
-    def platform(self, value: str) -> None:
-        """Setter: Data platform urn associated with the datasource"""
-        self._inner_dict['platform'] = value
+    @category.setter
+    def category(self, value: str) -> None:
+        """Setter: Datasource category urn associated with the datasource"""
+        self._inner_dict['category'] = value
     
     
     @property
@@ -5638,6 +5718,53 @@ class DatasetSnapshotClass(DictWrapper):
     @aspects.setter
     def aspects(self, value: List[Union["DatasetKeyClass", "DatasetPropertiesClass", "EditableDatasetPropertiesClass", "DatasetDeprecationClass", "DatasetUpstreamLineageClass", "UpstreamLineageClass", "InstitutionalMemoryClass", "OwnershipClass", "StatusClass", "SchemaMetadataClass", "EditableSchemaMetadataClass", "GlobalTagsClass", "GlossaryTermsClass", "BrowsePathsClass"]]) -> None:
         """Setter: The list of metadata aspects associated with the dataset. Depending on the use case, this can either be all, or a selection, of supported aspects."""
+        self._inner_dict['aspects'] = value
+    
+    
+class DatasourceCategorySnapshotClass(DictWrapper):
+    """A metadata snapshot for a specific datasourcecategory entity."""
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.metadata.snapshot.DatasourceCategorySnapshot")
+    def __init__(self,
+        urn: str,
+        aspects: List[Union["DatasourceCategoryKeyClass", "DatasourceCategoryInfoClass"]],
+    ):
+        super().__init__()
+        
+        self.urn = urn
+        self.aspects = aspects
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "DatasourceCategorySnapshotClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.urn = str()
+        self.aspects = list()
+    
+    
+    @property
+    def urn(self) -> str:
+        """Getter: URN for the entity the metadata snapshot is associated with."""
+        return self._inner_dict.get('urn')  # type: ignore
+    
+    @urn.setter
+    def urn(self, value: str) -> None:
+        """Setter: URN for the entity the metadata snapshot is associated with."""
+        self._inner_dict['urn'] = value
+    
+    
+    @property
+    def aspects(self) -> List[Union["DatasourceCategoryKeyClass", "DatasourceCategoryInfoClass"]]:
+        """Getter: The list of metadata aspects associated with the datasource category. Depending on the use case, this can either be all, or a selection, of supported aspects."""
+        return self._inner_dict.get('aspects')  # type: ignore
+    
+    @aspects.setter
+    def aspects(self, value: List[Union["DatasourceCategoryKeyClass", "DatasourceCategoryInfoClass"]]) -> None:
+        """Setter: The list of metadata aspects associated with the datasource category. Depending on the use case, this can either be all, or a selection, of supported aspects."""
         self._inner_dict['aspects'] = value
     
     
@@ -7718,7 +7845,7 @@ class MetadataChangeEventClass(DictWrapper):
     
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.mxe.MetadataChangeEvent")
     def __init__(self,
-        proposedSnapshot: Union["ChartSnapshotClass", "CorpGroupSnapshotClass", "CorpUserSnapshotClass", "DashboardSnapshotClass", "DataFlowSnapshotClass", "DataJobSnapshotClass", "DatasetSnapshotClass", "DatasourceSnapshotClass", "DataProcessSnapshotClass", "DataPlatformSnapshotClass", "MLModelSnapshotClass", "MLPrimaryKeySnapshotClass", "MLFeatureSnapshotClass", "MLFeatureTableSnapshotClass", "MLModelDeploymentSnapshotClass", "MLModelGroupSnapshotClass", "TagSnapshotClass", "GlossaryTermSnapshotClass", "GlossaryNodeSnapshotClass"],
+        proposedSnapshot: Union["ChartSnapshotClass", "CorpGroupSnapshotClass", "CorpUserSnapshotClass", "DashboardSnapshotClass", "DataFlowSnapshotClass", "DataJobSnapshotClass", "DatasetSnapshotClass", "DatasourceSnapshotClass", "DataProcessSnapshotClass", "DataPlatformSnapshotClass", "DatasourceCategorySnapshotClass", "MLModelSnapshotClass", "MLPrimaryKeySnapshotClass", "MLFeatureSnapshotClass", "MLFeatureTableSnapshotClass", "MLModelDeploymentSnapshotClass", "MLModelGroupSnapshotClass", "TagSnapshotClass", "GlossaryTermSnapshotClass", "GlossaryNodeSnapshotClass"],
         auditHeader: Union[None, "KafkaAuditHeaderClass"]=None,
         proposedDelta: None=None,
         systemMetadata: Union[None, "SystemMetadataClass"]=None,
@@ -7756,12 +7883,12 @@ class MetadataChangeEventClass(DictWrapper):
     
     
     @property
-    def proposedSnapshot(self) -> Union["ChartSnapshotClass", "CorpGroupSnapshotClass", "CorpUserSnapshotClass", "DashboardSnapshotClass", "DataFlowSnapshotClass", "DataJobSnapshotClass", "DatasetSnapshotClass", "DatasourceSnapshotClass", "DataProcessSnapshotClass", "DataPlatformSnapshotClass", "MLModelSnapshotClass", "MLPrimaryKeySnapshotClass", "MLFeatureSnapshotClass", "MLFeatureTableSnapshotClass", "MLModelDeploymentSnapshotClass", "MLModelGroupSnapshotClass", "TagSnapshotClass", "GlossaryTermSnapshotClass", "GlossaryNodeSnapshotClass"]:
+    def proposedSnapshot(self) -> Union["ChartSnapshotClass", "CorpGroupSnapshotClass", "CorpUserSnapshotClass", "DashboardSnapshotClass", "DataFlowSnapshotClass", "DataJobSnapshotClass", "DatasetSnapshotClass", "DatasourceSnapshotClass", "DataProcessSnapshotClass", "DataPlatformSnapshotClass", "DatasourceCategorySnapshotClass", "MLModelSnapshotClass", "MLPrimaryKeySnapshotClass", "MLFeatureSnapshotClass", "MLFeatureTableSnapshotClass", "MLModelDeploymentSnapshotClass", "MLModelGroupSnapshotClass", "TagSnapshotClass", "GlossaryTermSnapshotClass", "GlossaryNodeSnapshotClass"]:
         """Getter: Snapshot of the proposed metadata change. Include only the aspects affected by the change in the snapshot."""
         return self._inner_dict.get('proposedSnapshot')  # type: ignore
     
     @proposedSnapshot.setter
-    def proposedSnapshot(self, value: Union["ChartSnapshotClass", "CorpGroupSnapshotClass", "CorpUserSnapshotClass", "DashboardSnapshotClass", "DataFlowSnapshotClass", "DataJobSnapshotClass", "DatasetSnapshotClass", "DatasourceSnapshotClass", "DataProcessSnapshotClass", "DataPlatformSnapshotClass", "MLModelSnapshotClass", "MLPrimaryKeySnapshotClass", "MLFeatureSnapshotClass", "MLFeatureTableSnapshotClass", "MLModelDeploymentSnapshotClass", "MLModelGroupSnapshotClass", "TagSnapshotClass", "GlossaryTermSnapshotClass", "GlossaryNodeSnapshotClass"]) -> None:
+    def proposedSnapshot(self, value: Union["ChartSnapshotClass", "CorpGroupSnapshotClass", "CorpUserSnapshotClass", "DashboardSnapshotClass", "DataFlowSnapshotClass", "DataJobSnapshotClass", "DatasetSnapshotClass", "DatasourceSnapshotClass", "DataProcessSnapshotClass", "DataPlatformSnapshotClass", "DatasourceCategorySnapshotClass", "MLModelSnapshotClass", "MLPrimaryKeySnapshotClass", "MLFeatureSnapshotClass", "MLFeatureTableSnapshotClass", "MLModelDeploymentSnapshotClass", "MLModelGroupSnapshotClass", "TagSnapshotClass", "GlossaryTermSnapshotClass", "GlossaryNodeSnapshotClass"]) -> None:
         """Setter: Snapshot of the proposed metadata change. Include only the aspects affected by the change in the snapshot."""
         self._inner_dict['proposedSnapshot'] = value
     
@@ -9761,6 +9888,7 @@ __SCHEMA_TYPES = {
     'com.linkedin.pegasus2avro.datasource.DatasourceDeprecation': DatasourceDeprecationClass,
     'com.linkedin.pegasus2avro.datasource.DatasourceProperties': DatasourcePropertiesClass,
     'com.linkedin.pegasus2avro.datasource.EditableDatasourceProperties': EditableDatasourcePropertiesClass,
+    'com.linkedin.pegasus2avro.datasourcecategory.DatasourceCategoryInfo': DatasourceCategoryInfoClass,
     'com.linkedin.pegasus2avro.events.metadata.ChangeType': ChangeTypeClass,
     'com.linkedin.pegasus2avro.glossary.GlossaryNodeInfo': GlossaryNodeInfoClass,
     'com.linkedin.pegasus2avro.glossary.GlossaryTermInfo': GlossaryTermInfoClass,
@@ -9776,6 +9904,7 @@ __SCHEMA_TYPES = {
     'com.linkedin.pegasus2avro.metadata.key.DataPlatformKey': DataPlatformKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.DataProcessKey': DataProcessKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.DatasetKey': DatasetKeyClass,
+    'com.linkedin.pegasus2avro.metadata.key.DatasourceCategoryKey': DatasourceCategoryKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.DatasourceKey': DatasourceKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.GlossaryNodeKey': GlossaryNodeKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.GlossaryTermKey': GlossaryTermKeyClass,
@@ -9795,6 +9924,7 @@ __SCHEMA_TYPES = {
     'com.linkedin.pegasus2avro.metadata.snapshot.DataPlatformSnapshot': DataPlatformSnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.DataProcessSnapshot': DataProcessSnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.DatasetSnapshot': DatasetSnapshotClass,
+    'com.linkedin.pegasus2avro.metadata.snapshot.DatasourceCategorySnapshot': DatasourceCategorySnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.DatasourceSnapshot': DatasourceSnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.GlossaryNodeSnapshot': GlossaryNodeSnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.GlossaryTermSnapshot': GlossaryTermSnapshotClass,
@@ -9934,6 +10064,7 @@ __SCHEMA_TYPES = {
     'DatasourceDeprecation': DatasourceDeprecationClass,
     'DatasourceProperties': DatasourcePropertiesClass,
     'EditableDatasourceProperties': EditableDatasourcePropertiesClass,
+    'DatasourceCategoryInfo': DatasourceCategoryInfoClass,
     'ChangeType': ChangeTypeClass,
     'GlossaryNodeInfo': GlossaryNodeInfoClass,
     'GlossaryTermInfo': GlossaryTermInfoClass,
@@ -9949,6 +10080,7 @@ __SCHEMA_TYPES = {
     'DataPlatformKey': DataPlatformKeyClass,
     'DataProcessKey': DataProcessKeyClass,
     'DatasetKey': DatasetKeyClass,
+    'DatasourceCategoryKey': DatasourceCategoryKeyClass,
     'DatasourceKey': DatasourceKeyClass,
     'GlossaryNodeKey': GlossaryNodeKeyClass,
     'GlossaryTermKey': GlossaryTermKeyClass,
@@ -9968,6 +10100,7 @@ __SCHEMA_TYPES = {
     'DataPlatformSnapshot': DataPlatformSnapshotClass,
     'DataProcessSnapshot': DataProcessSnapshotClass,
     'DatasetSnapshot': DatasetSnapshotClass,
+    'DatasourceCategorySnapshot': DatasourceCategorySnapshotClass,
     'DatasourceSnapshot': DatasourceSnapshotClass,
     'GlossaryNodeSnapshot': GlossaryNodeSnapshotClass,
     'GlossaryTermSnapshot': GlossaryTermSnapshotClass,

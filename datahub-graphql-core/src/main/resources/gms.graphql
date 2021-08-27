@@ -76,6 +76,14 @@ enum EntityType {
     """
     DATA_PLATFORM
     """
+    The DatasourceCategory Entity
+    """
+    DATASOURCE_CATEGORY
+    """
+    The DatasourceCategory Entity
+    """
+    ALL_DATASOURCE_CATEGORIES
+    """
     The Dashboard Entity
     """
     DASHBOARD
@@ -221,6 +229,8 @@ type Query {
     Fetch a GlossaryTerm by primary key
     """
     glossaryTerm(urn: String!): GlossaryTerm
+
+    allDatasourceCategories: AllDatasourceCategory
 }
 
 type Mutation {
@@ -382,9 +392,9 @@ type Datasource implements Entity {
     type: EntityType!
 
     """
-    Standardized platform urn where the datasource is defined
+    Standardized category urn where the datasource is defined
     """
-    platform: DataPlatform!
+    category: DatasourceCategory!
 
     """
     Datasource native name
@@ -553,12 +563,53 @@ type DataPlatform implements Entity {
     info: DataPlatformInfo
 }
 
+type AllDatasourceCategory implements Entity {
+    """
+    Urn of the datasource category
+    """
+    urn: String!
+
+    """
+    GMS Entity Type
+    """
+    type: EntityType!
+
+    categories: [DatasourceCategory]
+}
+
+type DatasourceCategory implements Entity {
+    """
+    Urn of the data platform
+    """
+    urn: String!
+
+    """
+    GMS Entity Type
+    """
+    type: EntityType!
+
+    """
+    Name of the data platform
+    """
+    name: String!
+
+    """
+    Display name of the data platform
+    """
+    displayName: String
+
+    """
+    Metadata associated with a datasourcecategory
+    """
+    info: DatasourceCategoryInfo
+}
+
 type DatasourceConnections {
 
     """
-    datasource category
+    datasource platform
     """
-    category: String
+    platform: DataPlatform!
 
     """
     datasource data center
@@ -632,6 +683,13 @@ type DataPlatformInfo {
     A logo URL associated with the platform
     """
     logoUrl: String
+}
+
+type DatasourceCategoryInfo {
+    """
+    Display name associated with the category
+    """
+    displayName: String
 }
 
 enum PlatformType {

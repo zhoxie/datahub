@@ -1,17 +1,3 @@
-const initCategory = [
-    {
-        label: 'Category-1',
-        value: 'Category-1',
-    },
-    {
-        label: 'Category-2',
-        value: 'Category-2',
-    },
-    {
-        label: 'Category-3',
-        value: 'Category-3',
-    },
-];
 const initDataCenter = [
     {
         label: 'DFW',
@@ -34,19 +20,45 @@ const initCluster = [
     },
 ];
 
-const initDriver = [
+const typeData = ['oracle', 'mysql', 'postgres'];
+
+const driverData = {
+    oracle: ['oracle.jdbc.driver.OracleDriver'],
+    mysql: ['com.mysql.jdbc.Driver'],
+    postgres: ['org.postgresql.Driver'],
+};
+
+const typeDrivers = [
     {
-        label: 'com.mysql.jdbc.Driver',
-        value: 'com.mysql.jdbc.Driver',
+        value: 'oracle',
+        label: 'Oracle',
+        children: [
+            {
+                value: 'oracle.jdbc.driver.OracleDriver',
+                label: 'oracle.jdbc.driver.OracleDriver',
+            },
+        ],
     },
     {
-        label: 'oracle.jdbc.driver.OracleDriver',
-        value: 'oracle.jdbc.driver.OracleDriver',
+        value: 'mysql',
+        label: 'Mysql',
+        children: [
+            {
+                value: 'com.mysql.jdbc.Driver',
+                label: 'com.mysql.jdbc.Driver',
+            },
+        ],
     },
     {
-        label: 'org.postgresql.Driver',
-        value: 'org.postgresql.Driver',
+        value: 'postgres',
+        label: 'Postgres',
+        children: [
+            {
+                value: 'org.postgresql.Driver',
+                label: 'org.postgresql.Driver',
+            },
+        ],
     },
 ];
 
-export { initCategory, initDataCenter, initCluster, initDriver };
+export { initDataCenter, initCluster, typeData, driverData, typeDrivers };

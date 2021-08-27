@@ -13,6 +13,7 @@ from ......schema_classes import DataJobKeyClass
 from ......schema_classes import DataPlatformKeyClass
 from ......schema_classes import DataProcessKeyClass
 from ......schema_classes import DatasetKeyClass
+from ......schema_classes import DatasourceCategoryKeyClass
 from ......schema_classes import DatasourceKeyClass
 from ......schema_classes import GlossaryNodeKeyClass
 from ......schema_classes import GlossaryTermKeyClass
@@ -34,6 +35,7 @@ DataJobKey = DataJobKeyClass
 DataPlatformKey = DataPlatformKeyClass
 DataProcessKey = DataProcessKeyClass
 DatasetKey = DatasetKeyClass
+DatasourceCategoryKey = DatasourceCategoryKeyClass
 DatasourceKey = DatasourceKeyClass
 GlossaryNodeKey = GlossaryNodeKeyClass
 GlossaryTermKey = GlossaryTermKeyClass

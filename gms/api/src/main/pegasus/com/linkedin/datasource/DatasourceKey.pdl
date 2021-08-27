@@ -1,6 +1,6 @@
 namespace com.linkedin.datasource
 
-import com.linkedin.common.DataPlatformUrn
+import com.linkedin.common.DatasourceCategoryUrn
 import com.linkedin.common.FabricType
 
 /**
@@ -9,10 +9,10 @@ import com.linkedin.common.FabricType
 record DatasourceKey {
 
   /**
-   * Standardized platform urn where datasource is defined. The data platform Urn (urn:li:platform:{platform_name})
+   * Standardized category urn where datasource is defined. The category Urn (urn:li:datasourceCategory:{category_name})
    */
   @validate.`com.linkedin.datasource.rest.validator.DataPlatformValidator` = { }
-  platform: DataPlatformUrn
+  category: DatasourceCategoryUrn
 
   /**
    * Datasource native name e.g. {db}.{table}, /dir/subdir/{name}, or {name}

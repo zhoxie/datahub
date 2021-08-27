@@ -4,8 +4,8 @@ import com.linkedin.common.GlobalTags;
 import com.linkedin.common.InstitutionalMemory;
 import com.linkedin.common.Ownership;
 import com.linkedin.common.Status;
-import com.linkedin.datahub.graphql.generated.DataPlatform;
 import com.linkedin.datahub.graphql.generated.Datasource;
+import com.linkedin.datahub.graphql.generated.DatasourceCategory;
 import com.linkedin.datahub.graphql.generated.DatasourceEditableProperties;
 import com.linkedin.datahub.graphql.generated.EntityType;
 import com.linkedin.datahub.graphql.generated.FabricType;
@@ -47,9 +47,9 @@ public class DatasourceSnapshotMapper implements ModelMapper<DatasourceSnapshot,
         result.setName(datasource.getUrn().getDatasourceNameEntity());
         result.setOrigin(Enum.valueOf(FabricType.class, datasource.getUrn().getOriginEntity().toString()));
 
-        DataPlatform partialPlatform = new DataPlatform();
-        partialPlatform.setUrn(datasource.getUrn().getPlatformEntity().toString());
-        result.setPlatform(partialPlatform);
+        DatasourceCategory partialCategory = new DatasourceCategory();
+        partialCategory.setUrn(datasource.getUrn().getCategoryEntity().toString());
+        result.setCategory(partialCategory);
 
         ModelUtils.getAspectsFromSnapshot(datasource).forEach(aspect -> {
             result.setTags(new ArrayList<>());

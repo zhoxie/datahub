@@ -2967,9 +2967,9 @@
                     "doc": "Key for a Datasource",
                     "fields": [
                       {
-                        "name": "platform",
+                        "name": "category",
                         "type": "string",
-                        "doc": "Data platform urn associated with the datasource",
+                        "doc": "Datasource category urn associated with the datasource",
                         "Searchable": {
                           "addToFilters": true,
                           "fieldType": "URN"
@@ -3180,8 +3180,16 @@
                     "namespace": "com.linkedin.pegasus2avro.datasource",
                     "fields": [
                       {
-                        "name": "category",
-                        "type": "string"
+                        "name": "platform",
+                        "type": "string",
+                        "doc": "Datasource platform urn associated with the datasource",
+                        "Searchable": {
+                          "addToFilters": true,
+                          "fieldType": "URN"
+                        },
+                        "java": {
+                          "class": "com.linkedin.pegasus2avro.common.urn.Urn"
+                        }
                       },
                       {
                         "name": "dataCenter",
@@ -3537,6 +3545,81 @@
           "Entity": {
             "keyAspect": "dataPlatformKey",
             "name": "dataPlatform"
+          }
+        },
+        {
+          "type": "record",
+          "name": "DatasourceCategorySnapshot",
+          "namespace": "com.linkedin.pegasus2avro.metadata.snapshot",
+          "doc": "A metadata snapshot for a specific datasourcecategory entity.",
+          "fields": [
+            {
+              "name": "urn",
+              "type": "string",
+              "doc": "URN for the entity the metadata snapshot is associated with.",
+              "java": {
+                "class": "com.linkedin.pegasus2avro.common.urn.DatasourceCategoryUrn"
+              }
+            },
+            {
+              "name": "aspects",
+              "type": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "record",
+                    "name": "DatasourceCategoryKey",
+                    "namespace": "com.linkedin.pegasus2avro.metadata.key",
+                    "doc": "Key for a Datasource Category",
+                    "fields": [
+                      {
+                        "name": "categoryName",
+                        "type": "string",
+                        "doc": "Datasource category name"
+                      }
+                    ],
+                    "Aspect": {
+                      "name": "datasourceCategoryKey"
+                    }
+                  },
+                  {
+                    "type": "record",
+                    "name": "DatasourceCategoryInfo",
+                    "namespace": "com.linkedin.pegasus2avro.datasourcecategory",
+                    "doc": "Information about a data platform",
+                    "fields": [
+                      {
+                        "name": "name",
+                        "type": "string",
+                        "doc": "Name of the data platform",
+                        "validate": {
+                          "strlen": {
+                            "max": 15
+                          }
+                        }
+                      },
+                      {
+                        "name": "displayName",
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "doc": "The name that will be used for displaying a platform type.",
+                        "default": null
+                      }
+                    ],
+                    "Aspect": {
+                      "name": "datasourceCategoryInfo"
+                    }
+                  }
+                ]
+              },
+              "doc": "The list of metadata aspects associated with the datasource category. Depending on the use case, this can either be all, or a selection, of supported aspects."
+            }
+          ],
+          "Entity": {
+            "keyAspect": "datasourceCategoryKey",
+            "name": "datasourceCategory"
           }
         },
         {

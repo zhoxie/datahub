@@ -10,9 +10,9 @@ export type Props = {
     id: number;
 };
 
-export default function DatasourceVertify({ datasource: { platform, connections }, id }: Props) {
+export default function DatasourceVertify({ datasource: { connections }, id }: Props) {
     const [showLoading, setLoading] = useState(false);
-    const platformName = capitalizeFirstLetter(platform.name);
+    const platformName = capitalizeFirstLetter(connections?.platform?.name || 'null');
     const conn = connections?.connections?.map((item, index) => {
         return {
             ...item,

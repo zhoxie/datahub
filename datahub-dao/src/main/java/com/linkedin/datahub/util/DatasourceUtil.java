@@ -1,6 +1,7 @@
 package com.linkedin.datahub.util;
 
 import com.linkedin.common.AuditStamp;
+import com.linkedin.common.urn.DataPlatformUrn;
 import com.linkedin.common.urn.DatasourceUrn;
 import com.linkedin.datahub.models.view.DatasourceView;
 import com.linkedin.datahub.models.view.DatasourceLineageView;
@@ -45,13 +46,19 @@ public class DatasourceUtil {
    */
   public static DatasourceView toDatasourceView(Datasource datasource) {
     DatasourceView view = new DatasourceView();
-    view.setPlatform(datasource.getPlatform().getPlatformNameEntity());
+    view.setCategory(datasource.getCategory().getCategoryNameEntity());
+    try {
+      String paltform = DataPlatformUrn.createFromUrn(datasource.getConnections().getPlatform()).getPlatformNameEntity();
+      view.setPlatform(paltform);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
     view.setNativeName(datasource.getName());
     view.setFabric(datasource.getOrigin().name());
     view.setDescription(datasource.getDescription());
     view.setTags(datasource.getTags());
     // construct DatasourceUrn and overwrite URI field for frontend use
-    view.setUri(new DatasourceUrn(datasource.getPlatform(), datasource.getName(), datasource.getOrigin()).toString());
+    view.setUri(new DatasourceUrn(datasource.getCategory(), datasource.getName(), datasource.getOrigin()).toString());
 
     if (datasource.hasPlatformNativeType()) {
       view.setNativeType(datasource.getPlatformNativeType().name());

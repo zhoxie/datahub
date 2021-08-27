@@ -1,0 +1,24 @@
+namespace com.linkedin.common
+
+/**
+ * Standardized datasource category available
+ */
+@java.class = "com.linkedin.common.urn.DatasourceCategoryUrn"
+@validate.`com.linkedin.common.validator.TypedUrnValidator` = {
+  "accessible" : true,
+  "owningTeam" : "urn:li:internalTeam:wherehows",
+  "entityType" : "datasourceCategory",
+  "constructable" : true,
+  "namespace" : "li",
+  "name" : "DatasourceCategory",
+  "doc" : "Standardizeddatasource category available",
+  "owners" : [ "urn:li:corpuser:fbar", "urn:li:corpuser:bfoo" ],
+  "fields" : [ {
+    "name" : "categoryName",
+    "doc" : "datasource category name i.e. calling, device",
+    "type" : "string",
+    "maxLength" : 25
+  } ],
+  "maxLength" : 45
+}
+typeref DatasourceCategoryUrn = string

@@ -1,6 +1,7 @@
 package com.linkedin.datahub.graphql;
 
 import com.linkedin.dataplatform.client.DataPlatforms;
+import com.linkedin.datasourcecategory.client.DatasourceCategories;
 import com.linkedin.entity.client.AspectClient;
 import com.linkedin.entity.client.EntityClient;
 import com.linkedin.lineage.client.Lineages;
@@ -37,6 +38,7 @@ public class GmsClientFactory {
     private static EntityClient _entities;
     private static AspectClient _aspects;
     private static UsageClient _usage;
+    private static DatasourceCategories _datasourceCategories;
 
 
     private GmsClientFactory() { }
@@ -94,5 +96,16 @@ public class GmsClientFactory {
             }
         }
         return _usage;
+    }
+
+    public static DatasourceCategories getDatasourceCategories() {
+        if (_datasourceCategories == null) {
+            synchronized (GmsClientFactory.class) {
+                if (_datasourceCategories == null) {
+                    _datasourceCategories = new DatasourceCategories(REST_CLIENT);
+                }
+            }
+        }
+        return _datasourceCategories;
     }
 }

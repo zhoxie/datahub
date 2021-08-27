@@ -59,11 +59,8 @@ query getSearchResults($input: SearchInput!) {
                     origin
                     description
                     uri
-                    platform {
+                    category {
                         name
-                        info {
-                            logoUrl
-                        }
                     }
                     platformNativeType
                     tags

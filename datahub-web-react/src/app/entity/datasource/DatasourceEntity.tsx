@@ -67,8 +67,8 @@ export class DatasourceEntity implements Entity<Datasource> {
                 name={data.name}
                 origin={data.origin}
                 description={data.description}
-                platformName={data.platform.name}
-                platformLogo={data.platform.info?.logoUrl}
+                platformName={data.connections?.platform?.name || 'null'}
+                platformLogo={data.connections?.platform?.info?.logoUrl || ''}
                 owners={data.ownership?.owners}
                 globalTags={data.globalTags}
                 glossaryTerms={data.glossaryTerms}
@@ -84,8 +84,8 @@ export class DatasourceEntity implements Entity<Datasource> {
                 name={data.name}
                 origin={data.origin}
                 description={data.description}
-                platformName={data.platform.name}
-                platformLogo={data.platform.info?.logoUrl}
+                platformName={data.connections?.platform?.name || 'null'}
+                platformLogo={data.connections?.platform?.info?.logoUrl || ''}
                 owners={data.ownership?.owners}
                 globalTags={data.globalTags}
                 snippet={
@@ -111,8 +111,8 @@ export class DatasourceEntity implements Entity<Datasource> {
             type: EntityType.Datasource,
             upstreamChildren: [],
             downstreamChildren: [],
-            icon: entity.platform.info?.logoUrl || undefined,
-            platform: entity.platform.name,
+            icon: entity.connections?.platform?.info?.logoUrl || undefined,
+            platform: entity.connections?.platform?.name,
         };
     };
 }

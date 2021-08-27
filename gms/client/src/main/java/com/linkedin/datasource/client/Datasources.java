@@ -173,7 +173,7 @@ public class Datasources extends BaseBrowsableClient<Datasource, DatasourceUrn> 
         throws RemoteInvocationException {
         final List<Datasource> response = filter(indexFilter, Collections.emptyList(), lastUrn, size);
         return response.stream()
-            .map(datasource -> new DatasourceUrn(datasource.getPlatform(), datasource.getName(), datasource.getOrigin()))
+            .map(datasource -> new DatasourceUrn(datasource.getCategory(), datasource.getName(), datasource.getOrigin()))
             .map(Urn::toString)
             .collect(Collectors.toList());
     }
@@ -263,12 +263,12 @@ public class Datasources extends BaseBrowsableClient<Datasource, DatasourceUrn> 
         return new DatasourceKey()
             .setName(urn.getDatasourceNameEntity())
             .setOrigin(urn.getOriginEntity())
-            .setPlatform(urn.getPlatformEntity());
+            .setCategory(urn.getCategoryEntity());
     }
 
     @Nonnull
     private DatasourceUrn toDatasourceUrn(@Nonnull DatasourceKey key) {
-        return new DatasourceUrn(key.getPlatform(), key.getName(), key.getOrigin());
+        return new DatasourceUrn(key.getCategory(), key.getName(), key.getOrigin());
     }
 
     /**

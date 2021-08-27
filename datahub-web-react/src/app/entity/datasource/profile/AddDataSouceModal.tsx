@@ -1,10 +1,12 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Modal, Select, Space } from 'antd';
+import { Alert, Button, Card, Form, Input, Modal, Select, Space, Cascader } from 'antd';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { FormField, IDataSourceConnection, IFormConnectionData, IFormData } from '../service/DataSouceType';
-import { initCategory, initCluster, initDataCenter, initDriver } from '../service/FormInitValue';
 import { showMessageByNotification, showRequestResult } from '../service/NotificationUtil';
+import { initDataCenter, initCluster, typeDrivers } from '../service/FormInitValue';
+import { useAllDatasourceCategoriesQuery } from '../../../../graphql/datasourceCategory.generated';
+import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';
 
 type AddDataSourceModalProps = {
     visible: boolean;
@@ -23,7 +25,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     let count = 1;
     const initData: IFormData = originData ?? {
         sourceName: '',
-        sourceType: '',
+        sourceType: typeDrivers[0].value,
         category: '',
         dataCenter: '',
         connections: [
@@ -32,7 +34,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 cluster: 'PRIMARY',
                 connName: '',
                 connPwd: '',
-                driver: '',
+                driver: typeDrivers[0].children[0].value,
                 url: '',
             },
         ],
@@ -40,14 +42,21 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
 
     const [formData, updateDataSourceFormData] = useState(initData);
     const [form] = Form.useForm();
+    const categoryName = capitalizeFirstLetter(formData.category);
+
+    const { data, loading, error } = useAllDatasourceCategoriesQuery({ variables: {} });
+
+    if (error || (!loading && !error && !data)) {
+        return <Alert type="error" message={error?.message || 'Entity failed to load'} />;
+    }
 
     const showValidateMsg = (msg) => {
         showMessageByNotification(msg);
     };
 
-    const sendDataSourceSaveReq = (data) => {
+    const sendDataSourceSaveReq = (reqData) => {
         axios
-            .post('/entities?action=ingest', data, {
+            .post('/entities?action=ingest', reqData, {
                 headers: { 'Content-Type': 'application/json' },
             })
             .then((res) => {
@@ -57,8 +66,8 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 }
                 showRequestResult(status);
             })
-            .catch((error) => {
-                console.error(error);
+            .catch((err) => {
+                console.error(err);
                 showRequestResult(500);
             });
     };
@@ -86,12 +95,12 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             showValidateMsg('Exist some required value missing from form items !');
             return;
         }
-        const urn = `urn:li:datasource:(urn:li:dataPlatform:${formData.sourceType},${formData.sourceName},PROD)`;
+        const urn = `urn:li:datasource:(urn:li:datasourceCategory:${formData.category},${formData.sourceName},PROD)`;
         const sourceKey = {
             'com.linkedin.metadata.key.DatasourceKey': {
                 name: formData.sourceName,
                 origin: 'PROD',
-                platform: `urn:li:dataPlatform:${formData.sourceType}`,
+                category: `urn:li:datasourceCategory:${formData.category}`,
             },
         };
         const connections: IDataSourceConnection[] = formData.connections?.map((conn) => {
@@ -108,7 +117,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         });
         const connectionKey = {
             'com.linkedin.datasource.DatasourceConnections': {
-                category: formData.category,
+                platform: `urn:li:dataPlatform:${formData.sourceType}`,
                 dataCenter: formData.dataCenter,
                 connections,
             },
@@ -193,6 +202,13 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         updateDataSourceFormData(updatedData);
     };
 
+    const handleTypeChange = (value) => {
+        updateDataSourceBasicInfo(value[0], FormField.sourceType);
+        for (let i = 0; i <= count; i++) {
+            updateDataSourceConnections(value[1], FormField.driver, i);
+        }
+    };
+
     const dataSourceBasic = () => {
         return (
             <Card title="Data Source">
@@ -213,28 +229,42 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                     label="Type"
                     rules={[{ required: true, message: 'Please input dataSource type!' }]}
                 >
-                    <Input
-                        placeholder="Please input dataSource type"
-                        autoComplete="off"
-                        defaultValue={formData.sourceType}
-                        onChange={(e) => updateDataSourceBasicInfo(e.target.value, FormField.sourceType)}
-                    />
+                    {formData.sourceType && formData.connections[0].driver && (
+                        <Cascader
+                            options={typeDrivers}
+                            defaultValue={[formData.sourceType, formData.connections[0].driver]}
+                            onChange={handleTypeChange}
+                        />
+                    )}
                 </Form.Item>
                 <Form.Item
                     name="category"
                     label="Category"
                     rules={[{ required: true, message: 'Please choose dataSource category!' }]}
                 >
-                    <Select
-                        placeholder="Select an option for category"
-                        onChange={(e) => updateDataSourceBasicInfo(e, FormField.category)}
-                        allowClear
-                        defaultValue={formData.category}
-                    >
-                        {initCategory?.map((item) => {
-                            return <Option value={item.value}>{item.label}</Option>;
-                        })}
-                    </Select>
+                    {loading && (
+                        <Select
+                            placeholder="Select an option for category"
+                            onChange={(e) => updateDataSourceBasicInfo(e, FormField.category)}
+                            allowClear
+                            defaultValue={formData.category}
+                            disabled
+                        >
+                            <Option value="loading">loading</Option>
+                        </Select>
+                    )}
+                    {data && data.allDatasourceCategories && (
+                        <Select
+                            placeholder="Select an option for category"
+                            onChange={(e) => updateDataSourceBasicInfo(e, FormField.category)}
+                            allowClear
+                            defaultValue={categoryName}
+                        >
+                            {data.allDatasourceCategories.categories?.map((item) => {
+                                return <Option value={item?.name || 'null'}>{item?.displayName || 'null'}</Option>;
+                            })}
+                        </Select>
+                    )}
                 </Form.Item>
                 <Form.Item
                     name="dataCenter"
@@ -309,22 +339,6 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                                 defaultValue={info.connPwd}
                                 onChange={(e) => updateDataSourceConnections(e.target.value, FormField.connPwd, index)}
                             />
-                        </Form.Item>
-                        <Form.Item
-                            name={`driver_${info.id}`}
-                            label="Driver"
-                            rules={[{ required: true, message: 'Please choose connection driver!' }]}
-                        >
-                            <Select
-                                placeholder="Select an option for driver"
-                                defaultValue={info.driver}
-                                onChange={(e) => updateDataSourceConnections(e, FormField.driver, index)}
-                                allowClear
-                            >
-                                {initDriver?.map((item) => {
-                                    return <Option value={item.value}>{item.label}</Option>;
-                                })}
-                            </Select>
                         </Form.Item>
                         <Form.Item
                             name={`url_${info.id}`}

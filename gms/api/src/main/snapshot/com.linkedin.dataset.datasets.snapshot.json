@@ -239,9 +239,9 @@
         "doc" : "Standardized datasource identifier.",
         "entityType" : "datasource",
         "fields" : [ {
-          "doc" : "Standardized platform urn where datasource is defined.",
-          "name" : "platform",
-          "type" : "com.linkedin.common.urn.DataPlatformUrn"
+          "doc" : "Standardized category urn where datasource is defined.",
+          "name" : "category",
+          "type" : "com.linkedin.common.urn.DatasourceCategoryUrn"
         }, {
           "doc" : "Datasource native name e.g. db.table, /dir/subdir/name, or name",
           "maxLength" : 210,

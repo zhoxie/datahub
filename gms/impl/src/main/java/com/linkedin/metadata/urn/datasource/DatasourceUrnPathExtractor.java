@@ -15,10 +15,10 @@ public final class DatasourceUrnPathExtractor implements UrnPathExtractor<Dataso
   public Map<String, Object> extractPaths(@Nonnull DatasourceUrn urn) {
     return Collections.unmodifiableMap(new HashMap<String, String>() {
       {
-        put("/platform", urn.getPlatformEntity().toString());
+        put("/category", urn.getCategoryEntity().toString());
         put("/datasourceName", urn.getDatasourceNameEntity());
         put("/origin", urn.getOriginEntity().toString());
-        put("/platform/platformName", urn.getPlatformEntity().getPlatformNameEntity());
+        put("/category/categoryName", urn.getCategoryEntity().getCategoryNameEntity());
       }
     });
   }

@@ -1,0 +1,14 @@
+namespace com.linkedin.metadata.key
+
+/**
+ * Key for a Datasource Category
+ */
+@Aspect = {
+  "name": "datasourceCategoryKey"
+}
+record DatasourceCategoryKey {
+  /**
+  * Datasource category name
+  */
+  categoryName: string
+}
