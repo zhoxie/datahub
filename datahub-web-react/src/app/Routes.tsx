@@ -60,7 +60,7 @@ export const Routes = (): JSX.Element => {
                 />
                 <ProtectedRoute isLoggedIn={isLoggedIn} path={PageRoutes.ANALYTICS} render={() => <AnalyticsPage />} />
                 {/* Starting the react app locally opens /assets by default. For a smoother dev experience, we'll redirect to the homepage */}
-                <Route path={PageRoutes.ASSETS} component={() => <Redirect to="/" />} exact />
+                <Route path={PageRoutes.ASSETS} component={() => <Redirect to="/index" />} exact />
                 <Route component={NoPageFound} />
             </Switch>
         </div>

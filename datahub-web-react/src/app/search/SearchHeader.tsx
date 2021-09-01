@@ -73,7 +73,7 @@ export const SearchHeader = ({
 
     return (
         <Header style={styles.header as any}>
-            <Link to="/">
+            <Link to="/index">
                 <Space size={4}>
                     <Image style={styles.logoImage} src={themeConfig.assets.logoUrl} preview={false} />
                     <HeaderTitle level={4}>{themeConfig.content.title}</HeaderTitle>
