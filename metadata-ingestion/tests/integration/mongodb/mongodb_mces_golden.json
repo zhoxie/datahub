@@ -20,13 +20,13 @@
                         "platform": "urn:li:dataPlatform:mongodb",
                         "version": 0,
                         "created": {
-                            "time": 1615443388097,
-                            "actor": "urn:li:corpuser:etl",
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
                             "impersonator": null
                         },
                         "lastModified": {
-                            "time": 1615443388097,
-                            "actor": "urn:li:corpuser:etl",
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
                             "impersonator": null
                         },
                         "deleted": null,
@@ -44,7 +44,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "mongodb-test",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -67,13 +72,13 @@
                         "platform": "urn:li:dataPlatform:mongodb",
                         "version": 0,
                         "created": {
-                            "time": 1615443388097,
-                            "actor": "urn:li:corpuser:etl",
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
                             "impersonator": null
                         },
                         "lastModified": {
-                            "time": 1615443388097,
-                            "actor": "urn:li:corpuser:etl",
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
                             "impersonator": null
                         },
                         "deleted": null,
@@ -428,7 +433,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "mongodb-test",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -451,13 +461,13 @@
                         "platform": "urn:li:dataPlatform:mongodb",
                         "version": 0,
                         "created": {
-                            "time": 1615443388097,
-                            "actor": "urn:li:corpuser:etl",
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
                             "impersonator": null
                         },
                         "lastModified": {
-                            "time": 1615443388097,
-                            "actor": "urn:li:corpuser:etl",
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
                             "impersonator": null
                         },
                         "deleted": null,
@@ -617,6 +627,11 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "mongodb-test",
+        "properties": null
+    }
 }
 ]

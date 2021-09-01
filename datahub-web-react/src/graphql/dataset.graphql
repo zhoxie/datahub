@@ -10,6 +10,30 @@ mutation updateDataset($input: DatasetUpdateInput!) {
     }
 }
 
+query getDataProfiles($urn: String!, $limit: Int, $startTime: Long, $endTime: Long) {
+    dataset(urn: $urn) {
+        urn
+        datasetProfiles(limit: $limit, startTimeMillis: $startTime, endTimeMillis: $endTime) {
+            rowCount
+            columnCount
+            timestampMillis
+            fieldProfiles {
+                fieldPath
+                uniqueCount
+                uniqueProportion
+                nullCount
+                nullProportion
+                min
+                max
+                mean
+                median
+                stdev
+                sampleValues
+            }
+        }
+    }
+}
+
 query getDataset($urn: String!) {
     dataset(urn: $urn) {
         ...nonRecursiveDatasetFields
@@ -18,6 +42,33 @@ query getDataset($urn: String!) {
         }
         upstreamLineage {
             ...upstreamRelationshipFields
+        }
+        schemaMetadata(version: 0) {
+            ...schemaMetadataFields
+        }
+        previousSchemaMetadata: schemaMetadata(version: -1) {
+            ...schemaMetadataFields
+        }
+        editableSchemaMetadata {
+            editableSchemaFieldInfo {
+                fieldPath
+                description
+                globalTags {
+                    ...globalTagsFields
+                }
+            }
+        }
+        deprecation {
+            actor
+            deprecated
+            note
+            decommissionTime
+        }
+        globalTags {
+            ...globalTagsFields
+        }
+        glossaryTerms {
+            ...glossaryTerms
         }
         usageStats(resource: $urn, range: MONTH) {
             buckets {
@@ -44,6 +95,50 @@ query getDataset($urn: String!) {
                 fields {
                     fieldName
                     count
+                }
+            }
+        }
+        datasetProfiles(limit: 1) {
+            rowCount
+            columnCount
+            timestampMillis
+            fieldProfiles {
+                fieldPath
+                uniqueCount
+                uniqueProportion
+                nullCount
+                nullProportion
+                min
+                max
+                mean
+                median
+                stdev
+                sampleValues
+            }
+        }
+    }
+}
+
+query getDatasetSchemaVersions($urn: String!, $version1: Long, $version2: Long) {
+    dataset(urn: $urn) {
+        urn
+        name
+        type
+        origin
+        description
+        uri
+        schemaMetadata(version: $version1) {
+            ...schemaMetadataFields
+        }
+        previousSchemaMetadata: schemaMetadata(version: $version2) {
+            ...schemaMetadataFields
+        }
+        editableSchemaMetadata {
+            editableSchemaFieldInfo {
+                fieldPath
+                description
+                globalTags {
+                    ...globalTagsFields
                 }
             }
         }

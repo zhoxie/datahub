@@ -54,7 +54,7 @@ const LayoutDiv = styled(({ isCompact: _, ...props }: LayoutProps & LayoutPropsE
 `;
 
 const defaultProps = {
-    tags: [],
+    tags: null,
     tabs: [],
     tagCardHeader: 'Tags',
 };

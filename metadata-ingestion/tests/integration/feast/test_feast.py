@@ -1,4 +1,5 @@
 import pytest
+from freezegun import freeze_time
 
 from datahub.ingestion.run.pipeline import Pipeline
 from tests.test_helpers import mce_helpers
@@ -7,9 +8,12 @@ from tests.test_helpers import mce_helpers
 # from tests.test_helpers import mce_helpers
 from tests.test_helpers.docker_helpers import wait_for_port
 
+FROZEN_TIME = "2020-04-14 07:00:00"
+
 
 # make sure that mock_time is excluded here because it messes with feast
-@pytest.mark.slow
+@freeze_time(FROZEN_TIME)
+@pytest.mark.integration
 def test_feast_ingest(docker_compose_runner, pytestconfig, tmp_path):
     test_resources_dir = pytestconfig.rootpath / "tests/integration/feast"
 
@@ -44,8 +48,8 @@ def test_feast_ingest(docker_compose_runner, pytestconfig, tmp_path):
         pipeline.raise_from_status()
 
         # Verify the output.
-        output = mce_helpers.load_json_file(str(tmp_path / "feast_mces.json"))
-        golden = mce_helpers.load_json_file(
-            str(test_resources_dir / "feast_mces_golden.json")
+        mce_helpers.check_golden_file(
+            pytestconfig,
+            output_path=tmp_path / "feast_mces.json",
+            golden_path=test_resources_dir / "feast_mces_golden.json",
         )
-        mce_helpers.assert_mces_equal(output, golden)

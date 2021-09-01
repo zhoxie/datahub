@@ -2,10 +2,11 @@ import { Divider, Image, Row, Space, Tag, Typography } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { GlobalTags, GlossaryTerms, Owner } from '../../types.generated';
+import { GlobalTags, Owner, GlossaryTerms } from '../../types.generated';
+import { useEntityRegistry } from '../useEntityRegistry';
 import AvatarsGroup from '../shared/avatar/AvatarsGroup';
 import TagTermGroup from '../shared/tags/TagTermGroup';
-import { useEntityRegistry } from '../useEntityRegistry';
+import MarkdownViewer from '../entity/shared/MarkdownViewer';
 
 interface Props {
     name: string;
@@ -25,6 +26,13 @@ interface Props {
 }
 
 const DescriptionParagraph = styled(Typography.Paragraph)`
+    &&& {
+        margin-bottom: 0px;
+        padding-left: 8px;
+    }
+`;
+
+const DescriptionMarkdownViewer = styled(MarkdownViewer)`
     &&& {
         margin-bottom: 0px;
         padding-left: 8px;
@@ -70,7 +78,7 @@ export default function DefaultPreviewCard({
             <Space direction="vertical" align="start" size={28} style={styles.leftColumn}>
                 <Link to={url}>
                     <Space direction="horizontal" size={20} align="center">
-                        {logoUrl ? <PreviewImage src={logoUrl} preview /> : logoComponent || ''}
+                        {logoUrl ? <PreviewImage preview={false} src={logoUrl} /> : logoComponent || ''}
 
                         <Space direction="vertical" size={8}>
                             <Typography.Text strong style={styles.name}>
@@ -91,7 +99,7 @@ export default function DefaultPreviewCard({
                     {description.length === 0 ? (
                         <DescriptionParagraph type="secondary">No description</DescriptionParagraph>
                     ) : (
-                        <DescriptionParagraph>{description}</DescriptionParagraph>
+                        <DescriptionMarkdownViewer source={description} />
                     )}
                     {snippet}
                 </div>

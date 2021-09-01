@@ -35,6 +35,9 @@ query getSearchResults($input: SearchInput!) {
                             logoUrl
                         }
                     }
+                    editableProperties {
+                        description
+                    }
                     platformNativeType
                     tags
                     properties {
@@ -112,6 +115,9 @@ query getSearchResults($input: SearchInput!) {
                     globalTags {
                         ...globalTagsFields
                     }
+                    editableProperties {
+                        description
+                    }
                 }
                 ... on Chart {
                     urn
@@ -134,6 +140,9 @@ query getSearchResults($input: SearchInput!) {
                     globalTags {
                         ...globalTagsFields
                     }
+                    editableProperties {
+                        description
+                    }
                 }
                 ... on DataFlow {
                     urn
@@ -151,6 +160,9 @@ query getSearchResults($input: SearchInput!) {
                     }
                     globalTags {
                         ...globalTagsFields
+                    }
+                    editableProperties {
+                        description
                     }
                 }
                 ... on DataJob {
@@ -178,6 +190,9 @@ query getSearchResults($input: SearchInput!) {
                     globalTags {
                         ...globalTagsFields
                     }
+                    editableProperties {
+                        description
+                    }
                 }
                 ... on GlossaryTerm {
                     name
@@ -189,6 +204,52 @@ query getSearchResults($input: SearchInput!) {
                         customProperties {
                             key
                             value
+                        }
+                    }
+                }
+                ... on MLFeatureTable {
+                    urn
+                    type
+                    name
+                    description
+                    featureTableProperties {
+                        description
+                        mlFeatures {
+                            urn
+                        }
+                        mlPrimaryKeys {
+                            urn
+                        }
+                    }
+                    ownership {
+                        ...ownershipFields
+                    }
+                }
+                ... on MLModel {
+                    name
+                    description
+                    origin
+                    ownership {
+                        ...ownershipFields
+                    }
+                    platform {
+                        name
+                        info {
+                            logoUrl
+                        }
+                    }
+                }
+                ... on MLModelGroup {
+                    name
+                    origin
+                    description
+                    ownership {
+                        ...ownershipFields
+                    }
+                    platform {
+                        name
+                        info {
+                            logoUrl
                         }
                     }
                 }

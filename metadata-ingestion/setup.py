@@ -32,14 +32,17 @@ base_requirements = {
 
 framework_common = {
     "click>=6.0.0",
+    "click-default-group",
     "PyYAML",
     "toml>=0.10.0",
     "entrypoints",
     "docker",
     "expandvars>=0.6.5",
-    "avro-gen3==0.5.0",
+    "avro-gen3==0.6.0",
     "avro-python3>=1.8.2",
     "python-dateutil",
+    "stackprinter",
+    "tabulate",
 }
 
 kafka_common = {
@@ -57,6 +60,11 @@ sql_common = {
     "sqlalchemy==1.3.24",
 }
 
+aws_common = {
+    # AWS Python SDK
+    "boto3"
+}
+
 # Note: for all of these, framework_common will be added.
 plugins: Dict[str, Set[str]] = {
     # Sink plugins.
@@ -71,18 +79,19 @@ plugins: Dict[str, Set[str]] = {
     "athena": sql_common | {"PyAthena[SQLAlchemy]"},
     "bigquery": sql_common | {"pybigquery >= 0.6.0"},
     "bigquery-usage": {"google-cloud-logging", "cachetools"},
+    "dbt": set(),
     "druid": sql_common | {"pydruid>=0.6.2"},
     "feast": {"docker"},
-    "glue": {"boto3"},
+    "glue": aws_common,
     "hive": sql_common
     | {
         # Acryl Data maintains a fork of PyHive, which adds support for table comments
         # and column comments, and also releases HTTP and HTTPS transport schemes.
-        "acryl-pyhive[hive]>=0.6.7"
+        "acryl-pyhive[hive]>=0.6.10"
     },
     "ldap": {"python-ldap>=2.4"},
     "looker": {"looker-sdk==21.6.0"},
-    "lookml": {"lkml>=1.1.0", "sql-metadata==1.12.0"},
+    "lookml": {"lkml>=1.1.0", "sql-metadata==2.2.1"},
     "mongodb": {"pymongo>=3.11"},
     "mssql": sql_common | {"sqlalchemy-pytds>=0.3"},
     "mssql-odbc": sql_common | {"pyodbc"},
@@ -90,8 +99,10 @@ plugins: Dict[str, Set[str]] = {
     "oracle": sql_common | {"cx_Oracle"},
     "postgres": sql_common | {"psycopg2-binary", "GeoAlchemy2"},
     "redshift": sql_common | {"sqlalchemy-redshift", "psycopg2-binary", "GeoAlchemy2"},
-    "snowflake": sql_common | {"snowflake-sqlalchemy"},
-    "snowflake-usage": sql_common | {"snowflake-sqlalchemy"},
+    "sagemaker": aws_common,
+    "snowflake": sql_common | {"snowflake-sqlalchemy<=1.2.4"},
+    "snowflake-usage": sql_common | {"snowflake-sqlalchemy<=1.2.4"},
+    "sql-profiles": sql_common | {"great-expectations"},
     "superset": {"requests"},
 }
 
@@ -115,6 +126,8 @@ mypy_stubs = {
     "types-cachetools",
     # versions 0.1.13 and 0.1.14 seem to have issues
     "types-click==0.1.12",
+    "boto3-stubs[s3,glue,sagemaker]",
+    "types-tabulate",
 }
 
 base_dev_requirements = {
@@ -141,15 +154,11 @@ base_dev_requirements = {
         for plugin in [
             "bigquery",
             "bigquery-usage",
-            "mysql",
-            "mssql",
-            "mongodb",
-            "feast",
-            "ldap",
             "looker",
             "glue",
-            "hive",
             "oracle",
+            "postgres",
+            "sagemaker",
             "datahub-kafka",
             "datahub-rest",
             # airflow is added below
@@ -166,42 +175,59 @@ if is_py37_or_newer:
 
 dev_requirements = {
     *base_dev_requirements,
-    "apache-airflow==1.10.15",
-    "apache-airflow-backport-providers-snowflake",  # Used in the example DAGs.
+    "apache-airflow[snowflake]>=2.0.2",  # snowflake is used in example dags
 }
-dev_requirements_airflow_2 = {
+dev_requirements_airflow_1 = {
     *base_dev_requirements,
-    "apache-airflow>=2.0.2",
-    "apache-airflow-providers-snowflake",
+    "apache-airflow==1.10.15",
+    "apache-airflow-backport-providers-snowflake",
 }
 
+full_test_dev_requirements = {
+    *list(
+        dependency
+        for plugin in [
+            "druid",
+            "feast",
+            "hive",
+            "ldap",
+            "mongodb",
+            "mssql",
+            "mysql",
+            "snowflake",
+            "sql-profiles",
+        ]
+        for dependency in plugins[plugin]
+    ),
+}
 
 entry_points = {
     "console_scripts": ["datahub = datahub.entrypoints:main"],
     "datahub.ingestion.source.plugins": [
         "file = datahub.ingestion.source.file:GenericFileSource",
-        "sqlalchemy = datahub.ingestion.source.sql_generic:SQLAlchemyGenericSource",
-        "athena = datahub.ingestion.source.athena:AthenaSource",
-        "bigquery = datahub.ingestion.source.bigquery:BigQuerySource",
-        "bigquery-usage = datahub.ingestion.source.bigquery_usage:BigQueryUsageSource",
+        "sqlalchemy = datahub.ingestion.source.sql.sql_generic:SQLAlchemyGenericSource",
+        "athena = datahub.ingestion.source.sql.athena:AthenaSource",
+        "bigquery = datahub.ingestion.source.sql.bigquery:BigQuerySource",
+        "bigquery-usage = datahub.ingestion.source.usage.bigquery_usage:BigQueryUsageSource",
         "dbt = datahub.ingestion.source.dbt:DBTSource",
-        "druid = datahub.ingestion.source.druid:DruidSource",
+        "druid = datahub.ingestion.source.sql.druid:DruidSource",
         "feast = datahub.ingestion.source.feast:FeastSource",
-        "glue = datahub.ingestion.source.glue:GlueSource",
-        "hive = datahub.ingestion.source.hive:HiveSource",
+        "glue = datahub.ingestion.source.aws.glue:GlueSource",
+        "sagemaker = datahub.ingestion.source.aws.sagemaker:SagemakerSource",
+        "hive = datahub.ingestion.source.sql.hive:HiveSource",
         "kafka = datahub.ingestion.source.kafka:KafkaSource",
         "kafka-connect = datahub.ingestion.source.kafka_connect:KafkaConnectSource",
         "ldap = datahub.ingestion.source.ldap:LDAPSource",
         "looker = datahub.ingestion.source.looker:LookerDashboardSource",
         "lookml = datahub.ingestion.source.lookml:LookMLSource",
         "mongodb = datahub.ingestion.source.mongodb:MongoDBSource",
-        "mssql = datahub.ingestion.source.mssql:SQLServerSource",
-        "mysql = datahub.ingestion.source.mysql:MySQLSource",
-        "oracle = datahub.ingestion.source.oracle:OracleSource",
-        "postgres = datahub.ingestion.source.postgres:PostgresSource",
-        "redshift = datahub.ingestion.source.redshift:RedshiftSource",
-        "snowflake = datahub.ingestion.source.snowflake:SnowflakeSource",
-        "snowflake-usage = datahub.ingestion.source.snowflake_usage:SnowflakeUsageSource",
+        "mssql = datahub.ingestion.source.sql.mssql:SQLServerSource",
+        "mysql = datahub.ingestion.source.sql.mysql:MySQLSource",
+        "oracle = datahub.ingestion.source.sql.oracle:OracleSource",
+        "postgres = datahub.ingestion.source.sql.postgres:PostgresSource",
+        "redshift = datahub.ingestion.source.sql.redshift:RedshiftSource",
+        "snowflake = datahub.ingestion.source.sql.snowflake:SnowflakeSource",
+        "snowflake-usage = datahub.ingestion.source.usage.snowflake_usage:SnowflakeUsageSource",
         "superset = datahub.ingestion.source.superset:SupersetSource",
     ],
     "datahub.ingestion.sink.plugins": [
@@ -224,7 +250,6 @@ setuptools.setup(
         "Source": "https://github.com/linkedin/datahub",
         "Changelog": "https://github.com/linkedin/datahub/releases",
     },
-    author="DataHub Committers",
     license="Apache License 2.0",
     description="A CLI to work with DataHub metadata",
     long_description=get_long_description(),
@@ -258,6 +283,7 @@ setuptools.setup(
         "datahub": ["py.typed"],
         "datahub.metadata": ["schema.avsc"],
         "datahub.metadata.schemas": ["*.avsc"],
+        "datahub.ingestion.source.feast_image": ["Dockerfile", "requirements.txt"],
     },
     entry_points=entry_points,
     # Dependencies.
@@ -278,6 +304,7 @@ setuptools.setup(
             )
         ),
         "dev": list(dev_requirements),
-        "dev-airflow2": list(dev_requirements_airflow_2),
+        "dev-airflow1": list(dev_requirements_airflow_1),
+        "integration-tests": list(full_test_dev_requirements),
     },
 )

@@ -7,14 +7,16 @@ import com.linkedin.common.urn.TestEntityUrn;
 import com.linkedin.common.urn.Urn;
 import com.linkedin.metadata.models.registry.EntityRegistry;
 import com.linkedin.metadata.models.registry.SnapshotEntityRegistry;
-import com.linkedin.metadata.query.BrowseResult;
+import com.linkedin.metadata.browse.BrowseResult;
 import com.linkedin.metadata.query.SearchResult;
 import com.linkedin.metadata.search.elasticsearch.indexbuilder.ESIndexBuilders;
+import com.linkedin.metadata.search.elasticsearch.indexbuilder.SettingsBuilder;
 import com.linkedin.metadata.search.elasticsearch.query.ESBrowseDAO;
 import com.linkedin.metadata.search.elasticsearch.query.ESSearchDAO;
 import com.linkedin.metadata.search.elasticsearch.update.ESWriteDAO;
 import com.linkedin.metadata.utils.elasticsearch.IndexConvention;
 import com.linkedin.metadata.utils.elasticsearch.IndexConventionImpl;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.apache.http.HttpHost;
@@ -33,6 +35,7 @@ public class ElasticSearchServiceTest {
   private RestHighLevelClient _searchClient;
   private EntityRegistry _entityRegistry;
   private IndexConvention _indexConvention;
+  private SettingsBuilder _settingsBuilder;
   private ElasticSearchService _elasticSearchService;
 
   private static final String IMAGE_NAME = "docker.elastic.co/elasticsearch/elasticsearch:7.9.3";
@@ -44,6 +47,7 @@ public class ElasticSearchServiceTest {
     _entityRegistry = new SnapshotEntityRegistry(new Snapshot());
     _indexConvention = new IndexConventionImpl(null);
     _elasticsearchContainer = new ElasticsearchContainer(IMAGE_NAME);
+    _settingsBuilder = new SettingsBuilder(Collections.emptyList());
     _elasticsearchContainer.start();
     _searchClient = buildRestClient();
     _elasticSearchService = buildService();
@@ -64,7 +68,7 @@ public class ElasticSearchServiceTest {
 
   @Nonnull
   private ElasticSearchService buildService() {
-    ESIndexBuilders indexBuilders = new ESIndexBuilders(_entityRegistry, _searchClient, _indexConvention);
+    ESIndexBuilders indexBuilders = new ESIndexBuilders(_entityRegistry, _searchClient, _indexConvention, _settingsBuilder);
     ESSearchDAO searchDAO = new ESSearchDAO(_entityRegistry, _searchClient, _indexConvention);
     ESBrowseDAO browseDAO = new ESBrowseDAO(_entityRegistry, _searchClient, _indexConvention);
     ESWriteDAO writeDAO = new ESWriteDAO(_entityRegistry, _searchClient, _indexConvention, 1, 1, 1, 1);
@@ -84,6 +88,7 @@ public class ElasticSearchServiceTest {
     assertEquals(searchResult.getNumEntities().intValue(), 0);
     BrowseResult browseResult = _elasticSearchService.browse(ENTITY_NAME, "", null, 0, 10);
     assertEquals(browseResult.getMetadata().getTotalNumEntities().longValue(), 0);
+    assertEquals(_elasticSearchService.docCount(ENTITY_NAME), 0);
 
     Urn urn = new TestEntityUrn("test", "testUrn", "VALUE_1");
     ObjectNode document = JsonNodeFactory.instance.objectNode();
@@ -98,7 +103,8 @@ public class ElasticSearchServiceTest {
     assertEquals(searchResult.getEntities().get(0), urn);
     browseResult = _elasticSearchService.browse(ENTITY_NAME, "", null, 0, 10);
     assertEquals(browseResult.getMetadata().getTotalNumEntities().longValue(), 1);
-    assertEquals(browseResult.getMetadata().getGroups().get(0).getName(), "a");
+    assertEquals(browseResult.getGroups().get(0).getName(), "a");
+    assertEquals(_elasticSearchService.docCount(ENTITY_NAME), 1);
 
     _elasticSearchService.deleteDocument(ENTITY_NAME, urn.toString());
     TimeUnit.SECONDS.sleep(5);
@@ -106,5 +112,6 @@ public class ElasticSearchServiceTest {
     assertEquals(searchResult.getNumEntities().intValue(), 0);
     browseResult = _elasticSearchService.browse(ENTITY_NAME, "", null, 0, 10);
     assertEquals(browseResult.getMetadata().getTotalNumEntities().longValue(), 0);
+    assertEquals(_elasticSearchService.docCount(ENTITY_NAME), 0);
   }
 }
