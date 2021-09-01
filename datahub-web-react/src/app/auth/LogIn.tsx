@@ -47,7 +47,7 @@ export const LogIn: React.VFC<LogInProps> = () => {
     }, []);
 
     if (isLoggedIn) {
-        return <Redirect to="/" />;
+        return <Redirect to="/index" />;
     }
 
     return (
