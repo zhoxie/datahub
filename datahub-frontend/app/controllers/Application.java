@@ -53,6 +53,7 @@ public class Application extends Controller {
     String fullPath = "public/" + path;
     InputStream indexHtml = Play.application().classloader().getResourceAsStream(fullPath);
     response().setHeader("Cache-Control", "no-cache");
+
     return ok(indexHtml).as("text/html");
   }
 

@@ -27,7 +27,7 @@ const ProtectedRoute = ({
 };
 
 /**
- * Container for all views behind an authentication wall.
+ * Container for all views behind an authentication wall
  */
 export const Routes = (): JSX.Element => {
     useTrackPageView();
