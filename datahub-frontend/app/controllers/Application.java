@@ -50,9 +50,9 @@ public class Application extends Controller {
    */
   @Nonnull
   private Result serveAsset(@Nullable String path) {
-    InputStream indexHtml = Play.application().classloader().getResourceAsStream("public/index.html");
+    String fullPath = "public/" + path;
+    InputStream indexHtml = Play.application().classloader().getResourceAsStream(fullPath);
     response().setHeader("Cache-Control", "no-cache");
-
     return ok(indexHtml).as("text/html");
   }
 
@@ -100,7 +100,7 @@ public class Application extends Controller {
    */
   @Nonnull
   public Result index(@Nullable String path) {
-    return serveAsset("");
+    return serveAsset(path);
   }
 
   /**
