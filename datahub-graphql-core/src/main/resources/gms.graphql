@@ -307,6 +307,11 @@ type Dataset implements EntityWithRelationships & Entity {
     properties: [StringMapEntry!]
 
     """
+    The Data sources
+    """
+    sources: DatasetSources
+
+    """
     A list of editable platform-specific metadata tuples
     """
     editableProperties: DatasetEditableProperties
@@ -380,7 +385,14 @@ type Dataset implements EntityWithRelationships & Entity {
     datasetProfiles(startTimeMillis: Long, endTimeMillis: Long, limit: Int): [DatasetProfile!]
 }
 
-type Datasource implements Entity {
+type DatasetSources {
+    """
+    Data sources for the dataset
+    """
+    sources: [Datasource!]
+}
+
+type Datasource implements EntityWithRelationships & Entity {
     """
     The unique Datasource URN
     """
@@ -470,6 +482,16 @@ type Datasource implements Entity {
     The structured tags associated with the datasource
     """
     globalTags: GlobalTags
+
+    """
+    Entities upstream of the given entity
+    """
+    upstreamLineage: UpstreamEntityRelationships
+
+    """
+    Entities downstream of the given entity
+    """
+    downstreamLineage: DownstreamEntityRelationships
 
     """
     The structured glossary terms associated with the datasource

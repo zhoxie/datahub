@@ -1,0 +1,8 @@
+namespace com.linkedin.dataset
+
+import com.linkedin.common.DatasourceUrn
+
+/**
+ * Input source type for a dataset such as datasource or metric
+ */
+typeref DatasetSourceType = union[DatasourceUrn]DatasetSnapshotMapper.java

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Datasource, EntityType, SearchResult } from '../../../types.generated';
 import { DatasourceProfile } from './profile/DatasourceProfile';
 import { Entity, IconStyleType, PreviewType } from '../Entity';
-import { Preview } from './preview/Preview';
+import { PreviewNoDel, Preview } from './preview/Preview';
 import { FIELDS_TO_HIGHLIGHT } from './search/highlights';
 
 const MatchTag = styled(Tag)`
@@ -76,10 +76,26 @@ export class DatasourceEntity implements Entity<Datasource> {
         );
     };
 
+    renderNoDelPreview = (_: PreviewType, data: Datasource) => {
+        return (
+            <PreviewNoDel
+                urn={data.urn}
+                name={data.name}
+                origin={data.origin}
+                description={data.description}
+                platformName={data.connections?.platform?.name || 'null'}
+                platformLogo={data.connections?.platform?.info?.logoUrl || ''}
+                owners={data.ownership?.owners}
+                globalTags={data.globalTags}
+                glossaryTerms={data.glossaryTerms}
+            />
+        );
+    };
+
     renderSearch = (result: SearchResult) => {
         const data = result.entity as Datasource;
         return (
-            <Preview
+            <PreviewNoDel
                 urn={data.urn}
                 name={data.name}
                 origin={data.origin}

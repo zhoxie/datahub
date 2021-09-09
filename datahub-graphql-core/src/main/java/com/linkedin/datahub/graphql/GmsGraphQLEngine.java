@@ -9,6 +9,7 @@ import com.linkedin.datahub.graphql.generated.DashboardInfo;
 import com.linkedin.datahub.graphql.generated.DataJob;
 import com.linkedin.datahub.graphql.generated.DataJobInputOutput;
 import com.linkedin.datahub.graphql.generated.Dataset;
+import com.linkedin.datahub.graphql.generated.DatasetSources;
 import com.linkedin.datahub.graphql.generated.Datasource;
 import com.linkedin.datahub.graphql.generated.Entity;
 import com.linkedin.datahub.graphql.generated.EntityRelationship;
@@ -443,6 +444,15 @@ public class GmsGraphQLEngine {
                                 (env) -> ((InstitutionalMemoryMetadata) env.getSource()).getAuthor().getUrn()))
                 )
             );
+        builder.type("DatasetSources", typeWiring -> typeWiring
+            .dataFetcher("sources", new AuthenticatedResolver<>(
+                new LoadableTypeBatchResolver<>(
+                    DATASOURCE_TYPE,
+                    (env) -> ((DatasetSources) env.getSource()).getSources().stream()
+                        .map(Datasource::getUrn)
+                        .collect(Collectors.toList())))
+            )
+        );
     }
 
     /**

@@ -253,6 +253,7 @@ export const dataset3 = {
     name: 'Yet Another Dataset',
     origin: 'PROD',
     tags: ['Trusted'],
+    sources: [],
     description: 'This and here we have yet another Dataset (YAN). Are there more?',
     uri: 'www.google.com',
     properties: [],

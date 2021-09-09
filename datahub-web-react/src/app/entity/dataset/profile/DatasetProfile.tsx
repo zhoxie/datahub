@@ -17,11 +17,13 @@ import { useGetAuthenticatedUser } from '../../../useGetAuthenticatedUser';
 import analytics, { EventType, EntityActionType } from '../../../analytics';
 import QueriesTab from './QueriesTab';
 import StatsView from './stats/Stats';
+import DatasetSources from './DatasetSources';
 
 export enum TabType {
     Ownership = 'Ownership',
     Schema = 'Schema',
     Lineage = 'Lineage',
+    Sources = 'Sources',
     Properties = 'Properties',
     Documents = 'Documents',
     Queries = 'Queries',
@@ -60,6 +62,7 @@ export const DatasetProfile = ({ urn }: { urn: string }): JSX.Element => {
         previousSchemaMetadata,
         editableSchemaMetadata,
         usageStats,
+        sources,
     }: Dataset & { previousSchemaMetadata: SchemaMetadata }) => {
         const tabs = [
             {
@@ -107,6 +110,11 @@ export const DatasetProfile = ({ urn }: { urn: string }): JSX.Element => {
                 name: TabType.Lineage,
                 path: TabType.Lineage.toLowerCase(),
                 content: <LineageView upstreamLineage={upstreamLineage} downstreamLineage={downstreamLineage} />,
+            },
+            {
+                name: TabType.Sources,
+                path: TabType.Sources.toLowerCase(),
+                content: <DatasetSources datasources={sources?.sources || []} />,
             },
             {
                 name: TabType.Queries,

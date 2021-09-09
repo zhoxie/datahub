@@ -1663,6 +1663,35 @@
       "name" : "datasetProperties"
     }
   }, {
+    "type" : "typeref",
+    "name" : "DatasetSourceType",
+    "namespace" : "com.linkedin.dataset",
+    "doc" : "Input source type for a dataset such as datasource or metric",
+    "ref" : [ "com.linkedin.common.DatasourceUrn" ]
+  }, {
+    "type" : "record",
+    "name" : "DatasetSources",
+    "namespace" : "com.linkedin.dataset",
+    "doc" : "the data sources of the dataset",
+    "fields" : [ {
+      "name" : "sources",
+      "type" : {
+        "type" : "array",
+        "items" : "DatasetSourceType"
+      },
+      "doc" : "Data sources for the chart",
+      "optional" : true,
+      "Relationship" : {
+        "/*/string" : {
+          "entityTypes" : [ "datasource" ],
+          "name" : "Consumes"
+        }
+      }
+    } ],
+    "Aspect" : {
+      "name" : "datasetSources"
+    }
+  }, {
     "type" : "record",
     "name" : "DatasetUpstreamLineage",
     "namespace" : "com.linkedin.dataset",
@@ -2466,7 +2495,7 @@
                   "Aspect" : {
                     "name" : "datasetKey"
                   }
-                }, "com.linkedin.dataset.DatasetProperties", "com.linkedin.dataset.EditableDatasetProperties", "com.linkedin.dataset.DatasetDeprecation", "com.linkedin.dataset.DatasetUpstreamLineage", "com.linkedin.dataset.UpstreamLineage", "com.linkedin.common.InstitutionalMemory", "com.linkedin.common.Ownership", "com.linkedin.common.Status", {
+                }, "com.linkedin.dataset.DatasetSources", "com.linkedin.dataset.DatasetProperties", "com.linkedin.dataset.EditableDatasetProperties", "com.linkedin.dataset.DatasetDeprecation", "com.linkedin.dataset.DatasetUpstreamLineage", "com.linkedin.dataset.UpstreamLineage", "com.linkedin.common.InstitutionalMemory", "com.linkedin.common.Ownership", "com.linkedin.common.Status", {
                   "type" : "record",
                   "name" : "SchemaMetadata",
                   "namespace" : "com.linkedin.schema",
