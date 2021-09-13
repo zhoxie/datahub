@@ -87,6 +87,29 @@ fragment upstreamRelationshipFields on UpstreamEntityRelationships {
                     }
                 }
             }
+            ... on Datasource {
+                name
+                description
+                category {
+                    name
+                }
+                connections {
+                    platform {
+                        name
+                        info {
+                            logoUrl
+                        }
+                    }
+                    dataCenter
+                    connections {
+                        cluster
+                        driver
+                        username
+                        password
+                        url
+                    }
+                }
+            }
             ... on MLModelGroup {
                 urn
                 type

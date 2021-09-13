@@ -1319,12 +1319,6 @@
       "name" : "datasetProperties"
     }
   }, {
-    "type" : "typeref",
-    "name" : "DatasetSourceType",
-    "namespace" : "com.linkedin.dataset",
-    "doc" : "Input source type for a dataset such as datasource or metric",
-    "ref" : [ "com.linkedin.common.DatasourceUrn" ]
-  }, {
     "type" : "record",
     "name" : "DatasetSources",
     "namespace" : "com.linkedin.dataset",
@@ -1333,14 +1327,14 @@
       "name" : "sources",
       "type" : {
         "type" : "array",
-        "items" : "DatasetSourceType"
+        "items" : "com.linkedin.common.DatasourceUrn"
       },
       "doc" : "Data sources for the chart",
       "optional" : true,
       "Relationship" : {
-        "/*/string" : {
+        "/*" : {
           "entityTypes" : [ "datasource" ],
-          "name" : "Consumes"
+          "name" : "IsPartOf"
         }
       }
     } ],

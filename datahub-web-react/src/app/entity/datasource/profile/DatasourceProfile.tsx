@@ -21,6 +21,7 @@ import DatasourceHeader from './DatasourceHeader';
 import DatasourceVertify from './DatasourceVertify';
 import DocumentsView from './Documentation';
 import LineageView from './Lineage';
+import DatasetView from './DatasourceDatasets';
 import QueriesTab from './QueriesTab';
 
 export enum TabType {
@@ -30,6 +31,7 @@ export enum TabType {
     Properties = 'Properties',
     Documents = 'Documents',
     Queries = 'Queries',
+    Datasets = 'Datasets',
 }
 
 const EMPTY_ARR: never[] = [];
@@ -79,7 +81,7 @@ export const DatasourceProfile = ({ urn }: { urn: string }): JSX.Element => {
     );
 
     const getTabs = (datasource: Datasource) => {
-        const { ownership, properties, institutionalMemory, connections } = datasource;
+        const { ownership, properties, institutionalMemory, connections, upstreamLineage } = datasource;
 
         return [
             {
@@ -92,6 +94,11 @@ export const DatasourceProfile = ({ urn }: { urn: string }): JSX.Element => {
                         connections={connections as DatasourceConnections}
                     />
                 ),
+            },
+            {
+                name: TabType.Datasets,
+                path: TabType.Datasets.toLowerCase(),
+                content: <DatasetView upstreamLineage={upstreamLineage} />,
             },
             {
                 name: TabType.Ownership,

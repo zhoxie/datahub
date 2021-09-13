@@ -35,5 +35,11 @@ query getDatasource($urn: String!) {
                 }
             }
         }
+        downstreamLineage {
+            ...downstreamRelationshipFields
+        }
+        upstreamLineage {
+            ...upstreamRelationshipFields
+        }
     }
 }

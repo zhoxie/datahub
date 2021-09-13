@@ -99,7 +99,7 @@ public class DatasetSnapshotMapper implements ModelMapper<DatasetSnapshot, Datas
                     com.linkedin.datahub.graphql.generated.DatasetSources target = new com.linkedin.datahub.graphql.generated.DatasetSources();
                     target.setSources(sources.getSources().stream().map(source -> {
                         final Datasource datasource = new Datasource();
-                        datasource.setUrn(source.getDatasourceUrn().toString());
+                        datasource.setUrn(source.toString());
                         return datasource;
                     }).collect(Collectors.toList()));
                     result.setSources(target);
