@@ -40,7 +40,7 @@ framework_common = {
     "expandvars>=0.6.5",
     "avro-gen3==0.6.0",
     "avro-python3>=1.8.2",
-    "python-dateutil",
+    "python-dateutil>=2.8.0",
     "stackprinter",
     "tabulate",
 }
@@ -71,14 +71,15 @@ plugins: Dict[str, Set[str]] = {
     "datahub-kafka": kafka_common,
     "datahub-rest": {"requests"},
     # Integrations.
-    "airflow": {"apache-airflow >= 1.10.2"},
+    "airflow": {
+        "apache-airflow >= 1.10.2",
+    },
     # Source plugins
-    "kafka": kafka_common,
-    "kafka-connect": {"requests"},
-    "sqlalchemy": sql_common,
     "athena": sql_common | {"PyAthena[SQLAlchemy]"},
+    "azure-ad": set(),
     "bigquery": sql_common | {"pybigquery >= 0.6.0"},
     "bigquery-usage": {"google-cloud-logging", "cachetools"},
+    "datahub-business-glossary": set(),
     "dbt": set(),
     "druid": sql_common | {"pydruid>=0.6.2"},
     "feast": {"docker"},
@@ -87,8 +88,10 @@ plugins: Dict[str, Set[str]] = {
     | {
         # Acryl Data maintains a fork of PyHive, which adds support for table comments
         # and column comments, and also releases HTTP and HTTPS transport schemes.
-        "acryl-pyhive[hive]>=0.6.10"
+        "acryl-pyhive[hive]>=0.6.11"
     },
+    "kafka": kafka_common,
+    "kafka-connect": sql_common | {"requests"},
     "ldap": {"python-ldap>=2.4"},
     "looker": {"looker-sdk==21.6.0"},
     "lookml": {"lkml>=1.1.0", "sql-metadata==2.2.1"},
@@ -96,12 +99,15 @@ plugins: Dict[str, Set[str]] = {
     "mssql": sql_common | {"sqlalchemy-pytds>=0.3"},
     "mssql-odbc": sql_common | {"pyodbc"},
     "mysql": sql_common | {"pymysql>=1.0.2"},
+    "okta": {"okta~=1.7.0"},
     "oracle": sql_common | {"cx_Oracle"},
     "postgres": sql_common | {"psycopg2-binary", "GeoAlchemy2"},
+    "redash": {"redash-toolbelt"},
     "redshift": sql_common | {"sqlalchemy-redshift", "psycopg2-binary", "GeoAlchemy2"},
     "sagemaker": aws_common,
     "snowflake": sql_common | {"snowflake-sqlalchemy<=1.2.4"},
     "snowflake-usage": sql_common | {"snowflake-sqlalchemy<=1.2.4"},
+    "sqlalchemy": sql_common,
     "sql-profiles": sql_common | {"great-expectations"},
     "superset": {"requests"},
 }
@@ -137,6 +143,7 @@ base_dev_requirements = {
     "black>=19.10b0",
     "coverage>=5.1",
     "flake8>=3.8.3",
+    "flake8-tidy-imports>=4.3.0",
     "isort>=5.7.0",
     "mypy>=0.901",
     "pytest>=6.2.2",
@@ -156,11 +163,13 @@ base_dev_requirements = {
             "bigquery-usage",
             "looker",
             "glue",
+            "okta",
             "oracle",
             "postgres",
             "sagemaker",
             "datahub-kafka",
             "datahub-rest",
+            "redash",
             # airflow is added below
         ]
         for dependency in plugins[plugin]
@@ -176,11 +185,13 @@ if is_py37_or_newer:
 dev_requirements = {
     *base_dev_requirements,
     "apache-airflow[snowflake]>=2.0.2",  # snowflake is used in example dags
+    "snowflake-sqlalchemy<=1.2.4",  # make constraint consistent with extras
 }
 dev_requirements_airflow_1 = {
     *base_dev_requirements,
     "apache-airflow==1.10.15",
     "apache-airflow-backport-providers-snowflake",
+    "snowflake-sqlalchemy<=1.2.4",  # make constraint consistent with extras
 }
 
 full_test_dev_requirements = {
@@ -196,6 +207,7 @@ full_test_dev_requirements = {
             "mysql",
             "snowflake",
             "sql-profiles",
+            "redash",
         ]
         for dependency in plugins[plugin]
     ),
@@ -207,6 +219,7 @@ entry_points = {
         "file = datahub.ingestion.source.file:GenericFileSource",
         "sqlalchemy = datahub.ingestion.source.sql.sql_generic:SQLAlchemyGenericSource",
         "athena = datahub.ingestion.source.sql.athena:AthenaSource",
+        "azure-ad = datahub.ingestion.source.identity.azure_ad:AzureADSource",
         "bigquery = datahub.ingestion.source.sql.bigquery:BigQuerySource",
         "bigquery-usage = datahub.ingestion.source.usage.bigquery_usage:BigQueryUsageSource",
         "dbt = datahub.ingestion.source.dbt:DBTSource",
@@ -220,11 +233,14 @@ entry_points = {
         "ldap = datahub.ingestion.source.ldap:LDAPSource",
         "looker = datahub.ingestion.source.looker:LookerDashboardSource",
         "lookml = datahub.ingestion.source.lookml:LookMLSource",
+        "datahub-business-glossary = datahub.ingestion.source.metadata.business_glossary:BusinessGlossaryFileSource",
         "mongodb = datahub.ingestion.source.mongodb:MongoDBSource",
         "mssql = datahub.ingestion.source.sql.mssql:SQLServerSource",
         "mysql = datahub.ingestion.source.sql.mysql:MySQLSource",
+        "okta = datahub.ingestion.source.identity.okta:OktaSource",
         "oracle = datahub.ingestion.source.sql.oracle:OracleSource",
         "postgres = datahub.ingestion.source.sql.postgres:PostgresSource",
+        "redash = datahub.ingestion.source.redash:RedashSource",
         "redshift = datahub.ingestion.source.sql.redshift:RedshiftSource",
         "snowflake = datahub.ingestion.source.sql.snowflake:SnowflakeSource",
         "snowflake-usage = datahub.ingestion.source.usage.snowflake_usage:SnowflakeUsageSource",

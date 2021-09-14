@@ -1,21 +1,16 @@
 import React from 'react';
-import { Alert } from 'antd';
-import {
-    GetDataFlowDocument,
-    useGetDataFlowQuery,
-    useUpdateDataFlowMutation,
-} from '../../../../graphql/dataFlow.generated';
-import { EntityProfile } from '../../../shared/EntityProfile';
+import { Alert, message } from 'antd';
+import { useGetDataFlowQuery, useUpdateDataFlowMutation } from '../../../../graphql/dataFlow.generated';
+import { LegacyEntityProfile } from '../../../shared/LegacyEntityProfile';
 import { DataFlow, EntityType, GlobalTags } from '../../../../types.generated';
 import DataFlowHeader from './DataFlowHeader';
-import DataFlowDataJobs from './DataFlowDataJobs';
+import { DataFlowDataJobs } from './DataFlowDataJobs';
 import { Message } from '../../../shared/Message';
 import TagTermGroup from '../../../shared/tags/TagTermGroup';
-import { Properties as PropertiesView } from '../../shared/Properties';
-import { Ownership as OwnershipView } from '../../shared/Ownership';
+import { Properties as PropertiesView } from '../../shared/components/legacy/Properties';
+import { Ownership as OwnershipView } from '../../shared/components/legacy/Ownership';
 import { useEntityRegistry } from '../../../useEntityRegistry';
 import analytics, { EventType, EntityActionType } from '../../../analytics';
-import { topologicalSort } from '../../../../utils/sort/topologicalSort';
 
 /**
  * Responsible for display the DataFlow Page
@@ -27,19 +22,12 @@ export const DataFlowProfile = ({ urn }: { urn: string }): JSX.Element => {
         Ownership: 'Ownership',
         Properties: 'Properties',
     };
-    const { loading, error, data } = useGetDataFlowQuery({ variables: { urn } });
+    const { loading, error, data, refetch } = useGetDataFlowQuery({ variables: { urn } });
     const [updateDataFlow] = useUpdateDataFlowMutation({
-        update(cache, { data: newDataFlow }) {
-            cache.modify({
-                fields: {
-                    dataFlow() {
-                        cache.writeQuery({
-                            query: GetDataFlowDocument,
-                            data: { dataFlow: { ...newDataFlow?.updateDataFlow } },
-                        });
-                    },
-                },
-            });
+        refetchQueries: () => ['getDataFlow'],
+        onError: (e) => {
+            message.destroy();
+            message.error({ content: `Failed to update: \n ${e.message || ''}`, duration: 3 });
         },
     });
 
@@ -78,7 +66,7 @@ export const DataFlowProfile = ({ urn }: { urn: string }): JSX.Element => {
             {
                 name: TabType.Task,
                 path: TabType.Task.toLowerCase(),
-                content: <DataFlowDataJobs dataJobs={topologicalSort(dataJobs?.entities || [])} />,
+                content: <DataFlowDataJobs dataJobs={dataJobs?.entities} />,
             },
         ];
     };
@@ -87,21 +75,15 @@ export const DataFlowProfile = ({ urn }: { urn: string }): JSX.Element => {
         <>
             {loading && <Message type="loading" content="Loading..." style={{ marginTop: '10%' }} />}
             {data && data.dataFlow && (
-                <EntityProfile
+                <LegacyEntityProfile
                     tags={
                         <TagTermGroup
                             editableTags={data.dataFlow?.globalTags as GlobalTags}
-                            canAdd
+                            canAddTag
                             canRemove
-                            updateTags={(globalTags) => {
-                                analytics.event({
-                                    type: EventType.EntityActionEvent,
-                                    actionType: EntityActionType.UpdateTags,
-                                    entityType: EntityType.DataFlow,
-                                    entityUrn: urn,
-                                });
-                                return updateDataFlow({ variables: { input: { urn, globalTags } } });
-                            }}
+                            entityUrn={urn}
+                            entityType={EntityType.DataFlow}
+                            refetch={refetch}
                         />
                     }
                     titleLink={`/${entityRegistry.getPathName(EntityType.DataFlow)}/${urn}`}

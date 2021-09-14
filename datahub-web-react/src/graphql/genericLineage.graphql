@@ -54,6 +54,12 @@ fragment upstreamRelationshipFields on UpstreamEntityRelationships {
                     description
                     externalUrl
                 }
+                ownership {
+                    ...ownershipFields
+                }
+                editableProperties {
+                    description
+                }
             }
             ... on Dashboard {
                 urn
@@ -63,6 +69,12 @@ fragment upstreamRelationshipFields on UpstreamEntityRelationships {
                 info {
                     externalUrl
                     name
+                    description
+                }
+                ownership {
+                    ...ownershipFields
+                }
+                editableProperties {
                     description
                 }
             }
@@ -76,6 +88,12 @@ fragment upstreamRelationshipFields on UpstreamEntityRelationships {
                         urn
                     }
                 }
+                ownership {
+                    ...ownershipFields
+                }
+                editableProperties {
+                    description
+                }
             }
             ... on Dataset {
                 name
@@ -85,6 +103,12 @@ fragment upstreamRelationshipFields on UpstreamEntityRelationships {
                     info {
                         logoUrl
                     }
+                }
+                ownership {
+                    ...ownershipFields
+                }
+                editableProperties {
+                    description
                 }
             }
             ... on Datasource {
@@ -123,6 +147,9 @@ fragment upstreamRelationshipFields on UpstreamEntityRelationships {
                         logoUrl
                     }
                 }
+                ownership {
+                    ...ownershipFields
+                }
                 ...shallowLineageFields
             }
             ... on MLModel {
@@ -138,6 +165,9 @@ fragment upstreamRelationshipFields on UpstreamEntityRelationships {
                         logoUrl
                     }
                 }
+                ownership {
+                    ...ownershipFields
+                }
                 ...shallowLineageFields
             }
         }
@@ -151,10 +181,16 @@ fragment downstreamRelationshipFields on DownstreamEntityRelationships {
             type
             ... on DataJob {
                 ...dataJobFields
+                editableProperties {
+                    description
+                }
                 ...shallowLineageFields
             }
             ... on Dashboard {
                 ...dashboardFields
+                editableProperties {
+                    description
+                }
                 ...shallowLineageFields
             }
             ... on Chart {
@@ -167,16 +203,28 @@ fragment downstreamRelationshipFields on DownstreamEntityRelationships {
                         urn
                     }
                 }
+                editableProperties {
+                    description
+                }
+                ownership {
+                    ...ownershipFields
+                }
                 ...shallowLineageFields
             }
             ... on Dataset {
                 name
                 description
+                editableProperties {
+                    description
+                }
                 platform {
                     name
                     info {
                         logoUrl
                     }
+                }
+                ownership {
+                    ...ownershipFields
                 }
                 ...shallowLineageFields
             }
@@ -193,6 +241,9 @@ fragment downstreamRelationshipFields on DownstreamEntityRelationships {
                         logoUrl
                     }
                 }
+                ownership {
+                    ...ownershipFields
+                }
                 ...shallowLineageFields
             }
             ... on MLModel {
@@ -207,6 +258,9 @@ fragment downstreamRelationshipFields on DownstreamEntityRelationships {
                         displayName
                         logoUrl
                     }
+                }
+                ownership {
+                    ...ownershipFields
                 }
                 ...shallowLineageFields
             }

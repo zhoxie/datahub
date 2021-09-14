@@ -7,7 +7,10 @@ import styled, { useTheme } from 'styled-components';
 import { EntityType } from '../../types.generated';
 import { useEntityRegistry } from '../useEntityRegistry';
 import { GlobalCfg } from '../../conf';
+import { isLoggedInVar } from '../auth/checkAuthStatus';
 import CustomAvatar from './avatar/CustomAvatar';
+import analytics, { EventType } from '../analytics';
+import { ANTD_GRAY } from '../entity/shared/constants';
 
 const MenuItem = styled(Menu.Item)`
     && {
@@ -25,7 +28,7 @@ const MenuItem = styled(Menu.Item)`
 const DownArrow = styled(CaretDownOutlined)`
     vertical-align: -5px;
     font-size: 16px;
-    color: #fff;
+    color: ${ANTD_GRAY[7]};
 `;
 
 interface Props {
@@ -42,10 +45,9 @@ export const ManageAccount = ({ urn: _urn, pictureLink: _pictureLink, name }: Pr
     const entityRegistry = useEntityRegistry();
     const themeConfig = useTheme();
     const handleLogout = () => {
+        analytics.event({ type: EventType.LogOutEvent });
+        isLoggedInVar(false);
         Cookies.remove(GlobalCfg.CLIENT_AUTH_COOKIE);
-        if (window) {
-            window.open('/', '_self');
-        }
     };
 
     const menu = (
@@ -64,8 +66,10 @@ export const ManageAccount = ({ urn: _urn, pictureLink: _pictureLink, name }: Pr
                     </MenuItem>
                 );
             })}
-            <MenuItem id="user-profile-menu-logout" danger key="logout" onClick={handleLogout} tabIndex={0}>
-                Log out
+            <MenuItem danger key="logout" tabIndex={0}>
+                <a href="/logOut" onClick={handleLogout}>
+                    Logout
+                </a>
             </MenuItem>
         </Menu>
     );

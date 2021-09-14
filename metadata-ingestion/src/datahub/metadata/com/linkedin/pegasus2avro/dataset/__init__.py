@@ -10,6 +10,7 @@ from .....schema_classes import DatasetFieldProfileClass
 from .....schema_classes import DatasetLineageTypeClass
 from .....schema_classes import DatasetProfileClass
 from .....schema_classes import DatasetPropertiesClass
+from .....schema_classes import DatasetSourcesClass
 from .....schema_classes import DatasetUpstreamLineageClass
 from .....schema_classes import EditableDatasetPropertiesClass
 from .....schema_classes import HistogramClass
@@ -25,6 +26,7 @@ DatasetFieldProfile = DatasetFieldProfileClass
 DatasetLineageType = DatasetLineageTypeClass
 DatasetProfile = DatasetProfileClass
 DatasetProperties = DatasetPropertiesClass
+DatasetSources = DatasetSourcesClass
 DatasetUpstreamLineage = DatasetUpstreamLineageClass
 EditableDatasetProperties = EditableDatasetPropertiesClass
 Histogram = HistogramClass
