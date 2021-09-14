@@ -40,7 +40,7 @@ public class AuthModule extends AbstractModule {
     private static final String AUTH_SUCCESS_REDIRECT_PATH_CONFIG_PATH = "auth.successRedirectPath";
 
     private static final String DEFAULT_BASE_CALLBACK_PATH = "/callback";
-    private static final String DEFAULT_SUCCESS_REDIRECT_PATH = "/";
+    private static final String DEFAULT_SUCCESS_REDIRECT_PATH = "/index";
 
     private String _authBaseUrl;
     private String _authBaseCallbackPath;
