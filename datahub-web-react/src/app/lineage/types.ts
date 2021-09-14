@@ -3,6 +3,7 @@ import {
     Dashboard,
     DataJob,
     Dataset,
+    Datasource,
     EntityType,
     MlFeatureTable,
     MlPrimaryKey,
@@ -74,6 +75,10 @@ export type EntityAndType =
     | {
           type: EntityType.Dataset;
           entity: Dataset;
+      }
+    | {
+          type: EntityType.Datasource;
+          entity: Datasource;
       }
     | {
           type: EntityType.Chart;

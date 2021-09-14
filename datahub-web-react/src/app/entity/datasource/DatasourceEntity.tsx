@@ -7,6 +7,8 @@ import { DatasourceProfile } from './profile/DatasourceProfile';
 import { Entity, IconStyleType, PreviewType } from '../Entity';
 import { PreviewNoDel, Preview } from './preview/Preview';
 import { FIELDS_TO_HIGHLIGHT } from './search/highlights';
+import getChildren from '../../lineage/utils/getChildren';
+import { Direction } from '../../lineage/types';
 
 const MatchTag = styled(Tag)`
     &&& {
@@ -125,8 +127,12 @@ export class DatasourceEntity implements Entity<Datasource> {
             urn: entity.urn,
             name: entity.name,
             type: EntityType.Datasource,
-            upstreamChildren: [],
-            downstreamChildren: [],
+            upstreamChildren: getChildren({ entity, type: EntityType.Datasource }, Direction.Upstream).map(
+                (child) => child.entity.urn,
+            ),
+            downstreamChildren: getChildren({ entity, type: EntityType.Datasource }, Direction.Downstream).map(
+                (child) => child.entity.urn,
+            ),
             icon: entity.connections?.platform?.info?.logoUrl || undefined,
             platform: entity.connections?.platform?.name,
         };
