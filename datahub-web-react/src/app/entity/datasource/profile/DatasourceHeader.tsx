@@ -7,7 +7,7 @@ import { AvatarsGroup } from '../../../shared/avatar';
 import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';
 import CompactContext from '../../../shared/CompactContext';
 import { useEntityRegistry } from '../../../useEntityRegistry';
-import UpdatableDescription from '../../shared/UpdatableDescription';
+import UpdatableDescription from '../../shared/components/legacy/UpdatableDescription';
 
 export type Props = {
     datasource: Datasource;

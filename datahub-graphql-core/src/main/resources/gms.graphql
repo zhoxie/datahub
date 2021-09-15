@@ -665,6 +665,11 @@ type Datasource implements EntityWithRelationships & Entity {
     Statistics about how this Dataset is used
     """
     usageStats(resource: String!, range: TimeRange): UsageQueryResult
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type GlossaryTerm implements Entity {
@@ -781,6 +786,11 @@ type AllDatasourceCategory implements Entity {
     type: EntityType!
 
     categories: [DatasourceCategory]
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type DatasourceCategory implements Entity {
@@ -808,6 +818,11 @@ type DatasourceCategory implements Entity {
     Metadata associated with a datasourcecategory
     """
     info: DatasourceCategoryInfo
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type DatasourceConnections {

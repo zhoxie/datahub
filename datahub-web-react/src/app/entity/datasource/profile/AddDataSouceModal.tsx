@@ -2,8 +2,13 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { Alert, Button, Card, Form, Input, Modal, Select, Space, Cascader } from 'antd';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { FormField, IDataSourceConnection, IFormConnectionData, IFormData } from '../service/DataSouceType';
-import { showMessageByNotification, showRequestResult } from '../service/NotificationUtil';
+import {
+    FormField,
+    IDataSourceConnection,
+    IFormConnectionData,
+    IFormData,
+} from '../../shared/tabs/Datasource/Connection/DataSourceType';
+import { showMessageByNotification, showRequestResult } from '../../shared/tabs/Datasource/Connection/NotificationUtil';
 import { initDataCenter, initCluster, typeDrivers } from '../service/FormInitValue';
 import { useAllDatasourceCategoriesQuery } from '../../../../graphql/datasourceCategory.generated';
 import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';

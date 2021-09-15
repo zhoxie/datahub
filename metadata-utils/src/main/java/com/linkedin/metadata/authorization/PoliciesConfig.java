@@ -119,6 +119,35 @@ public class PoliciesConfig {
           .collect(Collectors.toList())
   );
 
+  // Datasource Privileges
+  public static final Privilege EDIT_DATASOURCE_COL_TAGS_PRIVILEGE = Privilege.of(
+          "EDIT_DATASOURCE_COL_TAGS",
+          "Edit Datasource Column Tags",
+          "The ability to edit the column (field) tags associated with a datasource schema."
+  );
+
+  public static final Privilege EDIT_DATASOURCE_COL_GLOSSARY_TERMS_PRIVILEGE = Privilege.of(
+          "EDIT_DATASOURCE_COL_GLOSSARY_TERMS",
+          "Edit Datasource Column Glossary Terms",
+          "The ability to edit the column (field) glossary terms associated with a datasource schema."
+  );
+
+  public static final Privilege EDIT_DATASOURCE_COL_DESCRIPTION_PRIVILEGE = Privilege.of(
+          "EDIT_DATASOURCE_COL_DESCRIPTION",
+          "Edit Datasource Column Descriptions",
+          "The ability to edit the column (field) descriptions associated with a datasource schema."
+  );
+
+  public static final ResourcePrivileges DATASOURCE_PRIVILEGES = ResourcePrivileges.of(
+          "datasource",
+          "Datasources",
+          "Datasources indexed by DataHub", Stream.of(
+            COMMON_ENTITY_PRIVILEGES,
+            ImmutableList.of(EDIT_DATASOURCE_COL_DESCRIPTION_PRIVILEGE, EDIT_DATASOURCE_COL_TAGS_PRIVILEGE, EDIT_DATASOURCE_COL_GLOSSARY_TERMS_PRIVILEGE))
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList())
+  );
+
   // Charts Privileges
   public static final ResourcePrivileges CHART_PRIVILEGES = ResourcePrivileges.of(
       "chart",

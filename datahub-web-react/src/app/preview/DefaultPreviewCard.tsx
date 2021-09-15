@@ -23,6 +23,7 @@ interface Props {
     snippet?: React.ReactNode;
     glossaryTerms?: GlossaryTerms;
     dataTestID?: string;
+    itemBtns?: React.ReactNode;
 }
 
 const PreviewContainer = styled.div`
@@ -106,6 +107,7 @@ export default function DefaultPreviewCard({
     snippet,
     glossaryTerms,
     dataTestID,
+    itemBtns,
 }: Props) {
     const entityRegistry = useEntityRegistry();
 
@@ -127,6 +129,7 @@ export default function DefaultPreviewCard({
                         <TagContainer>
                             <TagTermGroup uneditableGlossaryTerms={glossaryTerms} uneditableTags={tags} maxShow={3} />
                         </TagContainer>
+                        {itemBtns}
                     </TitleContainer>
                 </Link>
                 {description.length > 0 && (

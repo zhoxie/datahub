@@ -166,7 +166,7 @@
             "name" : "platform",
             "type" : "com.linkedin.common.urn.DataPlatformUrn"
           }, {
-            "doc" : "Dataset native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>",
+            "doc" : "Dataset native name e.g. db.table>, /dir/subdir/name, or name",
             "maxLength" : 210,
             "name" : "datasetName",
             "type" : "string"
@@ -200,7 +200,12 @@
           "values" : "string"
         },
         "doc" : "Custom property bag.",
-        "default" : { }
+        "default" : { },
+        "Searchable" : {
+          "/*" : {
+            "queryByDefault" : true
+          }
+        }
       } ]
     }, {
       "type" : "record",
@@ -603,6 +608,42 @@
       }
     }
   }, "com.linkedin.common.DatasetUrn", {
+    "type" : "typeref",
+    "name" : "DatasourceUrn",
+    "namespace" : "com.linkedin.common",
+    "doc" : "Standardized datasource identifier.",
+    "ref" : "string",
+    "java" : {
+      "class" : "com.linkedin.common.urn.DatasourceUrn"
+    },
+    "validate" : {
+      "com.linkedin.common.validator.TypedUrnValidator" : {
+        "accessible" : true,
+        "constructable" : true,
+        "doc" : "Standardized datasource identifier.",
+        "entityType" : "datasource",
+        "fields" : [ {
+          "doc" : "Standardized category urn where datasource is defined.",
+          "name" : "category",
+          "type" : "com.linkedin.common.urn.DatasourceCategoryUrn"
+        }, {
+          "doc" : "Datasource native name e.g. db.table, /dir/subdir/name, or name",
+          "maxLength" : 210,
+          "name" : "datasourceName",
+          "type" : "string"
+        }, {
+          "doc" : "Fabric type where datasource belongs to or where it was generated.",
+          "name" : "origin",
+          "type" : "com.linkedin.common.FabricType"
+        } ],
+        "maxLength" : 284,
+        "name" : "Datasource",
+        "namespace" : "li",
+        "owners" : [ "urn:li:corpuser:fbar", "urn:li:corpuser:bfoo" ],
+        "owningTeam" : "urn:li:internalTeam:datahub"
+      }
+    }
+  }, {
     "type" : "typeref",
     "name" : "EmailAddress",
     "namespace" : "com.linkedin.common",
@@ -1354,6 +1395,71 @@
       "name" : "upstreamLineage"
     }
   }, {
+    "type" : "record",
+    "name" : "DatasourceDeprecation",
+    "namespace" : "com.linkedin.datasource",
+    "doc" : "Datasource deprecation status",
+    "fields" : [ {
+      "name" : "deprecated",
+      "type" : "boolean",
+      "doc" : "Whether the datasource is deprecated by owner.",
+      "Searchable" : {
+        "fieldType" : "BOOLEAN",
+        "weightsPerFieldValue" : {
+          "true" : 0.5
+        }
+      }
+    }, {
+      "name" : "decommissionTime",
+      "type" : "long",
+      "doc" : "The time user plan to decommission this datasource.",
+      "optional" : true
+    }, {
+      "name" : "note",
+      "type" : "string",
+      "doc" : "Additional information about the datasource deprecation plan, such as the wiki, doc, RB."
+    }, {
+      "name" : "actor",
+      "type" : "com.linkedin.common.Urn",
+      "doc" : "The corpuser URN which will be credited for modifying this deprecation content.",
+      "optional" : true
+    } ],
+    "Aspect" : {
+      "name" : "datasourceDeprecation"
+    }
+  }, {
+    "type" : "record",
+    "name" : "DatasourceProperties",
+    "namespace" : "com.linkedin.datasource",
+    "doc" : "Properties associated with a Datasource",
+    "include" : [ "com.linkedin.common.CustomProperties", "com.linkedin.common.ExternalReference" ],
+    "fields" : [ {
+      "name" : "description",
+      "type" : "string",
+      "doc" : "Documentation of the datasource",
+      "optional" : true,
+      "Searchable" : {
+        "fieldType" : "TEXT",
+        "hasValuesFieldName" : "hasDescription"
+      }
+    }, {
+      "name" : "uri",
+      "type" : "com.linkedin.common.Uri",
+      "doc" : "The abstracted URI such as hdfs:///data/tracking/PageViewEvent, file:///dir/file_name. Uri should not include any environment specific properties. Some datasources might not have a standardized uri, which makes this field optional (i.e. kafka topic).",
+      "optional" : true
+    }, {
+      "name" : "tags",
+      "type" : {
+        "type" : "array",
+        "items" : "string"
+      },
+      "doc" : "[Legacy] Unstructured tags for the datasource. Structured tags can be applied via the `GlobalTags` aspect.",
+      "default" : [ ]
+    } ],
+    "Aspect" : {
+      "name" : "datasourceProperties"
+    }
+  }, {
     "type" : "enum",
     "name" : "ChangeType",
     "namespace" : "com.linkedin.events.metadata",
@@ -1792,7 +1898,7 @@
       "Aspect" : {
         "name" : "dataJobKey"
       }
-    }, "com.linkedin.datajob.DataJobInfo", "com.linkedin.datajob.DataJobInputOutput", "com.linkedin.dataset.DatasetDeprecation", "com.linkedin.dataset.DatasetProperties", "com.linkedin.dataset.UpstreamLineage", {
+    }, "com.linkedin.datajob.DataJobInfo", "com.linkedin.datajob.DataJobInputOutput", "com.linkedin.dataset.DatasetDeprecation", "com.linkedin.dataset.DatasetProperties", "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.datasource.DatasourceProperties", "com.linkedin.dataset.UpstreamLineage", {
       "type" : "record",
       "name" : "SchemaMetadata",
       "namespace" : "com.linkedin.schema",
@@ -2160,6 +2266,26 @@
                 } ]
               }, {
                 "type" : "record",
+                "name" : "DatasourceFieldForeignKey",
+                "doc" : "For non-urn based foregin keys.",
+                "fields" : [ {
+                  "name" : "parentDatasource",
+                  "type" : "com.linkedin.common.DatasourceUrn",
+                  "doc" : "datasource that stores the resource."
+                }, {
+                  "name" : "currentFieldPaths",
+                  "type" : {
+                    "type" : "array",
+                    "items" : "com.linkedin.dataset.SchemaFieldPath"
+                  },
+                  "doc" : "List of fields in hosting(current) SchemaMetadata that conform a foreign key. List can contain a single entry or multiple entries if several entries in hosting schema conform a foreign key in a single parent datasource."
+                }, {
+                  "name" : "parentField",
+                  "type" : "com.linkedin.dataset.SchemaFieldPath",
+                  "doc" : "SchemaField@fieldPath that uniquely identify field in parent datasource that this field references."
+                } ]
+              }, {
+                "type" : "record",
                 "name" : "UrnForeignKey",
                 "doc" : "If SchemaMetadata fields make any external references and references are of type com.linkedin.common.Urn or any children, this models can be used to mark it.",
                 "fields" : [ {
@@ -2226,7 +2352,7 @@
               "Searchable" : {
                 "/terms/*/urn" : {
                   "boostScore" : 0.5,
-                  "fieldName" : "fieldGlossaryTerms",
+                  "fieldName" : "editedFieldGlossaryTerms",
                   "fieldType" : "URN_PARTIAL"
                 }
               }
@@ -2984,7 +3110,7 @@
       "doc" : "A string->string map of custom properties that one might want to attach to an event\n",
       "optional" : true
     } ]
-  }, "com.linkedin.mxe.SystemMetadata", "com.linkedin.schema.ArrayType", "com.linkedin.schema.BinaryJsonSchema", "com.linkedin.schema.BooleanType", "com.linkedin.schema.BytesType", "com.linkedin.schema.DatasetFieldForeignKey", "com.linkedin.schema.DateType", "com.linkedin.schema.EditableSchemaFieldInfo", "com.linkedin.schema.EditableSchemaMetadata", "com.linkedin.schema.EnumType", "com.linkedin.schema.EspressoSchema", "com.linkedin.schema.FixedType", "com.linkedin.schema.ForeignKeySpec", "com.linkedin.schema.KafkaSchema", "com.linkedin.schema.KeyValueSchema", "com.linkedin.schema.MapType", "com.linkedin.schema.MySqlDDL", "com.linkedin.schema.NullType", "com.linkedin.schema.NumberType", "com.linkedin.schema.OracleDDL", "com.linkedin.schema.OrcSchema", "com.linkedin.schema.OtherSchema", "com.linkedin.schema.PrestoDDL", "com.linkedin.schema.RecordType", "com.linkedin.schema.SchemaField", "com.linkedin.schema.SchemaFieldDataType", "com.linkedin.schema.SchemaMetadata", "com.linkedin.schema.SchemaMetadataKey", "com.linkedin.schema.Schemaless", "com.linkedin.schema.StringType", "com.linkedin.schema.TimeType", "com.linkedin.schema.UnionType", "com.linkedin.schema.UrnForeignKey", "com.linkedin.tag.TagProperties" ],
+  }, "com.linkedin.mxe.SystemMetadata", "com.linkedin.schema.ArrayType", "com.linkedin.schema.BinaryJsonSchema", "com.linkedin.schema.BooleanType", "com.linkedin.schema.BytesType", "com.linkedin.schema.DatasetFieldForeignKey", "com.linkedin.schema.DatasourceFieldForeignKey", "com.linkedin.schema.DateType", "com.linkedin.schema.EditableSchemaFieldInfo", "com.linkedin.schema.EditableSchemaMetadata", "com.linkedin.schema.EnumType", "com.linkedin.schema.EspressoSchema", "com.linkedin.schema.FixedType", "com.linkedin.schema.ForeignKeySpec", "com.linkedin.schema.KafkaSchema", "com.linkedin.schema.KeyValueSchema", "com.linkedin.schema.MapType", "com.linkedin.schema.MySqlDDL", "com.linkedin.schema.NullType", "com.linkedin.schema.NumberType", "com.linkedin.schema.OracleDDL", "com.linkedin.schema.OrcSchema", "com.linkedin.schema.OtherSchema", "com.linkedin.schema.PrestoDDL", "com.linkedin.schema.RecordType", "com.linkedin.schema.SchemaField", "com.linkedin.schema.SchemaFieldDataType", "com.linkedin.schema.SchemaMetadata", "com.linkedin.schema.SchemaMetadataKey", "com.linkedin.schema.Schemaless", "com.linkedin.schema.StringType", "com.linkedin.schema.TimeType", "com.linkedin.schema.UnionType", "com.linkedin.schema.UrnForeignKey", "com.linkedin.tag.TagProperties" ],
   "schema" : {
     "name" : "aspects",
     "namespace" : "com.linkedin.entity",

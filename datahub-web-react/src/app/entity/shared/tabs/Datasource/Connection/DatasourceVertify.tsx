@@ -1,16 +1,16 @@
 import { Button } from 'antd';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Datasource } from '../../../../types.generated';
-import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';
-import { showRequestResult } from '../service/NotificationUtil';
+import { DatasourceConnections } from '../../../../../../types.generated';
+import { capitalizeFirstLetter } from '../../../../../shared/capitalizeFirstLetter';
+import { showRequestResult } from './NotificationUtil';
 
 export type Props = {
-    datasource: Datasource;
+    connections?: DatasourceConnections | null;
     id: number;
 };
 
-export default function DatasourceVertify({ datasource: { connections }, id }: Props) {
+export default function DatasourceVertify({ connections, id }: Props) {
     const [showLoading, setLoading] = useState(false);
     const platformName = capitalizeFirstLetter(connections?.platform?.name || 'null');
     const conn = connections?.connections?.map((item, index) => {

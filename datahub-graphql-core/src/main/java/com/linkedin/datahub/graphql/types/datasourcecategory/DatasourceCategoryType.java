@@ -46,7 +46,8 @@ public class DatasourceCategoryType implements EntityType<DatasourceCategory> {
             final Map<Urn, com.linkedin.entity.Entity> datasourceCategoryMap = _entityClient.batchGet(datasourceCategoryUrns
                 .stream()
                 .filter(Objects::nonNull)
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toSet()),
+                    context.getActor());
 
             final List<com.linkedin.entity.Entity> gmsResults = new ArrayList<>();
             for (Urn urn : datasourceCategoryUrns) {

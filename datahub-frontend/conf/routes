@@ -11,7 +11,7 @@ GET           /                                                               co
 GET           /admin                                                          controllers.Application.healthcheck()
 GET           /config                                                         controllers.Application.appConfig()
 POST          /entities                                                       controllers.EntitiesProxy.entitiesProxy()
-POST          /testconnection
+POST          /testconnection                                                 controllers.DatasourceTestConn.testConn()
 
 # Routes used exclusively by the React application.
 
