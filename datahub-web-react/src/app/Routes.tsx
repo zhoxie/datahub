@@ -34,7 +34,7 @@ export const Routes = (): JSX.Element => {
             <Route path={PageRoutes.LOG_IN} component={LogIn} />
             <ProtectedRoute isLoggedIn={isLoggedIn} render={() => <ProtectedRoutes />} />
             {/* Starting the react app locally opens /assets by default. For a smoother dev experience, we'll redirect to the homepage */}
-            <Route path={PageRoutes.ASSETS} component={() => <Redirect to="/index" />} exact />
+            <Route path={PageRoutes.ASSETS} component={() => <Redirect to="/" />} exact />
             <Route component={NoPageFound} />
         </Switch>
     );
