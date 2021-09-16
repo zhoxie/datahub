@@ -198,6 +198,7 @@ public class GmsGraphQLEngine {
         this.entityService = entityService;
 
         this.datasetType = new DatasetType(GmsClientFactory.getEntitiesClient());
+        this.datasourceType = new DatasourceType(GmsClientFactory.getEntitiesClient());
         this.corpUserType = new CorpUserType(GmsClientFactory.getEntitiesClient());
         this.corpGroupType = new CorpGroupType(GmsClientFactory.getEntitiesClient());
         this.chartType = new ChartType(GmsClientFactory.getEntitiesClient());
@@ -223,11 +224,14 @@ public class GmsGraphQLEngine {
         this.glossaryTermType = new GlossaryTermType(GmsClientFactory.getEntitiesClient());
         this.aspectType = new AspectType(GmsClientFactory.getAspectsClient());
         this.usageType = new UsageType(GmsClientFactory.getUsageClient());
+        this.datasourceCategoryType = new DatasourceCategoryType(GmsClientFactory.getEntitiesClient());
+        this.allDatasourceCategories = new AllDatasourceCategories(GmsClientFactory.getEntitiesClient());
 
         // Init Lists
         this.entityTypes = ImmutableList.of(datasetType, corpUserType, corpGroupType,
             dataPlatformType, chartType, dashboardType, tagType, mlModelType, mlModelGroupType, mlFeatureType,
-            mlFeatureTableType, mlPrimaryKeyType, dataFlowType, dataJobType, glossaryTermType
+            mlFeatureTableType, mlPrimaryKeyType, dataFlowType, dataJobType, glossaryTermType, datasourceType,
+            datasourceCategoryType, allDatasourceCategories
         );
         this.relationshipTypes = ImmutableList.of(downstreamLineageType, upstreamLineageType,
             dataFlowDataJobsRelationshipType
@@ -242,9 +246,6 @@ public class GmsGraphQLEngine {
             .filter(type -> (type instanceof BrowsableEntityType<?>))
             .map(type -> (BrowsableEntityType<?>) type)
             .collect(Collectors.toList());
-        this.datasourceType = new DatasourceType(GmsClientFactory.getEntitiesClient());
-        this.datasourceCategoryType = new DatasourceCategoryType(GmsClientFactory.getEntitiesClient());
-        this.allDatasourceCategories = new AllDatasourceCategories(GmsClientFactory.getDatasourceCategories());
     }
 
     public static String schema() {
@@ -524,7 +525,7 @@ public class GmsGraphQLEngine {
                 .type("Datasource", typeWiring -> typeWiring
                         .dataFetcher("category", new AuthenticatedResolver<>(
                                 new LoadableTypeResolver<>(
-                                        allDatasourceCategories,
+                                        datasourceCategoryType,
                                         (env) -> ((Datasource) env.getSource()).getCategory().getUrn()))
                         )
                         .dataFetcher("downstreamLineage", new AuthenticatedResolver<>(
