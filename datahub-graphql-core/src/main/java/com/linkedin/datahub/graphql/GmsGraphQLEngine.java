@@ -84,6 +84,7 @@ import com.linkedin.datahub.graphql.types.dataset.mappers.DatasetProfileMapper;
 import com.linkedin.datahub.graphql.types.datasourcecategory.AllDatasourceCategories;
 import com.linkedin.datahub.graphql.types.datasourcecategory.DatasourceCategoryType;
 import com.linkedin.datahub.graphql.types.lineage.DownstreamLineageType;
+import com.linkedin.datahub.graphql.types.lineage.SourceRelationshipsType;
 import com.linkedin.datahub.graphql.types.lineage.UpstreamLineageType;
 import com.linkedin.datahub.graphql.types.mlmodel.MLFeatureTableType;
 import com.linkedin.datahub.graphql.types.mlmodel.MLFeatureType;
@@ -144,6 +145,7 @@ public class GmsGraphQLEngine {
     private final DashboardType dashboardType;
     private final DataPlatformType dataPlatformType;
     private final DownstreamLineageType downstreamLineageType;
+    private final SourceRelationshipsType sourceRelationshipsType;
     private final UpstreamLineageType upstreamLineageType;
     private final TagType tagType;
     private final MLModelType mlModelType;
@@ -210,6 +212,7 @@ public class GmsGraphQLEngine {
         this.upstreamLineageType = new UpstreamLineageType(
             GmsClientFactory.getLineagesClient()
         );
+        this.sourceRelationshipsType = new SourceRelationshipsType(GmsClientFactory.getRelationshipsClient());
         this.tagType = new TagType(GmsClientFactory.getEntitiesClient());
         this.mlModelType = new MLModelType(GmsClientFactory.getEntitiesClient());
         this.mlModelGroupType = new MLModelGroupType(GmsClientFactory.getEntitiesClient());
@@ -234,7 +237,7 @@ public class GmsGraphQLEngine {
             datasourceCategoryType, allDatasourceCategories
         );
         this.relationshipTypes = ImmutableList.of(downstreamLineageType, upstreamLineageType,
-            dataFlowDataJobsRelationshipType
+            dataFlowDataJobsRelationshipType, sourceRelationshipsType
         );
         this.loadableTypes = Stream.concat(entityTypes.stream(), relationshipTypes.stream()).collect(Collectors.toList());
         this.ownerTypes = ImmutableList.of(corpUserType, corpGroupType);
@@ -536,6 +539,11 @@ public class GmsGraphQLEngine {
                         .dataFetcher("upstreamLineage", new AuthenticatedResolver<>(
                                 new LoadableTypeResolver<>(
                                         upstreamLineageType,
+                                        (env) -> ((Entity) env.getSource()).getUrn()))
+                        )
+                        .dataFetcher("datasets", new AuthenticatedResolver<>(
+                                new LoadableTypeResolver<>(
+                                        sourceRelationshipsType,
                                         (env) -> ((Entity) env.getSource()).getUrn()))
                         )
                         .dataFetcher("usageStats", new AuthenticatedResolver<>(new UsageTypeResolver()))

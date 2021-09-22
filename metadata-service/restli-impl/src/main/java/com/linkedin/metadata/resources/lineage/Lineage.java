@@ -47,7 +47,7 @@ public final class Lineage extends SimpleResourceTemplate<EntityRelationships> {
         "DownstreamOf", "Consumes", "Contains", "TrainedBy");
 
     private static final List<String> INVERSE_LINEAGE_RELATIONSHIP_TYPES = Arrays.asList(
-        "Produces", "MemberOf", "IsPartOf");
+        "Produces", "MemberOf");
 
     @Inject
     @Named("graphService")

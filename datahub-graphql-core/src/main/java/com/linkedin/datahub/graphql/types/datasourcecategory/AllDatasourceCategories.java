@@ -1,18 +1,14 @@
 package com.linkedin.datahub.graphql.types.datasourcecategory;
 
-import com.linkedin.common.urn.DatasourceCategoryUrn;
 import com.linkedin.common.urn.Urn;
 import com.linkedin.datahub.graphql.QueryContext;
 import com.linkedin.datahub.graphql.generated.AllDatasourceCategory;
 import com.linkedin.datahub.graphql.generated.DatasourceCategory;
-import com.linkedin.datahub.graphql.generated.DatasourceCategoryInfo;
 import com.linkedin.datahub.graphql.types.EntityType;
 import com.linkedin.datahub.graphql.types.datasourcecategory.mappers.DatasourceCategorySnapshotMapper;
-import com.linkedin.datasourcecategory.client.DatasourceCategories;
 import com.linkedin.entity.Entity;
 import com.linkedin.entity.client.EntityClient;
 import com.linkedin.metadata.query.ListUrnsResult;
-import com.linkedin.r2.RemoteInvocationException;
 import graphql.execution.DataFetcherResult;
 
 import java.util.ArrayList;
@@ -62,7 +58,7 @@ public class AllDatasourceCategories implements EntityType<AllDatasourceCategory
         }
     }
 
-    private List<Urn> getAll(final QueryContext context){
+    private List<Urn> getAll(final QueryContext context) {
         int start = 0;
         int count = 100;
         int actual;
@@ -76,7 +72,7 @@ public class AllDatasourceCategories implements EntityType<AllDatasourceCategory
             } while (actual == count);
 
             return urns;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Failed to batch load Data Categories", e);
         }
 

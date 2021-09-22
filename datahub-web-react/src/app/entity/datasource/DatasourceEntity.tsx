@@ -11,7 +11,7 @@ import getChildren from '../../lineage/utils/getChildren';
 import { Direction } from '../../lineage/types';
 import { ConnectionTab } from '../shared/tabs/Datasource/Connection/ConnectionTab';
 import { DocumentationTab } from '../shared/tabs/Documentation/DocumentationTab';
-import { LineageTab } from '../shared/tabs/Lineage/LineageTab';
+import { DatasetTab } from '../shared/tabs/Datasource/Connection/DatasetTab';
 import { PropertiesTab } from '../shared/tabs/Properties/PropertiesTab';
 import { SidebarAboutSection } from '../shared/containers/profile/sidebar/SidebarAboutSection';
 import { SidebarOwnerSection } from '../shared/containers/profile/sidebar/Ownership/SidebarOwnerSection';
@@ -87,10 +87,9 @@ export class DatasourceEntity implements Entity<Datasource> {
                 },
                 {
                     name: 'Datasets',
-                    component: LineageTab,
+                    component: DatasetTab,
                     shouldHide: (_, datasource: GetDatasourceQuery) =>
-                        (datasource?.datasource?.upstreamLineage?.entities?.length || 0) === 0 &&
-                        (datasource?.datasource?.downstreamLineage?.entities?.length || 0) === 0,
+                        (datasource?.datasource?.datasets?.entities?.length || 0) === 0,
                 },
                 {
                     name: 'Documentation',

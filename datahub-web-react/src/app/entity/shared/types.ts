@@ -20,6 +20,7 @@ import {
     StringMapEntry,
     UpstreamEntityRelationships,
     DatasourceConnections,
+    DatasetSources,
 } from '../../../types.generated';
 
 export type EntityTab = {
@@ -54,6 +55,8 @@ export type GenericEntityProperties = {
     editableSchemaMetadata?: Maybe<EditableSchemaMetadata>;
     editableProperties?: Maybe<DatasetEditableProperties>;
     connections?: Maybe<DatasourceConnections>;
+    datasets?: Maybe<UpstreamEntityRelationships>;
+    sources?: Maybe<DatasetSources>;
 };
 
 export type GenericEntityUpdate = {

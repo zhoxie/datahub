@@ -657,6 +657,11 @@ type Datasource implements EntityWithRelationships & Entity {
     downstreamLineage: DownstreamEntityRelationships
 
     """
+    Datasets
+    """
+    datasets: DatasourceDatasetsRelationships
+
+    """
     The structured glossary terms associated with the datasource
     """
     glossaryTerms: GlossaryTerms
@@ -1327,6 +1332,10 @@ type DownstreamEntityRelationships {
 }
 
 type DataFlowDataJobsRelationships {
+    entities: [EntityRelationshipLegacy]
+}
+
+type DatasourceDatasetsRelationships {
     entities: [EntityRelationshipLegacy]
 }
 

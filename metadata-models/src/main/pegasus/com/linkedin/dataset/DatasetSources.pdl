@@ -14,7 +14,7 @@ record DatasetSources {
   */
   @Relationship = {
     "/*": {
-      "name": "IsPartOf",
+      "name": "Sources",
       "entityTypes": [ "datasource" ]
     }
   }

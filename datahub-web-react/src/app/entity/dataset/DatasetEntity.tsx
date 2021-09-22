@@ -21,6 +21,7 @@ import { SidebarTagsSection } from '../shared/containers/profile/sidebar/Sidebar
 import { SidebarStatsSection } from '../shared/containers/profile/sidebar/Dataset/StatsSidebarSection';
 import StatsTab from '../shared/tabs/Dataset/Stats/StatsTab';
 import { LineageTab } from '../shared/tabs/Lineage/LineageTab';
+import { DatasourceTab } from '../shared/tabs/Dataset/Sources/SourceTab';
 
 const MatchTag = styled(Tag)`
     &&& {
@@ -98,6 +99,12 @@ export class DatasetEntity implements Entity<Dataset> {
                     shouldHide: (_, dataset: GetDatasetQuery) =>
                         (dataset?.dataset?.upstreamLineage?.entities?.length || 0) === 0 &&
                         (dataset?.dataset?.downstreamLineage?.entities?.length || 0) === 0,
+                },
+                {
+                    name: 'Sources',
+                    component: DatasourceTab,
+                    shouldHide: (_, dataset: GetDatasetQuery) =>
+                        (dataset?.dataset?.sources?.sources?.length || 0) === 0,
                 },
                 {
                     name: 'Queries',
