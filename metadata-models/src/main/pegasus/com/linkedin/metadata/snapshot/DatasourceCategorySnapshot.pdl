@@ -1,0 +1,24 @@
+namespace com.linkedin.metadata.snapshot
+
+import com.linkedin.common.DatasourceCategoryUrn
+import com.linkedin.metadata.aspect.DatasourceCategoryAspect
+
+/**
+ * A metadata snapshot for a specific datasourcecategory entity.
+ */
+@Entity = {
+  "name": "datasourceCategory",
+  "keyAspect": "datasourceCategoryKey"
+}
+record DatasourceCategorySnapshot {
+
+  /**
+   * URN for the entity the metadata snapshot is associated with.
+   */
+  urn: DatasourceCategoryUrn
+
+  /**
+   * The list of metadata aspects associated with the datasource category. Depending on the use case, this can either be all, or a selection, of supported aspects.
+   */
+  aspects: array[DatasourceCategoryAspect]
+}

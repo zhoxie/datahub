@@ -3,10 +3,25 @@ import { DatabaseFilled, DatabaseOutlined } from '@ant-design/icons';
 import { Tag, Typography } from 'antd';
 import styled from 'styled-components';
 import { Datasource, EntityType, SearchResult } from '../../../types.generated';
-import { DatasourceProfile } from './profile/DatasourceProfile';
+import { EntityProfile } from '../shared/containers/profile/EntityProfile';
 import { Entity, IconStyleType, PreviewType } from '../Entity';
-import { Preview } from './preview/Preview';
+import { PreviewNoDel, Preview } from './preview/Preview';
 import { FIELDS_TO_HIGHLIGHT } from './search/highlights';
+import getChildren from '../../lineage/utils/getChildren';
+import { Direction } from '../../lineage/types';
+import { ConnectionTab } from '../shared/tabs/Datasource/Connection/ConnectionTab';
+import { DocumentationTab } from '../shared/tabs/Documentation/DocumentationTab';
+import { DatasetTab } from '../shared/tabs/Datasource/Connection/DatasetTab';
+import { PropertiesTab } from '../shared/tabs/Properties/PropertiesTab';
+import { SidebarAboutSection } from '../shared/containers/profile/sidebar/SidebarAboutSection';
+import { SidebarOwnerSection } from '../shared/containers/profile/sidebar/Ownership/SidebarOwnerSection';
+import { SidebarTagsSection } from '../shared/containers/profile/sidebar/SidebarTagsSection';
+import { SidebarStatsSection } from '../shared/containers/profile/sidebar/Dataset/StatsSidebarSection';
+import {
+    GetDatasourceQuery,
+    useGetDatasourceQuery,
+    useUpdateDatasourceMutation,
+} from '../../../graphql/datasource.generated';
 
 const MatchTag = styled(Tag)`
     &&& {
@@ -58,7 +73,53 @@ export class DatasourceEntity implements Entity<Datasource> {
 
     getCollectionName = () => 'Datasources';
 
-    renderProfile = (urn: string) => <DatasourceProfile urn={urn} />;
+    renderProfile = (urn: string) => (
+        <EntityProfile
+            urn={urn}
+            entityType={EntityType.Datasource}
+            useEntityQuery={useGetDatasourceQuery}
+            useUpdateQuery={useUpdateDatasourceMutation}
+            getOverrideProperties={() => ({})}
+            tabs={[
+                {
+                    name: 'Connection',
+                    component: ConnectionTab,
+                },
+                {
+                    name: 'Datasets',
+                    component: DatasetTab,
+                    shouldHide: (_, datasource: GetDatasourceQuery) =>
+                        (datasource?.datasource?.datasets?.entities?.length || 0) === 0,
+                },
+                {
+                    name: 'Documentation',
+                    component: DocumentationTab,
+                },
+                {
+                    name: 'Properties',
+                    component: PropertiesTab,
+                },
+            ]}
+            sidebarSections={[
+                {
+                    component: SidebarAboutSection,
+                },
+                {
+                    component: SidebarStatsSection,
+                },
+                {
+                    component: SidebarTagsSection,
+                    properties: {
+                        hasTags: true,
+                        hasTerms: true,
+                    },
+                },
+                {
+                    component: SidebarOwnerSection,
+                },
+            ]}
+        />
+    );
 
     renderPreview = (_: PreviewType, data: Datasource) => {
         return (
@@ -67,8 +128,8 @@ export class DatasourceEntity implements Entity<Datasource> {
                 name={data.name}
                 origin={data.origin}
                 description={data.description}
-                platformName={data.platform.name}
-                platformLogo={data.platform.info?.logoUrl}
+                platformName={data.connections?.platform?.name || 'null'}
+                platformLogo={data.connections?.platform?.info?.logoUrl || ''}
                 owners={data.ownership?.owners}
                 globalTags={data.globalTags}
                 glossaryTerms={data.glossaryTerms}
@@ -79,13 +140,13 @@ export class DatasourceEntity implements Entity<Datasource> {
     renderSearch = (result: SearchResult) => {
         const data = result.entity as Datasource;
         return (
-            <Preview
+            <PreviewNoDel
                 urn={data.urn}
                 name={data.name}
                 origin={data.origin}
                 description={data.description}
-                platformName={data.platform.name}
-                platformLogo={data.platform.info?.logoUrl}
+                platformName={data.connections?.platform?.name || 'null'}
+                platformLogo={data.connections?.platform?.info?.logoUrl || ''}
                 owners={data.ownership?.owners}
                 globalTags={data.globalTags}
                 snippet={
@@ -109,10 +170,18 @@ export class DatasourceEntity implements Entity<Datasource> {
             urn: entity.urn,
             name: entity.name,
             type: EntityType.Datasource,
-            upstreamChildren: [],
-            downstreamChildren: [],
-            icon: entity.platform.info?.logoUrl || undefined,
-            platform: entity.platform.name,
+            upstreamChildren: getChildren({ entity, type: EntityType.Datasource }, Direction.Upstream).map(
+                (child) => child.entity.urn,
+            ),
+            downstreamChildren: getChildren({ entity, type: EntityType.Datasource }, Direction.Downstream).map(
+                (child) => child.entity.urn,
+            ),
+            icon: entity.connections?.platform?.info?.logoUrl || undefined,
+            platform: entity.connections?.platform?.name,
         };
+    };
+
+    displayName = (data: Datasource) => {
+        return data.name;
     };
 }

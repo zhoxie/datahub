@@ -19,6 +19,71 @@ interface Entity {
     GMS Entity Type
     """
     type: EntityType!
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
+}
+
+"""
+Result storing relationship information associated with a particular entity.
+"""
+type EntityRelationshipsResult {
+
+  """
+  Start offset of the result set
+  """
+  start: Int
+
+  """
+  Number of results in the returned result set
+  """
+  count: Int
+
+  """
+  Total number of results in the result set
+  """
+  total: Int
+
+  """
+  Relationship edges in the result set
+  """
+  relationships: [EntityRelationship!]!
+}
+
+"""
+The second version of EntityRelationship model, where Entity can be any entity.
+TODO - Migrate all entity relationships to this more generic model
+"""
+type EntityRelationship {
+    """
+    The type of the relationship
+    """
+    type: String!
+
+    """
+    The direction of the relationship relative to the source entity.
+    """
+    direction: RelationshipDirection!
+
+    """
+    Entity that is related via lineage
+    """
+    entity: Entity!
+
+    """
+    An AuditStamp corresponding to the last modification of this relationship
+    """
+    created: AuditStamp
+}
+
+"""
+Direction between a source and destination node.
+"""
+enum RelationshipDirection {
+  INCOMING,
+  OUTGOING
 }
 
 interface Aspect {
@@ -49,6 +114,11 @@ interface EntityWithRelationships implements Entity {
     Entities downstream of the given entity
     """
     downstreamLineage: DownstreamEntityRelationships
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 """
@@ -75,6 +145,14 @@ enum EntityType {
     The DataPlatform Entity
     """
     DATA_PLATFORM
+    """
+    The DatasourceCategory Entity
+    """
+    DATASOURCE_CATEGORY
+    """
+    The DatasourceCategory Entity
+    """
+    ALL_DATASOURCE_CATEGORIES
     """
     The Dashboard Entity
     """
@@ -122,6 +200,17 @@ enum EntityType {
 }
 
 type Query {
+
+    """
+    Fetch configurations for the DataHub UI.
+    """
+    appConfig: AppConfig
+
+    """
+    Fetch details associated with the logged in user.
+    """
+    me: AuthenticatedUser
+
     """
     Fetch a Dataset by primary key
     """
@@ -205,7 +294,7 @@ type Query {
     """
     Autocomplete a search query against DataHub entities
     """
-    autoCompleteForAll(input: AutoCompleteInput!): AutoCompleteAllResults
+    autoCompleteForMultiple(input: AutoCompleteMultipleInput!): AutoCompleteMultipleResults
 
     """
     Browse DataHub entities by path
@@ -221,6 +310,13 @@ type Query {
     Fetch a GlossaryTerm by primary key
     """
     glossaryTerm(urn: String!): GlossaryTerm
+
+    allDatasourceCategories: AllDatasourceCategory
+
+    """
+    List all DataHub Access Policies.
+    """
+    listPolicies(input: ListPoliciesInput!): ListPoliciesResult
 }
 
 type Mutation {
@@ -231,6 +327,75 @@ type Mutation {
     updateDataFlow(input: DataFlowUpdateInput!): DataFlow
     updateDataJob(input: DataJobUpdateInput!): DataJob
     updateTag(input: TagUpdate!): Tag
+    """
+		Adds a tag to a given entity or subresource
+    """
+    addTag(input: TagUpdateInput!): Boolean
+    """
+		Remoes a tag from a given entity or subresource
+    """
+    removeTag(input: TagUpdateInput!): Boolean
+    """
+		Adds a term to a given entity or subresource
+    """
+    addTerm(input: TermUpdateInput!): Boolean
+    """
+		Removes a term from a given entity or subresource
+    """
+    removeTerm(input: TermUpdateInput!): Boolean
+    """
+    Creates a policy and returns the resulting urn.
+    """
+    createPolicy(input: PolicyInput!): String
+    """
+    Updates an existing policy and returns the resulting urn
+    """
+    updatePolicy(urn: String!, input: PolicyInput!): String
+    """
+    Removes an existing policy and returns the policy urn
+    """
+    deletePolicy(urn: String!): String
+}
+
+input TermUpdateInput {
+    termUrn: String!
+    targetUrn: String!
+    subResourceType: String
+    subResource: String
+}
+
+input TagUpdateInput {
+    tagUrn: String!
+    targetUrn: String!
+    subResourceType: String
+    subResource: String
+}
+
+type AppConfig {
+  analyticsConfig: AnalyticsConfig!
+  policiesConfig: PoliciesConfig!
+}
+
+type AnalyticsConfig {
+  enabled: Boolean!
+}
+
+type AuthenticatedUser {
+  corpUser: CorpUser!
+  platformPrivileges: PlatformPrivileges!
+}
+
+type PlatformPrivileges {
+
+  """
+  Whether the user should be able to view analytics.
+  """
+  viewAnalytics: Boolean!
+
+  """
+  Whether the user should be able to manage policies.
+  """
+  managePolicies: Boolean!
 }
 
 type AuditStamp {
@@ -297,6 +462,11 @@ type Dataset implements EntityWithRelationships & Entity {
     properties: [StringMapEntry!]
 
     """
+    The Data sources
+    """
+    sources: DatasetSources
+
+    """
     A list of editable platform-specific metadata tuples
     """
     editableProperties: DatasetEditableProperties
@@ -361,6 +531,9 @@ type Dataset implements EntityWithRelationships & Entity {
     """
     glossaryTerms: GlossaryTerms
 
+    """
+    Statistics about how this Dataset is used
+    """
     usageStats(resource: String!, range: TimeRange): UsageQueryResult
 
     """
@@ -368,9 +541,21 @@ type Dataset implements EntityWithRelationships & Entity {
     If no start / end time are provided, the most recent events will be returned.
     """
     datasetProfiles(startTimeMillis: Long, endTimeMillis: Long, limit: Int): [DatasetProfile!]
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
-type Datasource implements Entity {
+type DatasetSources {
+    """
+    Data sources for the dataset
+    """
+    sources: [Datasource!]
+}
+
+type Datasource implements EntityWithRelationships & Entity {
     """
     The unique Datasource URN
     """
@@ -382,9 +567,9 @@ type Datasource implements Entity {
     type: EntityType!
 
     """
-    Standardized platform urn where the datasource is defined
+    Standardized category urn where the datasource is defined
     """
-    platform: DataPlatform!
+    category: DatasourceCategory!
 
     """
     Datasource native name
@@ -462,6 +647,21 @@ type Datasource implements Entity {
     globalTags: GlobalTags
 
     """
+    Entities upstream of the given entity
+    """
+    upstreamLineage: UpstreamEntityRelationships
+
+    """
+    Entities downstream of the given entity
+    """
+    downstreamLineage: DownstreamEntityRelationships
+
+    """
+    Datasets
+    """
+    datasets: DatasourceDatasetsRelationships
+
+    """
     The structured glossary terms associated with the datasource
     """
     glossaryTerms: GlossaryTerms
@@ -470,6 +670,11 @@ type Datasource implements Entity {
     Statistics about how this Dataset is used
     """
     usageStats(resource: String!, range: TimeRange): UsageQueryResult
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type GlossaryTerm implements Entity {
@@ -494,9 +699,19 @@ type GlossaryTerm implements Entity {
     name: String!
 
     """
+    hierarchicalName of glossary term
+    """
+    hierarchicalName: String!
+
+    """
     Details of the Glossary Term
     """
     glossaryTermInfo: GlossaryTermInfo!
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type GlossaryTermInfo {
@@ -524,7 +739,13 @@ type GlossaryTermInfo {
     Properties of the glossary term
     """
     customProperties: [StringMapEntry!]
+
+    """
+    Schema definition of glossary term
+    """
+    rawSchema: String
 }
+
 
 type DataPlatform implements Entity {
     """
@@ -551,14 +772,70 @@ type DataPlatform implements Entity {
     Metadata associated with a dataplatform
     """
     info: DataPlatformInfo
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
+}
+
+type AllDatasourceCategory implements Entity {
+    """
+    Urn of the datasource category
+    """
+    urn: String!
+
+    """
+    GMS Entity Type
+    """
+    type: EntityType!
+
+    categories: [DatasourceCategory]
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
+}
+
+type DatasourceCategory implements Entity {
+    """
+    Urn of the data platform
+    """
+    urn: String!
+
+    """
+    GMS Entity Type
+    """
+    type: EntityType!
+
+    """
+    Name of the data platform
+    """
+    name: String!
+
+    """
+    Display name of the data platform
+    """
+    displayName: String
+
+    """
+    Metadata associated with a datasourcecategory
+    """
+    info: DatasourceCategoryInfo
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type DatasourceConnections {
 
     """
-    datasource category
+    datasource platform
     """
-    category: String
+    platform: DataPlatform!
 
     """
     datasource data center
@@ -632,6 +909,13 @@ type DataPlatformInfo {
     A logo URL associated with the platform
     """
     logoUrl: String
+}
+
+type DatasourceCategoryInfo {
+    """
+    Display name associated with the category
+    """
+    displayName: String
 }
 
 enum PlatformType {
@@ -945,6 +1229,8 @@ type SchemaField {
     Glossary terms associated with the field
     """
     glossaryTerms: GlossaryTerms
+
+    isPartOfKey: Boolean
 }
 
 type EditableSchemaMetadata {
@@ -966,6 +1252,11 @@ type EditableSchemaFieldInfo {
     Tags associated with the field
     """
     globalTags: GlobalTags
+
+    """
+    Glossary terms associated with the field
+    """
+    glossaryTerms: GlossaryTerms
 }
 
 enum SchemaFieldDataType {
@@ -1020,28 +1311,32 @@ type DataFlowEditableProperties {
     description: String
 }
 
-type EntityRelationship {
-    """
-    An AuditStamp corresponding to the last modification of this relationship
-    """
-    created: AuditStamp
-
+type EntityRelationshipLegacy {
     """
     Entity that is related via lineage
     """
     entity: EntityWithRelationships
+
+    """
+    An AuditStamp corresponding to the last modification of this relationship
+    """
+    created: AuditStamp
 }
 
 type UpstreamEntityRelationships {
-    entities: [EntityRelationship]
+    entities: [EntityRelationshipLegacy]
 }
 
 type DownstreamEntityRelationships {
-    entities: [EntityRelationship]
+    entities: [EntityRelationshipLegacy]
 }
 
 type DataFlowDataJobsRelationships {
-    entities: [EntityRelationship]
+    entities: [EntityRelationshipLegacy]
+}
+
+type DatasourceDatasetsRelationships {
+    entities: [EntityRelationshipLegacy]
 }
 
 type UpstreamLineage {
@@ -1236,6 +1531,11 @@ type CorpUser implements Entity {
     The structured tags associated with the user
     """
     globalTags: GlobalTags
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type CorpUserInfo {
@@ -1252,7 +1552,7 @@ type CorpUserInfo {
     """
     Email address of the user
     """
-    email: String!
+    email: String
 
     """
     Title of the user
@@ -1329,21 +1629,37 @@ type CorpGroup implements Entity {
     type: EntityType!
 
     """
-    group name e.g. wherehows-dev, ask_metadata
+    Group name e.g. wherehows-dev, ask_metadata
     """
-    name: String
+    name: String!
 
     """
     Information of the corp group
     """
     info: CorpGroupInfo
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type CorpGroupInfo {
+
+    """
+    The name to display when rendering the group
+    """
+    displayName: String
+
+    """
+    The description provided for the group.
+    """
+    description: String
+
     """
     email of this group
     """
-    email: String!
+    email: String
 
     """
     owners of this group
@@ -1409,6 +1725,11 @@ type Tag implements Entity {
     Ownership metadata of the dataset
     """
     ownership: Ownership
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type TagAssociation {
@@ -1572,6 +1893,34 @@ input AutoCompleteInput {
 	filters: [FacetFilterInput!]
 }
 
+input AutoCompleteMultipleInput {
+    """
+    Entity types to be autocompleted against.
+    Optional- if none supplied, all searchable types will be autocompleted against
+    """
+    types: [EntityType!]
+
+    """
+    The query string
+    """
+    query: String!
+
+    """
+    An optional field to autocomplete against
+    """
+    field: String
+
+    """
+    The maximum number of autocomplete results
+    """
+    limit: Int
+
+    """
+    Faceted filters applied to autocomplete results
+    """
+    filters: [FacetFilterInput!]
+}
+
 type AutoCompleteResultForEntity {
     """
     Entity type
@@ -1584,7 +1933,7 @@ type AutoCompleteResultForEntity {
     suggestions: [String!]!
 }
 
-type AutoCompleteAllResults {
+type AutoCompleteMultipleResults {
     """
     The query string
     """
@@ -2091,6 +2440,11 @@ type Dashboard implements EntityWithRelationships & Entity {
     Editable properties
     """
     editableProperties: DashboardEditableProperties
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type DashboardInfo {
@@ -2217,6 +2571,11 @@ type Chart implements EntityWithRelationships & Entity {
     Editable properties
     """
     editableProperties: ChartEditableProperties
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type ChartInfo {
@@ -2456,6 +2815,11 @@ type MLModel implements EntityWithRelationships & Entity {
     Entities downstream of the given entity
     """
     downstreamLineage: DownstreamEntityRelationships
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type MLModelGroup implements EntityWithRelationships & Entity {
@@ -2516,6 +2880,11 @@ type MLModelGroup implements EntityWithRelationships & Entity {
     Entities downstream of the given entity
     """
     downstreamLineage: DownstreamEntityRelationships
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type MLModelGroupProperties {
@@ -2583,6 +2952,11 @@ type MLFeature implements Entity {
     Deprecation
     """
     deprecation: Deprecation
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type MLHyperParam {
@@ -2697,6 +3071,11 @@ type MLPrimaryKey implements Entity {
     Deprecation
     """
     deprecation: Deprecation
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type MLPrimaryKeyProperties {
@@ -2761,6 +3140,11 @@ type MLFeatureTable implements Entity {
     Deprecation
     """
     deprecation: Deprecation
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type MLFeatureTableProperties {
@@ -3120,6 +3504,11 @@ type DataFlow implements Entity {
     Editable properties
     """
     editableProperties: DataFlowEditableProperties
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type DataFlowInfo {
@@ -3209,6 +3598,11 @@ type DataJob implements EntityWithRelationships & Entity {
     Editable properties
     """
     editableProperties: DataJobEditableProperties
+
+    """
+    Edges extending from this entity.
+    """
+    relationships(types: [String!]!, direction: RelationshipDirection!, start: Int, count: Int): EntityRelationshipsResult
 }
 
 type DataJobInfo {
@@ -3335,4 +3729,199 @@ type DatasetProfile implements TimeSeriesAspect {
   columnCount: Long
   fieldProfiles: [DatasetFieldProfile!]
   partitionSpec: PartitionSpec
+}
+
+enum PolicyType {
+  METADATA
+  PLATFORM
+}
+
+enum PolicyState {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+type Policy {
+  urn: String!
+  type: PolicyType!
+  name: String!
+  state: PolicyState!
+  description: String
+  resources: ResourceFilter
+  privileges: [String!]!
+  actors: ActorFilter!
+  editable: Boolean!
+}
+
+type ResourceFilter {
+  """
+  The type of the resource the policy should apply to. Not required because in the future we want to support
+  filtering by type OR by domain
+  """
+  type: String!
+
+  """
+  A list of specific resource urns to apply the filter to
+  """
+  resources: [String!]
+
+  """
+  Whether of not to apply the filter to all resources of the type
+  """
+  allResources: Boolean!
+}
+
+type ActorFilter {
+  """
+  A specific set of users to apply the policy to (disjunctive)
+  """
+  users: [String!]
+
+  """
+  A specific set of groups to apply the policy to (disjunctive)
+  """
+  groups: [String!]
+
+  """
+  Whether the filter should return true for owners of a particular resource.
+  Only applies to policies of type 'Metadata', which have a resource associated with them.
+  """
+  resourceOwners: Boolean!
+
+  """
+  Whether the filter should apply to all users.
+  """
+  allUsers: Boolean!
+
+  """
+  Whether the filter should apply to all groups.
+  """
+  allGroups: Boolean!
+}
+
+input PolicyInput {
+  type: PolicyType!
+  name: String!
+  state: PolicyState!
+  description: String
+  resources: ResourceFilterInput
+  privileges: [String!]!
+  actors: ActorFilterInput!
+}
+
+input ResourceFilterInput {
+  """
+  The type of the resource the policy should apply to. Not required because in the future we want to support
+  filtering by type OR by domain
+  """
+  type: String!
+
+  """
+  A list of specific resource urns to apply the filter to
+  """
+  resources: [String!]
+
+  """
+  Whether of not to apply the filter to all resources of the type
+  """
+  allResources: Boolean!
+}
+
+input ActorFilterInput {
+  """
+  A specific set of users to apply the policy to (disjunctive)
+  """
+  users: [String!]
+
+  """
+  A specific set of groups to apply the policy to (disjunctive)
+  """
+  groups: [String!]
+
+  """
+  Whether the filter should return true for owners of a particular resource.
+  Only applies to policies of type 'Metadata', which have a resource associated with them.
+  """
+  resourceOwners: Boolean!
+
+  """
+  Whether the filter should apply to all users.
+  """
+  allUsers: Boolean!
+
+  """
+  Whether the filter should apply to all groups.
+  """
+  allGroups: Boolean!
+}
+
+input ListPoliciesInput {
+  start: Int
+  count: Int
+}
+
+type ListPoliciesResult {
+  start: Int!
+  count: Int!
+  total: Int!
+  policies: [Policy!]!
+}
+
+type PoliciesConfig {
+
+  """
+  Whether the policies feature is enabled and should be displayed in the UI
+  """
+  enabled: Boolean!
+
+  """
+  A list of platform privileges to display
+  """
+  platformPrivileges: [Privilege!]!
+
+  """
+  A list of resource privileges to display
+  """
+  resourcePrivileges: [ResourcePrivileges!]!
+
+}
+
+type Privilege {
+  """
+  Standardized privilege type, serving as a unique identifier for a privilege e.g. EDIT_ENTITY
+  """
+  type: String!
+
+  """
+  The name to appear when displaying the privilege, e.g. Edit Entity
+  """
+  displayName: String
+
+  """
+  A description of the privilege to display.
+  """
+  description: String
+}
+
+type ResourcePrivileges {
+  """
+  Resource type associated with the Metadata Privilege.
+  """
+  resourceType: String!
+
+  """
+  The name to used for displaying the resourceType
+  """
+  resourceTypeDisplayName: String
+
+  """
+  An optional entity type to use when performing search and navigation to the entity.
+  """
+  entityType: EntityType
+
+  """
+  A list of privileges that are supported against this resource
+  """
+  privileges: [Privilege!]!
 }

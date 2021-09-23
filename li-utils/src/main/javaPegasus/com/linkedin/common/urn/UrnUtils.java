@@ -28,15 +28,15 @@ public class UrnUtils {
 
     /**
      * Convert platform + datasource + origin into DatasourceUrn
-     * @param platformName String, e.g. hdfs, oracle
+     * @param categoryName String, e.g. messageing, calling
      * @param datasourceName String, e.g. /jobs/xxx, ABOOK.ADDRESS
      * @param origin PROD, CORP, EI, DEV
      * @return DatasourceUrn
      */
     @Nonnull
-    public static DatasourceUrn toDatasourceUrn(@Nonnull String platformName, @Nonnull String datasourceName,
+    public static DatasourceUrn toDatasourceUrn(@Nonnull String categoryName, @Nonnull String datasourceName,
                                           @Nonnull String origin) {
-        return new DatasourceUrn(new DataPlatformUrn(platformName), datasourceName, toFabricType(origin));
+        return new DatasourceUrn(new DatasourceCategoryUrn(categoryName), datasourceName, toFabricType(origin));
     }
 
     /**

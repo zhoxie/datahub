@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useGetChartQuery } from '../../../graphql/chart.generated';
 import { useGetDashboardQuery } from '../../../graphql/dashboard.generated';
 import { useGetDatasetQuery } from '../../../graphql/dataset.generated';
+import { useGetDatasourceQuery } from '../../../graphql/datasource.generated';
 import { useGetDataJobQuery } from '../../../graphql/dataJob.generated';
 import { useGetMlFeatureTableQuery } from '../../../graphql/mlFeatureTable.generated';
 import { useGetMlFeatureQuery } from '../../../graphql/mlFeature.generated';
@@ -16,6 +17,10 @@ export default function useGetEntityQuery(urn: string, entityType?: EntityType) 
         [EntityType.Dataset]: useGetDatasetQuery({
             variables: { urn },
             skip: entityType !== EntityType.Dataset,
+        }),
+        [EntityType.Datasource]: useGetDatasourceQuery({
+            variables: { urn },
+            skip: entityType !== EntityType.Datasource,
         }),
         [EntityType.Chart]: useGetChartQuery({
             variables: { urn },
@@ -60,6 +65,15 @@ export default function useGetEntityQuery(urn: string, entityType?: EntityType) 
                     return {
                         entity: returnData,
                         type: EntityType.Dataset,
+                    } as EntityAndType;
+                }
+                break;
+            case EntityType.Datasource:
+                returnData = allResults[EntityType.Datasource].data?.datasource;
+                if (returnData) {
+                    return {
+                        entity: returnData,
+                        type: EntityType.Datasource,
                     } as EntityAndType;
                 }
                 break;
@@ -128,7 +142,6 @@ export default function useGetEntityQuery(urn: string, entityType?: EntityType) 
                 break;
             case EntityType.MlmodelGroup:
                 returnData = allResults[EntityType.MlmodelGroup]?.data?.mlModelGroup;
-                console.log('test', returnData);
                 if (returnData) {
                     return {
                         entity: returnData,
@@ -146,6 +159,8 @@ export default function useGetEntityQuery(urn: string, entityType?: EntityType) 
         entityType,
         // eslint-disable-next-line react-hooks/exhaustive-deps
         allResults[EntityType.Dataset],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        allResults[EntityType.Datasource],
         // eslint-disable-next-line react-hooks/exhaustive-deps
         allResults[EntityType.Chart],
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -181,6 +196,8 @@ export default function useGetEntityQuery(urn: string, entityType?: EntityType) 
         returnEntityAndType,
         // eslint-disable-next-line react-hooks/exhaustive-deps
         allResults[EntityType.Dataset],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        allResults[EntityType.Datasource],
         // eslint-disable-next-line react-hooks/exhaustive-deps
         allResults[EntityType.Chart],
         // eslint-disable-next-line react-hooks/exhaustive-deps

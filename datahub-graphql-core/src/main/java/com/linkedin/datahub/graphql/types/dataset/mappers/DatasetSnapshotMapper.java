@@ -7,6 +7,7 @@ import com.linkedin.common.Ownership;
 import com.linkedin.common.Status;
 import com.linkedin.datahub.graphql.generated.DataPlatform;
 import com.linkedin.datahub.graphql.generated.Dataset;
+import com.linkedin.datahub.graphql.generated.Datasource;
 import com.linkedin.datahub.graphql.generated.EntityType;
 import com.linkedin.datahub.graphql.generated.FabricType;
 import com.linkedin.datahub.graphql.generated.DatasetEditableProperties;
@@ -19,12 +20,14 @@ import com.linkedin.datahub.graphql.types.mappers.ModelMapper;
 import com.linkedin.datahub.graphql.types.tag.mappers.GlobalTagsMapper;
 import com.linkedin.dataset.DatasetDeprecation;
 import com.linkedin.dataset.DatasetProperties;
+import com.linkedin.dataset.DatasetSources;
 import com.linkedin.dataset.EditableDatasetProperties;
 import com.linkedin.metadata.dao.utils.ModelUtils;
 import com.linkedin.metadata.snapshot.DatasetSnapshot;
 import com.linkedin.schema.EditableSchemaMetadata;
 import com.linkedin.schema.SchemaMetadata;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 
@@ -90,6 +93,17 @@ public class DatasetSnapshotMapper implements ModelMapper<DatasetSnapshot, Datas
                 final DatasetEditableProperties editableProperties = new DatasetEditableProperties();
                 editableProperties.setDescription(editableDatasetProperties.getDescription());
                 result.setEditableProperties(editableProperties);
+            } else if (aspect instanceof DatasetSources) {
+                DatasetSources sources = ((DatasetSources) aspect);
+                if (sources.hasSources()) {
+                    com.linkedin.datahub.graphql.generated.DatasetSources target = new com.linkedin.datahub.graphql.generated.DatasetSources();
+                    target.setSources(sources.getSources().stream().map(source -> {
+                        final Datasource datasource = new Datasource();
+                        datasource.setUrn(source.toString());
+                        return datasource;
+                    }).collect(Collectors.toList()));
+                    result.setSources(target);
+                }
             }
         });
 

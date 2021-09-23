@@ -9,10 +9,12 @@ from ......schema_classes import CorpGroupKeyClass
 from ......schema_classes import CorpUserKeyClass
 from ......schema_classes import DashboardKeyClass
 from ......schema_classes import DataFlowKeyClass
+from ......schema_classes import DataHubPolicyKeyClass
 from ......schema_classes import DataJobKeyClass
 from ......schema_classes import DataPlatformKeyClass
 from ......schema_classes import DataProcessKeyClass
 from ......schema_classes import DatasetKeyClass
+from ......schema_classes import DatasourceCategoryKeyClass
 from ......schema_classes import DatasourceKeyClass
 from ......schema_classes import GlossaryNodeKeyClass
 from ......schema_classes import GlossaryTermKeyClass
@@ -30,10 +32,12 @@ CorpGroupKey = CorpGroupKeyClass
 CorpUserKey = CorpUserKeyClass
 DashboardKey = DashboardKeyClass
 DataFlowKey = DataFlowKeyClass
+DataHubPolicyKey = DataHubPolicyKeyClass
 DataJobKey = DataJobKeyClass
 DataPlatformKey = DataPlatformKeyClass
 DataProcessKey = DataProcessKeyClass
 DatasetKey = DatasetKeyClass
+DatasourceCategoryKey = DatasourceCategoryKeyClass
 DatasourceKey = DatasourceKeyClass
 GlossaryNodeKey = GlossaryNodeKeyClass
 GlossaryTermKey = GlossaryTermKeyClass

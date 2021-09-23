@@ -33,7 +33,7 @@ public class DatasourceGraphBuilder extends BaseGraphBuilder<DatasourceSnapshot>
     final DatasourceUrn urn = snapshot.getUrn();
     final DatasourceEntity entity = new DatasourceEntity().setUrn(urn)
         .setName(urn.getDatasourceNameEntity())
-        .setPlatform(urn.getPlatformEntity())
+        .setCategory(urn.getCategoryEntity())
         .setOrigin(urn.getOriginEntity());
 
     setRemovedProperty(snapshot, entity);

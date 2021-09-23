@@ -4,7 +4,7 @@ import { GetDataJobDocument } from './graphql/dataJob.generated';
 import { GetBrowsePathsDocument, GetBrowseResultsDocument } from './graphql/browse.generated';
 import {
     GetAutoCompleteResultsDocument,
-    GetAutoCompleteAllResultsDocument,
+    GetAutoCompleteMultipleResultsDocument,
     GetSearchResultsDocument,
     GetSearchResultsQuery,
 } from './graphql/search.generated';
@@ -18,10 +18,12 @@ import {
     PlatformType,
     MlModel,
     MlModelGroup,
+    SchemaFieldDataType,
 } from './types.generated';
 import { GetTagDocument } from './graphql/tag.generated';
 import { GetMlModelDocument } from './graphql/mlModel.generated';
 import { GetMlModelGroupDocument } from './graphql/mlModelGroup.generated';
+import { GetGlossaryTermDocument, GetGlossaryTermQuery } from './graphql/glossaryTerm.generated';
 
 const user1 = {
     username: 'sdas',
@@ -253,9 +255,10 @@ export const dataset3 = {
     name: 'Yet Another Dataset',
     origin: 'PROD',
     tags: ['Trusted'],
+    sources: [],
     description: 'This and here we have yet another Dataset (YAN). Are there more?',
     uri: 'www.google.com',
-    properties: [],
+    properties: [{ key: 'propertyAKey', value: 'propertyAValue' }],
     editableProperties: null,
     created: {
         time: 0,
@@ -283,6 +286,7 @@ export const dataset3 = {
         },
     },
     globalTags: {
+        __typename: 'GlobalTags',
         tags: [
             {
                 tag: {
@@ -301,6 +305,7 @@ export const dataset3 = {
                     type: EntityType.GlossaryTerm,
                     urn: 'urn:li:glossaryTerm:sample-glossary-term',
                     name: 'sample-glossary-term',
+                    hierarchicalName: 'example.sample-glossary-term',
                     glossaryTermInfo: {
                         definition: 'sample definition',
                         termSource: 'sample term source',
@@ -324,7 +329,53 @@ export const dataset3 = {
             },
         ],
     },
-    schemaMetadata: null,
+    schemaMetadata: {
+        __typename: 'SchemaMetadata',
+        aspectVersion: 0,
+        createdAt: 0,
+        fields: [
+            {
+                nullable: false,
+                recursive: false,
+                fieldPath: 'user_id',
+                description: 'Id of the user created',
+                type: SchemaFieldDataType.String,
+                nativeDataType: 'varchar(100)',
+                isPartOfKey: false,
+                jsonPath: null,
+                globalTags: null,
+                glossaryTerms: null,
+            },
+            {
+                nullable: false,
+                recursive: false,
+                fieldPath: 'user_name',
+                description: 'Name of the user who signed up',
+                type: SchemaFieldDataType.String,
+                nativeDataType: 'boolean',
+                isPartOfKey: false,
+                jsonPath: null,
+                globalTags: null,
+                glossaryTerms: null,
+            },
+        ],
+        hash: '',
+        platformSchema: null,
+        platformUrn: 'urn:li:dataPlatform:hive',
+        created: {
+            actor: 'urn:li:corpuser:jdoe',
+            time: 1581407189000,
+        },
+        cluster: '',
+        name: 'SampleHiveSchema',
+        version: 0,
+        lastModified: {
+            actor: 'urn:li:corpuser:jdoe',
+            time: 1581407189000,
+        },
+        datasetUrn: 'urn:li:dataset:3',
+        primaryKeys: [],
+    },
     previousSchemaMetadata: null,
     editableSchemaMetadata: null,
     deprecation: null,
@@ -529,6 +580,7 @@ const glossaryTerm1 = {
     urn: 'urn:li:glossaryTerm:1',
     type: EntityType.GlossaryTerm,
     name: 'Another glossary term',
+    hierarchicalName: 'example.AnotherGlossaryTerm',
     ownership: {
         owners: [
             {
@@ -554,6 +606,98 @@ const glossaryTerm1 = {
         sourceRef: 'sourceRef',
         sourceURI: 'sourceURI',
     },
+} as GlossaryTerm;
+
+const glossaryTerm2 = {
+    urn: 'urn:li:glossaryTerm:example.glossaryterm1',
+    type: 'GLOSSARY_TERM',
+    name: 'glossaryterm1',
+    hierarchicalName: 'example.glossaryterm1',
+    ownership: null,
+    glossaryTermInfo: {
+        definition: 'is A relation glossary term 1',
+        termSource: 'INTERNAL',
+        sourceRef: 'TERM_SOURCE_SAXO',
+        sourceUrl: '',
+        rawSchema: 'sample proto schema',
+        customProperties: [
+            {
+                key: 'keyProperty',
+                value: 'valueProperty',
+                __typename: 'StringMapEntry',
+            },
+        ],
+        __typename: 'GlossaryTermInfo',
+    },
+    isRealtedTerms: {
+        start: 0,
+        count: 0,
+        total: 0,
+        relationships: [
+            {
+                entity: {
+                    urn: 'urn:li:glossaryTerm:schema.Field16Schema_v1',
+                    __typename: 'GlossaryTerm',
+                },
+            },
+        ],
+        __typename: 'EntityRelationshipsResult',
+    },
+    hasRelatedTerms: {
+        start: 0,
+        count: 0,
+        total: 0,
+        relationships: [
+            {
+                entity: {
+                    urn: 'urn:li:glossaryTerm:example.glossaryterm2',
+                    __typename: 'GlossaryTerm',
+                },
+            },
+        ],
+        __typename: 'EntityRelationshipsResult',
+    },
+    __typename: 'GlossaryTerm',
+};
+
+const glossaryTerm3 = {
+    urn: 'urn:li:glossaryTerm:example.glossaryterm2',
+    type: 'GLOSSARY_TERM',
+    name: 'glossaryterm2',
+    hierarchicalName: 'example.glossaryterm2',
+    ownership: null,
+    glossaryTermInfo: {
+        definition: 'has A relation glossary term 2',
+        termSource: 'INTERNAL',
+        sourceRef: 'TERM_SOURCE_SAXO',
+        sourceUrl: '',
+        rawSchema: 'sample proto schema',
+        customProperties: [
+            {
+                key: 'keyProperty',
+                value: 'valueProperty',
+                __typename: 'StringMapEntry',
+            },
+        ],
+        __typename: 'GlossaryTermInfo',
+    },
+    glossaryRelatedTerms: {
+        isRelatedTerms: null,
+        hasRelatedTerms: [
+            {
+                urn: 'urn:li:glossaryTerm:example.glossaryterm3',
+                name: 'glossaryterm3',
+                __typename: 'GlossaryTerm',
+            },
+            {
+                urn: 'urn:li:glossaryTerm:example.glossaryterm4',
+                name: 'glossaryterm4',
+                __typename: 'GlossaryTerm',
+            },
+        ],
+        __typename: 'GlossaryRelatedTerms',
+    },
+    __typename: 'GlossaryTerm',
 } as GlossaryTerm;
 
 const sampleTag = {
@@ -724,7 +868,7 @@ export const dataJob2 = {
         __typename: 'DataJobInputOutput',
         inputDatasets: [dataset3],
         outputDatasets: [dataset3],
-        inputDatajobs: [],
+        inputDatajobs: [dataJob1],
     },
     upstreamLineage: null,
     downstreamLineage: null,
@@ -780,7 +924,7 @@ export const dataJob3 = {
         __typename: 'DataJobInputOutput',
         inputDatasets: [dataset3],
         outputDatasets: [dataset3],
-        inputDatajobs: [],
+        inputDatajobs: [dataJob2],
     },
     upstreamLineage: null,
     downstreamLineage: null,
@@ -1111,7 +1255,7 @@ export const mocks = [
     },
     {
         request: {
-            query: GetAutoCompleteAllResultsDocument,
+            query: GetAutoCompleteMultipleResultsDocument,
             variables: {
                 input: {
                     query: 't',
@@ -1120,7 +1264,7 @@ export const mocks = [
         },
         result: {
             data: {
-                autoCompleteForAll: {
+                autoCompleteForMultiple: {
                     query: 't',
                     suggestions: [
                         {
@@ -1134,7 +1278,7 @@ export const mocks = [
     },
     {
         request: {
-            query: GetAutoCompleteAllResultsDocument,
+            query: GetAutoCompleteMultipleResultsDocument,
             variables: {
                 input: {
                     query: 't',
@@ -1144,7 +1288,7 @@ export const mocks = [
         },
         result: {
             data: {
-                autoCompleteForAll: {
+                autoCompleteForMultiple: {
                     query: 't',
                     suggestions: [
                         {
@@ -1302,7 +1446,7 @@ export const mocks = [
             variables: {
                 input: {
                     type: 'GLOSSARY_TERM',
-                    query: 'tags:"abc-sample-tag"',
+                    query: 'tags:"abc-sample-tag" OR fieldTags:"abc-sample-tag" OR editedFieldTags:"abc-sample-tag"',
                     start: 0,
                     count: 1,
                     filters: [],
@@ -1347,6 +1491,32 @@ export const mocks = [
                     ],
                 },
             } as GetSearchResultsQuery,
+        },
+    },
+    {
+        request: {
+            query: GetGlossaryTermDocument,
+            variables: {
+                urn: 'urn:li:glossaryTerm:example.glossaryterm1',
+            },
+        },
+        result: {
+            data: {
+                glossaryTerm: { ...glossaryTerm2 },
+            } as GetGlossaryTermQuery,
+        },
+    },
+    {
+        request: {
+            query: GetGlossaryTermDocument,
+            variables: {
+                urn: 'urn:li:glossaryTerm:example.glossaryterm2',
+            },
+        },
+        result: {
+            data: {
+                glossaryTerm: { ...glossaryTerm3 },
+            },
         },
     },
     {
@@ -1484,7 +1654,7 @@ export const mocks = [
             variables: {
                 input: {
                     type: 'CORP_USER',
-                    query: 'tags:"abc-sample-tag"',
+                    query: 'tags:"abc-sample-tag" OR fieldTags:"abc-sample-tag" OR editedFieldTags:"abc-sample-tag"',
                     start: 0,
                     count: 1,
                     filters: [],
@@ -1511,7 +1681,7 @@ export const mocks = [
             variables: {
                 input: {
                     type: 'DATASET',
-                    query: 'tags:"abc-sample-tag"',
+                    query: 'tags:"abc-sample-tag" OR fieldTags:"abc-sample-tag" OR editedFieldTags:"abc-sample-tag"',
                     start: 0,
                     count: 1,
                     filters: [],

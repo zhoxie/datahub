@@ -7,7 +7,7 @@ import { AvatarsGroup } from '../../../shared/avatar';
 import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';
 import CompactContext from '../../../shared/CompactContext';
 import { useEntityRegistry } from '../../../useEntityRegistry';
-import UpdatableDescription from '../../shared/UpdatableDescription';
+import UpdatableDescription from '../../shared/components/legacy/UpdatableDescription';
 
 export type Props = {
     datasource: Datasource;
@@ -22,7 +22,7 @@ export default function DatasourceHeader({
         description: originalDesc,
         ownership,
         deprecation,
-        platform,
+        category,
         editableProperties,
         // usageStats,
         connections,
@@ -31,9 +31,9 @@ export default function DatasourceHeader({
 }: Props) {
     const entityRegistry = useEntityRegistry();
     const isCompact = React.useContext(CompactContext);
-    const platformName = capitalizeFirstLetter(platform.name);
+    const platformName = capitalizeFirstLetter(connections?.platform?.name || 'null');
     // const platformLogoUrl = platform.info?.logoUrl;
-    const category = connections?.category;
+    const categoryName = category.name;
     const dataCenter = connections?.dataCenter;
 
     const datasourceInfoColumns: ColumnsType<StringMapEntry> = [
@@ -47,7 +47,7 @@ export default function DatasourceHeader({
         },
         {
             title: 'Category',
-            dataIndex: 'category',
+            dataIndex: 'categoryName',
         },
         {
             title: 'Data Center',
@@ -60,7 +60,7 @@ export default function DatasourceHeader({
             key: '1',
             name,
             type: platformName,
-            category,
+            categoryName,
             dataCenter,
         },
     ];

@@ -10,6 +10,8 @@ import java.util.Map;
 @NoArgsConstructor
 public class DatasourceView {
 
+  private String category;
+
   private String platform;
 
   private String nativeName;

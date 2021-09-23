@@ -1,0 +1,23 @@
+namespace com.linkedin.datasourcecategory
+
+import com.linkedin.common.Url
+
+/**
+ * Information about a data platform
+ */
+@Aspect = {
+  "name": "datasourceCategoryInfo"
+}
+record DatasourceCategoryInfo {
+
+  /**
+   * Name of the data platform
+   */
+  @validate.strlen.max = 15
+  name: string
+
+  /**
+   * The name that will be used for displaying a platform type.
+   */
+  displayName: optional string
+}

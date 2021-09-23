@@ -1,0 +1,45 @@
+{
+  "name" : "datasourceCategories",
+  "namespace" : "com.linkedin.datasourcecategory",
+  "path" : "/datasourceCategories",
+  "schema" : "com.linkedin.datasourceCategories.DatasourceCategory",
+  "doc" : "Resource provides information about various data platforms.\n\ngenerated from: com.linkedin.metadata.resources.datasourcecategory.DatasoureCategories",
+  "collection" : {
+    "identifier" : {
+      "name" : "categoryName",
+      "type" : "string"
+    },
+    "supports" : [ "get", "get_all" ],
+    "methods" : [ {
+      "method" : "get",
+      "doc" : "Get datasource category.",
+      "parameters" : [ {
+        "name" : "aspects",
+        "type" : "{ \"type\" : \"array\", \"items\" : \"string\" }",
+        "doc" : "list of aspects to be retrieved. Null to retrieve all aspects of the datasourceCategories."
+      } ]
+    }, {
+      "method" : "get_all",
+      "doc" : "Get all datasource categories.",
+      "pagingSupported" : true
+    } ],
+    "actions" : [ {
+      "name" : "getSnapshot",
+      "doc" : "Get the snapshot of datasource category.\nService Returns: Snapshot of datasource category with the requested aspects.",
+      "parameters" : [ {
+        "name" : "urn",
+        "type" : "string",
+        "doc" : "data datasource category urn."
+      }, {
+        "name" : "aspects",
+        "type" : "{ \"type\" : \"array\", \"items\" : \"string\" }",
+        "optional" : true,
+        "doc" : "list of aspects to be returned. null, when all aspects are to be returned."
+      } ],
+      "returns" : "com.linkedin.metadata.snapshot.DatasourceCategorySnapshot"
+    } ],
+    "entity" : {
+      "path" : "/datasourceCategories/{categoryName}"
+    }
+  }
+}

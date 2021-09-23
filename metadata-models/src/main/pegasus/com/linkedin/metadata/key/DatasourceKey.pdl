@@ -11,13 +11,13 @@ import com.linkedin.common.FabricType
 }
 record DatasourceKey {
   /**
-  * Data platform urn associated with the datasource
+  * Datasource category urn associated with the datasource
   */
   @Searchable = {
     "fieldType": "URN",
     "addToFilters": true
   }
-  platform: Urn
+  category: Urn
 
   /**
   * Datasource native name e.g. db.table, /dir/subdir/name, or name

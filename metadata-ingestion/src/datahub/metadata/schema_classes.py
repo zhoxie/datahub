@@ -1380,7 +1380,8 @@ class OwnershipTypeClass(object):
     
     
 class StatusClass(DictWrapper):
-    """The status metadata of an entity, e.g. dataset, metric, feature, etc."""
+    """The status metadata of an entity, e.g. dataset, metric, feature, etc.
+    This aspect is used to represent soft deletes conventionally."""
     
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.common.Status")
     def __init__(self,
@@ -3351,451 +3352,6 @@ class ValueFrequencyClass(DictWrapper):
         self._inner_dict['frequency'] = value
     
     
-class DatasourceClusterClass(object):
-    """The various types of support datasource cluster"""
-    
-    PRIMARY = "PRIMARY"
-    GSB = "GSB"
-    
-    
-class DatasourceConnInfoClass(DictWrapper):
-    """Information about a datasource connection"""
-    
-    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.datasource.DatasourceConnInfo")
-    def __init__(self,
-        cluster: Union[str, "DatasourceClusterClass"],
-        driver: str,
-        username: str,
-        password: str,
-        url: str,
-        customProperties: Optional[Dict[str, str]]=None,
-        externalUrl: Union[None, str]=None,
-    ):
-        super().__init__()
-        
-        if customProperties is None:
-            # default: {}
-            self.customProperties = dict()
-        else:
-            self.customProperties = customProperties
-        self.externalUrl = externalUrl
-        self.cluster = cluster
-        self.driver = driver
-        self.username = username
-        self.password = password
-        self.url = url
-    
-    @classmethod
-    def construct_with_defaults(cls) -> "DatasourceConnInfoClass":
-        self = cls.construct({})
-        self._restore_defaults()
-        
-        return self
-    
-    def _restore_defaults(self) -> None:
-        self.customProperties = dict()
-        self.externalUrl = self.RECORD_SCHEMA.field_map["externalUrl"].default
-        self.cluster = DatasourceClusterClass.PRIMARY
-        self.driver = str()
-        self.username = str()
-        self.password = str()
-        self.url = str()
-    
-    
-    @property
-    def customProperties(self) -> Dict[str, str]:
-        """Getter: Custom property bag."""
-        return self._inner_dict.get('customProperties')  # type: ignore
-    
-    @customProperties.setter
-    def customProperties(self, value: Dict[str, str]) -> None:
-        """Setter: Custom property bag."""
-        self._inner_dict['customProperties'] = value
-    
-    
-    @property
-    def externalUrl(self) -> Union[None, str]:
-        """Getter: URL where the reference exist"""
-        return self._inner_dict.get('externalUrl')  # type: ignore
-    
-    @externalUrl.setter
-    def externalUrl(self, value: Union[None, str]) -> None:
-        """Setter: URL where the reference exist"""
-        self._inner_dict['externalUrl'] = value
-    
-    
-    @property
-    def cluster(self) -> Union[str, "DatasourceClusterClass"]:
-        """Getter: cluster"""
-        return self._inner_dict.get('cluster')  # type: ignore
-    
-    @cluster.setter
-    def cluster(self, value: Union[str, "DatasourceClusterClass"]) -> None:
-        """Setter: cluster"""
-        self._inner_dict['cluster'] = value
-    
-    
-    @property
-    def driver(self) -> str:
-        """Getter: connection driver"""
-        return self._inner_dict.get('driver')  # type: ignore
-    
-    @driver.setter
-    def driver(self, value: str) -> None:
-        """Setter: connection driver"""
-        self._inner_dict['driver'] = value
-    
-    
-    @property
-    def username(self) -> str:
-        """Getter: connection username"""
-        return self._inner_dict.get('username')  # type: ignore
-    
-    @username.setter
-    def username(self, value: str) -> None:
-        """Setter: connection username"""
-        self._inner_dict['username'] = value
-    
-    
-    @property
-    def password(self) -> str:
-        """Getter: connection password"""
-        return self._inner_dict.get('password')  # type: ignore
-    
-    @password.setter
-    def password(self, value: str) -> None:
-        """Setter: connection password"""
-        self._inner_dict['password'] = value
-    
-    
-    @property
-    def url(self) -> str:
-        """Getter: connection url"""
-        return self._inner_dict.get('url')  # type: ignore
-    
-    @url.setter
-    def url(self, value: str) -> None:
-        """Setter: connection url"""
-        self._inner_dict['url'] = value
-    
-    
-class DatasourceConnectionsClass(DictWrapper):
-    # No docs available.
-    
-    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.datasource.DatasourceConnections")
-    def __init__(self,
-        category: str,
-        dataCenter: str,
-        connections: List["DatasourceConnInfoClass"],
-    ):
-        super().__init__()
-        
-        self.category = category
-        self.dataCenter = dataCenter
-        self.connections = connections
-    
-    @classmethod
-    def construct_with_defaults(cls) -> "DatasourceConnectionsClass":
-        self = cls.construct({})
-        self._restore_defaults()
-        
-        return self
-    
-    def _restore_defaults(self) -> None:
-        self.category = str()
-        self.dataCenter = str()
-        self.connections = list()
-    
-    
-    @property
-    def category(self) -> str:
-        # No docs available.
-        return self._inner_dict.get('category')  # type: ignore
-    
-    @category.setter
-    def category(self, value: str) -> None:
-        # No docs available.
-        self._inner_dict['category'] = value
-    
-    
-    @property
-    def dataCenter(self) -> str:
-        # No docs available.
-        return self._inner_dict.get('dataCenter')  # type: ignore
-    
-    @dataCenter.setter
-    def dataCenter(self, value: str) -> None:
-        # No docs available.
-        self._inner_dict['dataCenter'] = value
-    
-    
-    @property
-    def connections(self) -> List["DatasourceConnInfoClass"]:
-        # No docs available.
-        return self._inner_dict.get('connections')  # type: ignore
-    
-    @connections.setter
-    def connections(self, value: List["DatasourceConnInfoClass"]) -> None:
-        # No docs available.
-        self._inner_dict['connections'] = value
-    
-    
-class DatasourceDeprecationClass(DictWrapper):
-    """Datasource deprecation status"""
-    
-    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.datasource.DatasourceDeprecation")
-    def __init__(self,
-        deprecated: bool,
-        note: str,
-        decommissionTime: Union[None, int]=None,
-        actor: Union[None, str]=None,
-    ):
-        super().__init__()
-        
-        self.deprecated = deprecated
-        self.decommissionTime = decommissionTime
-        self.note = note
-        self.actor = actor
-    
-    @classmethod
-    def construct_with_defaults(cls) -> "DatasourceDeprecationClass":
-        self = cls.construct({})
-        self._restore_defaults()
-        
-        return self
-    
-    def _restore_defaults(self) -> None:
-        self.deprecated = bool()
-        self.decommissionTime = self.RECORD_SCHEMA.field_map["decommissionTime"].default
-        self.note = str()
-        self.actor = self.RECORD_SCHEMA.field_map["actor"].default
-    
-    
-    @property
-    def deprecated(self) -> bool:
-        """Getter: Whether the datasource is deprecated by owner."""
-        return self._inner_dict.get('deprecated')  # type: ignore
-    
-    @deprecated.setter
-    def deprecated(self, value: bool) -> None:
-        """Setter: Whether the datasource is deprecated by owner."""
-        self._inner_dict['deprecated'] = value
-    
-    
-    @property
-    def decommissionTime(self) -> Union[None, int]:
-        """Getter: The time user plan to decommission this datasource."""
-        return self._inner_dict.get('decommissionTime')  # type: ignore
-    
-    @decommissionTime.setter
-    def decommissionTime(self, value: Union[None, int]) -> None:
-        """Setter: The time user plan to decommission this datasource."""
-        self._inner_dict['decommissionTime'] = value
-    
-    
-    @property
-    def note(self) -> str:
-        """Getter: Additional information about the datasource deprecation plan, such as the wiki, doc, RB."""
-        return self._inner_dict.get('note')  # type: ignore
-    
-    @note.setter
-    def note(self, value: str) -> None:
-        """Setter: Additional information about the datasource deprecation plan, such as the wiki, doc, RB."""
-        self._inner_dict['note'] = value
-    
-    
-    @property
-    def actor(self) -> Union[None, str]:
-        """Getter: The corpuser URN which will be credited for modifying this deprecation content."""
-        return self._inner_dict.get('actor')  # type: ignore
-    
-    @actor.setter
-    def actor(self, value: Union[None, str]) -> None:
-        """Setter: The corpuser URN which will be credited for modifying this deprecation content."""
-        self._inner_dict['actor'] = value
-    
-    
-class DatasourcePropertiesClass(DictWrapper):
-    """Properties associated with a Datasource"""
-    
-    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.datasource.DatasourceProperties")
-    def __init__(self,
-        customProperties: Optional[Dict[str, str]]=None,
-        externalUrl: Union[None, str]=None,
-        description: Union[None, str]=None,
-        uri: Union[None, str]=None,
-        tags: Optional[List[str]]=None,
-    ):
-        super().__init__()
-        
-        if customProperties is None:
-            # default: {}
-            self.customProperties = dict()
-        else:
-            self.customProperties = customProperties
-        self.externalUrl = externalUrl
-        self.description = description
-        self.uri = uri
-        if tags is None:
-            # default: []
-            self.tags = list()
-        else:
-            self.tags = tags
-    
-    @classmethod
-    def construct_with_defaults(cls) -> "DatasourcePropertiesClass":
-        self = cls.construct({})
-        self._restore_defaults()
-        
-        return self
-    
-    def _restore_defaults(self) -> None:
-        self.customProperties = dict()
-        self.externalUrl = self.RECORD_SCHEMA.field_map["externalUrl"].default
-        self.description = self.RECORD_SCHEMA.field_map["description"].default
-        self.uri = self.RECORD_SCHEMA.field_map["uri"].default
-        self.tags = list()
-    
-    
-    @property
-    def customProperties(self) -> Dict[str, str]:
-        """Getter: Custom property bag."""
-        return self._inner_dict.get('customProperties')  # type: ignore
-    
-    @customProperties.setter
-    def customProperties(self, value: Dict[str, str]) -> None:
-        """Setter: Custom property bag."""
-        self._inner_dict['customProperties'] = value
-    
-    
-    @property
-    def externalUrl(self) -> Union[None, str]:
-        """Getter: URL where the reference exist"""
-        return self._inner_dict.get('externalUrl')  # type: ignore
-    
-    @externalUrl.setter
-    def externalUrl(self, value: Union[None, str]) -> None:
-        """Setter: URL where the reference exist"""
-        self._inner_dict['externalUrl'] = value
-    
-    
-    @property
-    def description(self) -> Union[None, str]:
-        """Getter: Documentation of the datasource"""
-        return self._inner_dict.get('description')  # type: ignore
-    
-    @description.setter
-    def description(self, value: Union[None, str]) -> None:
-        """Setter: Documentation of the datasource"""
-        self._inner_dict['description'] = value
-    
-    
-    @property
-    def uri(self) -> Union[None, str]:
-        """Getter: The abstracted URI such as hdfs:///data/tracking/PageViewEvent, file:///dir/file_name. Uri should not include any environment specific properties. Some datasources might not have a standardized uri, which makes this field optional (i.e. kafka topic)."""
-        return self._inner_dict.get('uri')  # type: ignore
-    
-    @uri.setter
-    def uri(self, value: Union[None, str]) -> None:
-        """Setter: The abstracted URI such as hdfs:///data/tracking/PageViewEvent, file:///dir/file_name. Uri should not include any environment specific properties. Some datasources might not have a standardized uri, which makes this field optional (i.e. kafka topic)."""
-        self._inner_dict['uri'] = value
-    
-    
-    @property
-    def tags(self) -> List[str]:
-        """Getter: [Legacy] Unstructured tags for the datasource. Structured tags can be applied via the `GlobalTags` aspect."""
-        return self._inner_dict.get('tags')  # type: ignore
-    
-    @tags.setter
-    def tags(self, value: List[str]) -> None:
-        """Setter: [Legacy] Unstructured tags for the datasource. Structured tags can be applied via the `GlobalTags` aspect."""
-        self._inner_dict['tags'] = value
-    
-    
-class EditableDatasourcePropertiesClass(DictWrapper):
-    """EditableDatasourceProperties stores editable changes made to datasource properties. This separates changes made from
-    ingestion pipelines and edits in the UI to avoid accidental overwrites of user-provided data by ingestion pipelines"""
-    
-    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.datasource.EditableDatasourceProperties")
-    def __init__(self,
-        created: Optional["AuditStampClass"]=None,
-        lastModified: Optional["AuditStampClass"]=None,
-        deleted: Union[None, "AuditStampClass"]=None,
-        description: Union[None, str]=None,
-    ):
-        super().__init__()
-        
-        if created is None:
-            # default: {'actor': 'urn:li:corpuser:unknown', 'impersonator': None, 'time': 0}
-            self.created = _json_converter.from_json_object(self.RECORD_SCHEMA.field_map["created"].default, writers_schema=self.RECORD_SCHEMA.field_map["created"].type)
-        else:
-            self.created = created
-        if lastModified is None:
-            # default: {'actor': 'urn:li:corpuser:unknown', 'impersonator': None, 'time': 0}
-            self.lastModified = _json_converter.from_json_object(self.RECORD_SCHEMA.field_map["lastModified"].default, writers_schema=self.RECORD_SCHEMA.field_map["lastModified"].type)
-        else:
-            self.lastModified = lastModified
-        self.deleted = deleted
-        self.description = description
-    
-    @classmethod
-    def construct_with_defaults(cls) -> "EditableDatasourcePropertiesClass":
-        self = cls.construct({})
-        self._restore_defaults()
-        
-        return self
-    
-    def _restore_defaults(self) -> None:
-        self.created = _json_converter.from_json_object(self.RECORD_SCHEMA.field_map["created"].default, writers_schema=self.RECORD_SCHEMA.field_map["created"].type)
-        self.lastModified = _json_converter.from_json_object(self.RECORD_SCHEMA.field_map["lastModified"].default, writers_schema=self.RECORD_SCHEMA.field_map["lastModified"].type)
-        self.deleted = self.RECORD_SCHEMA.field_map["deleted"].default
-        self.description = self.RECORD_SCHEMA.field_map["description"].default
-    
-    
-    @property
-    def created(self) -> "AuditStampClass":
-        """Getter: An AuditStamp corresponding to the creation of this resource/association/sub-resource. A value of 0 for time indicates missing data."""
-        return self._inner_dict.get('created')  # type: ignore
-    
-    @created.setter
-    def created(self, value: "AuditStampClass") -> None:
-        """Setter: An AuditStamp corresponding to the creation of this resource/association/sub-resource. A value of 0 for time indicates missing data."""
-        self._inner_dict['created'] = value
-    
-    
-    @property
-    def lastModified(self) -> "AuditStampClass":
-        """Getter: An AuditStamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created. A value of 0 for time indicates missing data."""
-        return self._inner_dict.get('lastModified')  # type: ignore
-    
-    @lastModified.setter
-    def lastModified(self, value: "AuditStampClass") -> None:
-        """Setter: An AuditStamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created. A value of 0 for time indicates missing data."""
-        self._inner_dict['lastModified'] = value
-    
-    
-    @property
-    def deleted(self) -> Union[None, "AuditStampClass"]:
-        """Getter: An AuditStamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics."""
-        return self._inner_dict.get('deleted')  # type: ignore
-    
-    @deleted.setter
-    def deleted(self, value: Union[None, "AuditStampClass"]) -> None:
-        """Setter: An AuditStamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics."""
-        self._inner_dict['deleted'] = value
-    
-    
-    @property
-    def description(self) -> Union[None, str]:
-        """Getter: Documentation of the datasource"""
-        return self._inner_dict.get('description')  # type: ignore
-    
-    @description.setter
-    def description(self, value: Union[None, str]) -> None:
-        """Setter: Documentation of the datasource"""
-        self._inner_dict['description'] = value
-    
-    
 class ChangeTypeClass(object):
     """Descriptor for a change action"""
     
@@ -3867,6 +3423,53 @@ class GlossaryNodeInfoClass(DictWrapper):
         self._inner_dict['parentNode'] = value
     
     
+class GlossaryRelatedTermsClass(DictWrapper):
+    """Has A / Is A lineage information about a glossary Term reporting the lineage"""
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.glossary.GlossaryRelatedTerms")
+    def __init__(self,
+        isRelatedTerms: Union[None, List[str]]=None,
+        hasRelatedTerms: Union[None, List[str]]=None,
+    ):
+        super().__init__()
+        
+        self.isRelatedTerms = isRelatedTerms
+        self.hasRelatedTerms = hasRelatedTerms
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "GlossaryRelatedTermsClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.isRelatedTerms = self.RECORD_SCHEMA.field_map["isRelatedTerms"].default
+        self.hasRelatedTerms = self.RECORD_SCHEMA.field_map["hasRelatedTerms"].default
+    
+    
+    @property
+    def isRelatedTerms(self) -> Union[None, List[str]]:
+        """Getter: The relationship Is A with glossary term"""
+        return self._inner_dict.get('isRelatedTerms')  # type: ignore
+    
+    @isRelatedTerms.setter
+    def isRelatedTerms(self, value: Union[None, List[str]]) -> None:
+        """Setter: The relationship Is A with glossary term"""
+        self._inner_dict['isRelatedTerms'] = value
+    
+    
+    @property
+    def hasRelatedTerms(self) -> Union[None, List[str]]:
+        """Getter: The relationship Has A with glossary term"""
+        return self._inner_dict.get('hasRelatedTerms')  # type: ignore
+    
+    @hasRelatedTerms.setter
+    def hasRelatedTerms(self, value: Union[None, List[str]]) -> None:
+        """Setter: The relationship Has A with glossary term"""
+        self._inner_dict['hasRelatedTerms'] = value
+    
+    
 class GlossaryTermInfoClass(DictWrapper):
     """Properties associated with a GlossaryTerm"""
     
@@ -3878,6 +3481,7 @@ class GlossaryTermInfoClass(DictWrapper):
         sourceRef: Union[None, str]=None,
         sourceUrl: Union[None, str]=None,
         customProperties: Optional[Dict[str, str]]=None,
+        rawSchema: Union[None, str]=None,
     ):
         super().__init__()
         
@@ -3891,6 +3495,7 @@ class GlossaryTermInfoClass(DictWrapper):
             self.customProperties = dict()
         else:
             self.customProperties = customProperties
+        self.rawSchema = rawSchema
     
     @classmethod
     def construct_with_defaults(cls) -> "GlossaryTermInfoClass":
@@ -3906,6 +3511,7 @@ class GlossaryTermInfoClass(DictWrapper):
         self.sourceRef = self.RECORD_SCHEMA.field_map["sourceRef"].default
         self.sourceUrl = self.RECORD_SCHEMA.field_map["sourceUrl"].default
         self.customProperties = dict()
+        self.rawSchema = self.RECORD_SCHEMA.field_map["rawSchema"].default
     
     
     @property
@@ -3974,22 +3580,37 @@ class GlossaryTermInfoClass(DictWrapper):
         self._inner_dict['customProperties'] = value
     
     
+    @property
+    def rawSchema(self) -> Union[None, str]:
+        """Getter: Schema definition of the glossary term"""
+        return self._inner_dict.get('rawSchema')  # type: ignore
+    
+    @rawSchema.setter
+    def rawSchema(self, value: Union[None, str]) -> None:
+        """Setter: Schema definition of the glossary term"""
+        self._inner_dict['rawSchema'] = value
+    
+    
 class CorpGroupInfoClass(DictWrapper):
     """group of corpUser, it may contains nested group"""
     
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.identity.CorpGroupInfo")
     def __init__(self,
-        email: str,
         admins: List[str],
         members: List[str],
         groups: List[str],
+        displayName: Union[None, str]=None,
+        email: Union[None, str]=None,
+        description: Union[None, str]=None,
     ):
         super().__init__()
         
+        self.displayName = displayName
         self.email = email
         self.admins = admins
         self.members = members
         self.groups = groups
+        self.description = description
     
     @classmethod
     def construct_with_defaults(cls) -> "CorpGroupInfoClass":
@@ -3999,19 +3620,32 @@ class CorpGroupInfoClass(DictWrapper):
         return self
     
     def _restore_defaults(self) -> None:
-        self.email = str()
+        self.displayName = self.RECORD_SCHEMA.field_map["displayName"].default
+        self.email = self.RECORD_SCHEMA.field_map["email"].default
         self.admins = list()
         self.members = list()
         self.groups = list()
+        self.description = self.RECORD_SCHEMA.field_map["description"].default
     
     
     @property
-    def email(self) -> str:
+    def displayName(self) -> Union[None, str]:
+        """Getter: The name to use when displaying the group."""
+        return self._inner_dict.get('displayName')  # type: ignore
+    
+    @displayName.setter
+    def displayName(self, value: Union[None, str]) -> None:
+        """Setter: The name to use when displaying the group."""
+        self._inner_dict['displayName'] = value
+    
+    
+    @property
+    def email(self) -> Union[None, str]:
         """Getter: email of this group"""
         return self._inner_dict.get('email')  # type: ignore
     
     @email.setter
-    def email(self, value: str) -> None:
+    def email(self, value: Union[None, str]) -> None:
         """Setter: email of this group"""
         self._inner_dict['email'] = value
     
@@ -4049,6 +3683,17 @@ class CorpGroupInfoClass(DictWrapper):
         self._inner_dict['groups'] = value
     
     
+    @property
+    def description(self) -> Union[None, str]:
+        """Getter: A description of the group."""
+        return self._inner_dict.get('description')  # type: ignore
+    
+    @description.setter
+    def description(self, value: Union[None, str]) -> None:
+        """Setter: A description of the group."""
+        self._inner_dict['description'] = value
+    
+    
 class CorpUserEditableInfoClass(DictWrapper):
     """Linkedin corp user information that can be edited from UI"""
     
@@ -4073,7 +3718,7 @@ class CorpUserEditableInfoClass(DictWrapper):
         else:
             self.skills = skills
         if pictureLink is None:
-            # default: 'https://raw.githubusercontent.com/linkedin/datahub/master/datahub-web/packages/data-portal/public/assets/images/default_avatar.png'
+            # default: 'https://raw.githubusercontent.com/linkedin/datahub/master/datahub-web-react/src/images/default_avatar.png'
             self.pictureLink = self.RECORD_SCHEMA.field_map["pictureLink"].default
         else:
             self.pictureLink = pictureLink
@@ -4142,8 +3787,8 @@ class CorpUserInfoClass(DictWrapper):
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.identity.CorpUserInfo")
     def __init__(self,
         active: bool,
-        email: str,
         displayName: Union[None, str]=None,
+        email: Union[None, str]=None,
         title: Union[None, str]=None,
         managerUrn: Union[None, str]=None,
         departmentId: Union[None, int]=None,
@@ -4177,7 +3822,7 @@ class CorpUserInfoClass(DictWrapper):
     def _restore_defaults(self) -> None:
         self.active = bool()
         self.displayName = self.RECORD_SCHEMA.field_map["displayName"].default
-        self.email = str()
+        self.email = self.RECORD_SCHEMA.field_map["email"].default
         self.title = self.RECORD_SCHEMA.field_map["title"].default
         self.managerUrn = self.RECORD_SCHEMA.field_map["managerUrn"].default
         self.departmentId = self.RECORD_SCHEMA.field_map["departmentId"].default
@@ -4211,12 +3856,12 @@ class CorpUserInfoClass(DictWrapper):
     
     
     @property
-    def email(self) -> str:
+    def email(self) -> Union[None, str]:
         """Getter: email address of this user"""
         return self._inner_dict.get('email')  # type: ignore
     
     @email.setter
-    def email(self, value: str) -> None:
+    def email(self, value: Union[None, str]) -> None:
         """Setter: email address of this user"""
         self._inner_dict['email'] = value
     
@@ -4309,6 +3954,39 @@ class CorpUserInfoClass(DictWrapper):
         self._inner_dict['countryCode'] = value
     
     
+class GroupMembershipClass(DictWrapper):
+    """Carries information about the CorpGroups a user is in."""
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.identity.GroupMembership")
+    def __init__(self,
+        groups: List[str],
+    ):
+        super().__init__()
+        
+        self.groups = groups
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "GroupMembershipClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.groups = list()
+    
+    
+    @property
+    def groups(self) -> List[str]:
+        # No docs available.
+        return self._inner_dict.get('groups')  # type: ignore
+    
+    @groups.setter
+    def groups(self, value: List[str]) -> None:
+        # No docs available.
+        self._inner_dict['groups'] = value
+    
+    
 class ChartKeyClass(DictWrapper):
     """Key for a Chart"""
     
@@ -4380,12 +4058,12 @@ class CorpGroupKeyClass(DictWrapper):
     
     @property
     def name(self) -> str:
-        """Getter: The name of the AD/LDAP group."""
+        """Getter: The URL-encoded name of the AD/LDAP group. Serves as a globally unique identifier within DataHub."""
         return self._inner_dict.get('name')  # type: ignore
     
     @name.setter
     def name(self, value: str) -> None:
-        """Setter: The name of the AD/LDAP group."""
+        """Setter: The URL-encoded name of the AD/LDAP group. Serves as a globally unique identifier within DataHub."""
         self._inner_dict['name'] = value
     
     
@@ -4528,6 +4206,39 @@ class DataFlowKeyClass(DictWrapper):
     def cluster(self, value: str) -> None:
         """Setter: Cluster where the flow is executed"""
         self._inner_dict['cluster'] = value
+    
+    
+class DataHubPolicyKeyClass(DictWrapper):
+    """Key for a DataHub Policy"""
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.metadata.key.DataHubPolicyKey")
+    def __init__(self,
+        id: str,
+    ):
+        super().__init__()
+        
+        self.id = id
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "DataHubPolicyKeyClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.id = str()
+    
+    
+    @property
+    def id(self) -> str:
+        """Getter: A unique id for the DataHub access policy record. Generated on the server side at policy creation time."""
+        return self._inner_dict.get('id')  # type: ignore
+    
+    @id.setter
+    def id(self, value: str) -> None:
+        """Setter: A unique id for the DataHub access policy record. Generated on the server side at policy creation time."""
+        self._inner_dict['id'] = value
     
     
 class DataJobKeyClass(DictWrapper):
@@ -4714,12 +4425,12 @@ class DatasetKeyClass(DictWrapper):
     
     @property
     def name(self) -> str:
-        """Getter: Dataset native name e.g. db.table, /dir/subdir/name, or name"""
+        """Getter: Dataset native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>"""
         return self._inner_dict.get('name')  # type: ignore
     
     @name.setter
     def name(self, value: str) -> None:
-        """Setter: Dataset native name e.g. db.table, /dir/subdir/name, or name"""
+        """Setter: Dataset native name e.g. <db>.<table>, /dir/subdir/<name>, or <name>"""
         self._inner_dict['name'] = value
     
     
@@ -4731,67 +4442,6 @@ class DatasetKeyClass(DictWrapper):
     @origin.setter
     def origin(self, value: Union[str, "FabricTypeClass"]) -> None:
         """Setter: Fabric type where dataset belongs to or where it was generated."""
-        self._inner_dict['origin'] = value
-    
-    
-class DatasourceKeyClass(DictWrapper):
-    """Key for a Datasource"""
-    
-    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.metadata.key.DatasourceKey")
-    def __init__(self,
-        platform: str,
-        name: str,
-        origin: Union[str, "FabricTypeClass"],
-    ):
-        super().__init__()
-        
-        self.platform = platform
-        self.name = name
-        self.origin = origin
-    
-    @classmethod
-    def construct_with_defaults(cls) -> "DatasourceKeyClass":
-        self = cls.construct({})
-        self._restore_defaults()
-        
-        return self
-    
-    def _restore_defaults(self) -> None:
-        self.platform = str()
-        self.name = str()
-        self.origin = FabricTypeClass.DEV
-    
-    
-    @property
-    def platform(self) -> str:
-        """Getter: Data platform urn associated with the datasource"""
-        return self._inner_dict.get('platform')  # type: ignore
-    
-    @platform.setter
-    def platform(self, value: str) -> None:
-        """Setter: Data platform urn associated with the datasource"""
-        self._inner_dict['platform'] = value
-    
-    
-    @property
-    def name(self) -> str:
-        """Getter: Datasource native name e.g. db.table, /dir/subdir/name, or name"""
-        return self._inner_dict.get('name')  # type: ignore
-    
-    @name.setter
-    def name(self, value: str) -> None:
-        """Setter: Datasource native name e.g. db.table, /dir/subdir/name, or name"""
-        self._inner_dict['name'] = value
-    
-    
-    @property
-    def origin(self) -> Union[str, "FabricTypeClass"]:
-        """Getter: Fabric type where datasource belongs to or where it was generated."""
-        return self._inner_dict.get('origin')  # type: ignore
-    
-    @origin.setter
-    def origin(self, value: Union[str, "FabricTypeClass"]) -> None:
-        """Setter: Fabric type where datasource belongs to or where it was generated."""
         self._inner_dict['origin'] = value
     
     
@@ -5318,7 +4968,7 @@ class CorpUserSnapshotClass(DictWrapper):
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.metadata.snapshot.CorpUserSnapshot")
     def __init__(self,
         urn: str,
-        aspects: List[Union["CorpUserKeyClass", "CorpUserInfoClass", "CorpUserEditableInfoClass", "GlobalTagsClass", "StatusClass"]],
+        aspects: List[Union["CorpUserKeyClass", "CorpUserInfoClass", "CorpUserEditableInfoClass", "GroupMembershipClass", "GlobalTagsClass", "StatusClass"]],
     ):
         super().__init__()
         
@@ -5349,12 +4999,12 @@ class CorpUserSnapshotClass(DictWrapper):
     
     
     @property
-    def aspects(self) -> List[Union["CorpUserKeyClass", "CorpUserInfoClass", "CorpUserEditableInfoClass", "GlobalTagsClass", "StatusClass"]]:
+    def aspects(self) -> List[Union["CorpUserKeyClass", "CorpUserInfoClass", "CorpUserEditableInfoClass", "GroupMembershipClass", "GlobalTagsClass", "StatusClass"]]:
         """Getter: The list of metadata aspects associated with the CorpUser. Depending on the use case, this can either be all, or a selection, of supported aspects."""
         return self._inner_dict.get('aspects')  # type: ignore
     
     @aspects.setter
-    def aspects(self, value: List[Union["CorpUserKeyClass", "CorpUserInfoClass", "CorpUserEditableInfoClass", "GlobalTagsClass", "StatusClass"]]) -> None:
+    def aspects(self, value: List[Union["CorpUserKeyClass", "CorpUserInfoClass", "CorpUserEditableInfoClass", "GroupMembershipClass", "GlobalTagsClass", "StatusClass"]]) -> None:
         """Setter: The list of metadata aspects associated with the CorpUser. Depending on the use case, this can either be all, or a selection, of supported aspects."""
         self._inner_dict['aspects'] = value
     
@@ -5450,6 +5100,53 @@ class DataFlowSnapshotClass(DictWrapper):
     @aspects.setter
     def aspects(self, value: List[Union["DataFlowKeyClass", "DataFlowInfoClass", "EditableDataFlowPropertiesClass", "OwnershipClass", "StatusClass", "GlobalTagsClass", "BrowsePathsClass"]]) -> None:
         """Setter: The list of metadata aspects associated with the data flow. Depending on the use case, this can either be all, or a selection, of supported aspects."""
+        self._inner_dict['aspects'] = value
+    
+    
+class DataHubPolicySnapshotClass(DictWrapper):
+    """A metadata snapshot for DataHub Access Policy data."""
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.metadata.snapshot.DataHubPolicySnapshot")
+    def __init__(self,
+        urn: str,
+        aspects: List[Union["DataHubPolicyKeyClass", "DataHubPolicyInfoClass"]],
+    ):
+        super().__init__()
+        
+        self.urn = urn
+        self.aspects = aspects
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "DataHubPolicySnapshotClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.urn = str()
+        self.aspects = list()
+    
+    
+    @property
+    def urn(self) -> str:
+        """Getter: URN for the entity the metadata snapshot is associated with."""
+        return self._inner_dict.get('urn')  # type: ignore
+    
+    @urn.setter
+    def urn(self, value: str) -> None:
+        """Setter: URN for the entity the metadata snapshot is associated with."""
+        self._inner_dict['urn'] = value
+    
+    
+    @property
+    def aspects(self) -> List[Union["DataHubPolicyKeyClass", "DataHubPolicyInfoClass"]]:
+        """Getter: The list of metadata aspects associated with the DataHub access policy."""
+        return self._inner_dict.get('aspects')  # type: ignore
+    
+    @aspects.setter
+    def aspects(self, value: List[Union["DataHubPolicyKeyClass", "DataHubPolicyInfoClass"]]) -> None:
+        """Setter: The list of metadata aspects associated with the DataHub access policy."""
         self._inner_dict['aspects'] = value
     
     
@@ -5641,53 +5338,6 @@ class DatasetSnapshotClass(DictWrapper):
         self._inner_dict['aspects'] = value
     
     
-class DatasourceSnapshotClass(DictWrapper):
-    # No docs available.
-    
-    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.metadata.snapshot.DatasourceSnapshot")
-    def __init__(self,
-        urn: str,
-        aspects: List[Union["DatasourceKeyClass", "DatasourcePropertiesClass", "EditableDatasourcePropertiesClass", "DatasourceDeprecationClass", "InstitutionalMemoryClass", "OwnershipClass", "StatusClass", "DatasourceConnectionsClass", "GlobalTagsClass", "GlossaryTermsClass", "BrowsePathsClass"]],
-    ):
-        super().__init__()
-        
-        self.urn = urn
-        self.aspects = aspects
-    
-    @classmethod
-    def construct_with_defaults(cls) -> "DatasourceSnapshotClass":
-        self = cls.construct({})
-        self._restore_defaults()
-        
-        return self
-    
-    def _restore_defaults(self) -> None:
-        self.urn = str()
-        self.aspects = list()
-    
-    
-    @property
-    def urn(self) -> str:
-        """Getter: URN for the entity the metadata snapshot is associated with."""
-        return self._inner_dict.get('urn')  # type: ignore
-    
-    @urn.setter
-    def urn(self, value: str) -> None:
-        """Setter: URN for the entity the metadata snapshot is associated with."""
-        self._inner_dict['urn'] = value
-    
-    
-    @property
-    def aspects(self) -> List[Union["DatasourceKeyClass", "DatasourcePropertiesClass", "EditableDatasourcePropertiesClass", "DatasourceDeprecationClass", "InstitutionalMemoryClass", "OwnershipClass", "StatusClass", "DatasourceConnectionsClass", "GlobalTagsClass", "GlossaryTermsClass", "BrowsePathsClass"]]:
-        """Getter: The list of metadata aspects associated with the datasource. Depending on the use case, this can either be all, or a selection, of supported aspects."""
-        return self._inner_dict.get('aspects')  # type: ignore
-    
-    @aspects.setter
-    def aspects(self, value: List[Union["DatasourceKeyClass", "DatasourcePropertiesClass", "EditableDatasourcePropertiesClass", "DatasourceDeprecationClass", "InstitutionalMemoryClass", "OwnershipClass", "StatusClass", "DatasourceConnectionsClass", "GlobalTagsClass", "GlossaryTermsClass", "BrowsePathsClass"]]) -> None:
-        """Setter: The list of metadata aspects associated with the datasource. Depending on the use case, this can either be all, or a selection, of supported aspects."""
-        self._inner_dict['aspects'] = value
-    
-    
 class GlossaryNodeSnapshotClass(DictWrapper):
     """A metadata snapshot for a specific GlossaryNode entity."""
     
@@ -5741,7 +5391,7 @@ class GlossaryTermSnapshotClass(DictWrapper):
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.metadata.snapshot.GlossaryTermSnapshot")
     def __init__(self,
         urn: str,
-        aspects: List[Union["GlossaryTermKeyClass", "GlossaryTermInfoClass", "OwnershipClass", "StatusClass", "BrowsePathsClass"]],
+        aspects: List[Union["GlossaryTermKeyClass", "GlossaryTermInfoClass", "OwnershipClass", "StatusClass", "BrowsePathsClass", "GlossaryRelatedTermsClass"]],
     ):
         super().__init__()
         
@@ -5772,12 +5422,12 @@ class GlossaryTermSnapshotClass(DictWrapper):
     
     
     @property
-    def aspects(self) -> List[Union["GlossaryTermKeyClass", "GlossaryTermInfoClass", "OwnershipClass", "StatusClass", "BrowsePathsClass"]]:
+    def aspects(self) -> List[Union["GlossaryTermKeyClass", "GlossaryTermInfoClass", "OwnershipClass", "StatusClass", "BrowsePathsClass", "GlossaryRelatedTermsClass"]]:
         """Getter: The list of metadata aspects associated with the GlossaryTerm. Depending on the use case, this can either be all, or a selection, of supported aspects."""
         return self._inner_dict.get('aspects')  # type: ignore
     
     @aspects.setter
-    def aspects(self, value: List[Union["GlossaryTermKeyClass", "GlossaryTermInfoClass", "OwnershipClass", "StatusClass", "BrowsePathsClass"]]) -> None:
+    def aspects(self, value: List[Union["GlossaryTermKeyClass", "GlossaryTermInfoClass", "OwnershipClass", "StatusClass", "BrowsePathsClass", "GlossaryRelatedTermsClass"]]) -> None:
         """Setter: The list of metadata aspects associated with the GlossaryTerm. Depending on the use case, this can either be all, or a selection, of supported aspects."""
         self._inner_dict['aspects'] = value
     
@@ -7718,7 +7368,7 @@ class MetadataChangeEventClass(DictWrapper):
     
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.mxe.MetadataChangeEvent")
     def __init__(self,
-        proposedSnapshot: Union["ChartSnapshotClass", "CorpGroupSnapshotClass", "CorpUserSnapshotClass", "DashboardSnapshotClass", "DataFlowSnapshotClass", "DataJobSnapshotClass", "DatasetSnapshotClass", "DatasourceSnapshotClass", "DataProcessSnapshotClass", "DataPlatformSnapshotClass", "MLModelSnapshotClass", "MLPrimaryKeySnapshotClass", "MLFeatureSnapshotClass", "MLFeatureTableSnapshotClass", "MLModelDeploymentSnapshotClass", "MLModelGroupSnapshotClass", "TagSnapshotClass", "GlossaryTermSnapshotClass", "GlossaryNodeSnapshotClass"],
+        proposedSnapshot: Union["ChartSnapshotClass", "CorpGroupSnapshotClass", "CorpUserSnapshotClass", "DashboardSnapshotClass", "DataFlowSnapshotClass", "DataJobSnapshotClass", "DatasetSnapshotClass", "DataProcessSnapshotClass", "DataPlatformSnapshotClass", "MLModelSnapshotClass", "MLPrimaryKeySnapshotClass", "MLFeatureSnapshotClass", "MLFeatureTableSnapshotClass", "MLModelDeploymentSnapshotClass", "MLModelGroupSnapshotClass", "TagSnapshotClass", "GlossaryTermSnapshotClass", "GlossaryNodeSnapshotClass", "DataHubPolicySnapshotClass"],
         auditHeader: Union[None, "KafkaAuditHeaderClass"]=None,
         proposedDelta: None=None,
         systemMetadata: Union[None, "SystemMetadataClass"]=None,
@@ -7756,12 +7406,12 @@ class MetadataChangeEventClass(DictWrapper):
     
     
     @property
-    def proposedSnapshot(self) -> Union["ChartSnapshotClass", "CorpGroupSnapshotClass", "CorpUserSnapshotClass", "DashboardSnapshotClass", "DataFlowSnapshotClass", "DataJobSnapshotClass", "DatasetSnapshotClass", "DatasourceSnapshotClass", "DataProcessSnapshotClass", "DataPlatformSnapshotClass", "MLModelSnapshotClass", "MLPrimaryKeySnapshotClass", "MLFeatureSnapshotClass", "MLFeatureTableSnapshotClass", "MLModelDeploymentSnapshotClass", "MLModelGroupSnapshotClass", "TagSnapshotClass", "GlossaryTermSnapshotClass", "GlossaryNodeSnapshotClass"]:
+    def proposedSnapshot(self) -> Union["ChartSnapshotClass", "CorpGroupSnapshotClass", "CorpUserSnapshotClass", "DashboardSnapshotClass", "DataFlowSnapshotClass", "DataJobSnapshotClass", "DatasetSnapshotClass", "DataProcessSnapshotClass", "DataPlatformSnapshotClass", "MLModelSnapshotClass", "MLPrimaryKeySnapshotClass", "MLFeatureSnapshotClass", "MLFeatureTableSnapshotClass", "MLModelDeploymentSnapshotClass", "MLModelGroupSnapshotClass", "TagSnapshotClass", "GlossaryTermSnapshotClass", "GlossaryNodeSnapshotClass", "DataHubPolicySnapshotClass"]:
         """Getter: Snapshot of the proposed metadata change. Include only the aspects affected by the change in the snapshot."""
         return self._inner_dict.get('proposedSnapshot')  # type: ignore
     
     @proposedSnapshot.setter
-    def proposedSnapshot(self, value: Union["ChartSnapshotClass", "CorpGroupSnapshotClass", "CorpUserSnapshotClass", "DashboardSnapshotClass", "DataFlowSnapshotClass", "DataJobSnapshotClass", "DatasetSnapshotClass", "DatasourceSnapshotClass", "DataProcessSnapshotClass", "DataPlatformSnapshotClass", "MLModelSnapshotClass", "MLPrimaryKeySnapshotClass", "MLFeatureSnapshotClass", "MLFeatureTableSnapshotClass", "MLModelDeploymentSnapshotClass", "MLModelGroupSnapshotClass", "TagSnapshotClass", "GlossaryTermSnapshotClass", "GlossaryNodeSnapshotClass"]) -> None:
+    def proposedSnapshot(self, value: Union["ChartSnapshotClass", "CorpGroupSnapshotClass", "CorpUserSnapshotClass", "DashboardSnapshotClass", "DataFlowSnapshotClass", "DataJobSnapshotClass", "DatasetSnapshotClass", "DataProcessSnapshotClass", "DataPlatformSnapshotClass", "MLModelSnapshotClass", "MLPrimaryKeySnapshotClass", "MLFeatureSnapshotClass", "MLFeatureTableSnapshotClass", "MLModelDeploymentSnapshotClass", "MLModelGroupSnapshotClass", "TagSnapshotClass", "GlossaryTermSnapshotClass", "GlossaryNodeSnapshotClass", "DataHubPolicySnapshotClass"]) -> None:
         """Setter: Snapshot of the proposed metadata change. Include only the aspects affected by the change in the snapshot."""
         self._inner_dict['proposedSnapshot'] = value
     
@@ -7934,14 +7584,22 @@ class SystemMetadataClass(DictWrapper):
     
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.mxe.SystemMetadata")
     def __init__(self,
-        lastObserved: Union[None, int]=None,
-        runId: Union[None, str]=None,
+        lastObserved: Optional[Union[int, None]]=None,
+        runId: Optional[Union[str, None]]=None,
         properties: Union[None, Dict[str, str]]=None,
     ):
         super().__init__()
         
-        self.lastObserved = lastObserved
-        self.runId = runId
+        if lastObserved is None:
+            # default: 0
+            self.lastObserved = self.RECORD_SCHEMA.field_map["lastObserved"].default
+        else:
+            self.lastObserved = lastObserved
+        if runId is None:
+            # default: 'no-run-id-provided'
+            self.runId = self.RECORD_SCHEMA.field_map["runId"].default
+        else:
+            self.runId = runId
         self.properties = properties
     
     @classmethod
@@ -7958,23 +7616,23 @@ class SystemMetadataClass(DictWrapper):
     
     
     @property
-    def lastObserved(self) -> Union[None, int]:
+    def lastObserved(self) -> Union[int, None]:
         """Getter: The timestamp the metadata was observed at"""
         return self._inner_dict.get('lastObserved')  # type: ignore
     
     @lastObserved.setter
-    def lastObserved(self, value: Union[None, int]) -> None:
+    def lastObserved(self, value: Union[int, None]) -> None:
         """Setter: The timestamp the metadata was observed at"""
         self._inner_dict['lastObserved'] = value
     
     
     @property
-    def runId(self) -> Union[None, str]:
+    def runId(self) -> Union[str, None]:
         """Getter: The run id that produced the metadata"""
         return self._inner_dict.get('runId')  # type: ignore
     
     @runId.setter
-    def runId(self, value: Union[None, str]) -> None:
+    def runId(self, value: Union[str, None]) -> None:
         """Setter: The run id that produced the metadata"""
         self._inner_dict['runId'] = value
     
@@ -7988,6 +7646,313 @@ class SystemMetadataClass(DictWrapper):
     def properties(self, value: Union[None, Dict[str, str]]) -> None:
         """Setter: Additional properties"""
         self._inner_dict['properties'] = value
+    
+    
+class DataHubActorFilterClass(DictWrapper):
+    """Information used to filter DataHub actors."""
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.policy.DataHubActorFilter")
+    def __init__(self,
+        users: Union[None, List[str]]=None,
+        groups: Union[None, List[str]]=None,
+        resourceOwners: Optional[bool]=None,
+        allUsers: Optional[bool]=None,
+        allGroups: Optional[bool]=None,
+    ):
+        super().__init__()
+        
+        self.users = users
+        self.groups = groups
+        if resourceOwners is None:
+            # default: False
+            self.resourceOwners = self.RECORD_SCHEMA.field_map["resourceOwners"].default
+        else:
+            self.resourceOwners = resourceOwners
+        if allUsers is None:
+            # default: False
+            self.allUsers = self.RECORD_SCHEMA.field_map["allUsers"].default
+        else:
+            self.allUsers = allUsers
+        if allGroups is None:
+            # default: False
+            self.allGroups = self.RECORD_SCHEMA.field_map["allGroups"].default
+        else:
+            self.allGroups = allGroups
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "DataHubActorFilterClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.users = self.RECORD_SCHEMA.field_map["users"].default
+        self.groups = self.RECORD_SCHEMA.field_map["groups"].default
+        self.resourceOwners = self.RECORD_SCHEMA.field_map["resourceOwners"].default
+        self.allUsers = self.RECORD_SCHEMA.field_map["allUsers"].default
+        self.allGroups = self.RECORD_SCHEMA.field_map["allGroups"].default
+    
+    
+    @property
+    def users(self) -> Union[None, List[str]]:
+        """Getter: A specific set of users to apply the policy to (disjunctive)"""
+        return self._inner_dict.get('users')  # type: ignore
+    
+    @users.setter
+    def users(self, value: Union[None, List[str]]) -> None:
+        """Setter: A specific set of users to apply the policy to (disjunctive)"""
+        self._inner_dict['users'] = value
+    
+    
+    @property
+    def groups(self) -> Union[None, List[str]]:
+        """Getter: A specific set of groups to apply the policy to (disjunctive)"""
+        return self._inner_dict.get('groups')  # type: ignore
+    
+    @groups.setter
+    def groups(self, value: Union[None, List[str]]) -> None:
+        """Setter: A specific set of groups to apply the policy to (disjunctive)"""
+        self._inner_dict['groups'] = value
+    
+    
+    @property
+    def resourceOwners(self) -> bool:
+        """Getter: Whether the filter should return true for owners of a particular resource.
+    Only applies to policies of type 'Metadata', which have a resource associated with them."""
+        return self._inner_dict.get('resourceOwners')  # type: ignore
+    
+    @resourceOwners.setter
+    def resourceOwners(self, value: bool) -> None:
+        """Setter: Whether the filter should return true for owners of a particular resource.
+    Only applies to policies of type 'Metadata', which have a resource associated with them."""
+        self._inner_dict['resourceOwners'] = value
+    
+    
+    @property
+    def allUsers(self) -> bool:
+        """Getter: Whether the filter should apply to all users."""
+        return self._inner_dict.get('allUsers')  # type: ignore
+    
+    @allUsers.setter
+    def allUsers(self, value: bool) -> None:
+        """Setter: Whether the filter should apply to all users."""
+        self._inner_dict['allUsers'] = value
+    
+    
+    @property
+    def allGroups(self) -> bool:
+        """Getter: Whether the filter should apply to all groups."""
+        return self._inner_dict.get('allGroups')  # type: ignore
+    
+    @allGroups.setter
+    def allGroups(self, value: bool) -> None:
+        """Setter: Whether the filter should apply to all groups."""
+        self._inner_dict['allGroups'] = value
+    
+    
+class DataHubPolicyInfoClass(DictWrapper):
+    """Information about a DataHub (UI) access policy."""
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.policy.DataHubPolicyInfo")
+    def __init__(self,
+        displayName: str,
+        description: str,
+        type: str,
+        state: str,
+        privileges: List[str],
+        actors: "DataHubActorFilterClass",
+        resources: Union[None, "DataHubResourceFilterClass"]=None,
+        editable: Optional[bool]=None,
+    ):
+        super().__init__()
+        
+        self.displayName = displayName
+        self.description = description
+        self.type = type
+        self.state = state
+        self.resources = resources
+        self.privileges = privileges
+        self.actors = actors
+        if editable is None:
+            # default: True
+            self.editable = self.RECORD_SCHEMA.field_map["editable"].default
+        else:
+            self.editable = editable
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "DataHubPolicyInfoClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.displayName = str()
+        self.description = str()
+        self.type = str()
+        self.state = str()
+        self.resources = self.RECORD_SCHEMA.field_map["resources"].default
+        self.privileges = list()
+        self.actors = DataHubActorFilterClass.construct_with_defaults()
+        self.editable = self.RECORD_SCHEMA.field_map["editable"].default
+    
+    
+    @property
+    def displayName(self) -> str:
+        """Getter: Display name of the Policy"""
+        return self._inner_dict.get('displayName')  # type: ignore
+    
+    @displayName.setter
+    def displayName(self, value: str) -> None:
+        """Setter: Display name of the Policy"""
+        self._inner_dict['displayName'] = value
+    
+    
+    @property
+    def description(self) -> str:
+        """Getter: Description of the Policy"""
+        return self._inner_dict.get('description')  # type: ignore
+    
+    @description.setter
+    def description(self, value: str) -> None:
+        """Setter: Description of the Policy"""
+        self._inner_dict['description'] = value
+    
+    
+    @property
+    def type(self) -> str:
+        """Getter: The type of policy"""
+        return self._inner_dict.get('type')  # type: ignore
+    
+    @type.setter
+    def type(self, value: str) -> None:
+        """Setter: The type of policy"""
+        self._inner_dict['type'] = value
+    
+    
+    @property
+    def state(self) -> str:
+        """Getter: The state of policy, ACTIVE or INACTIVE"""
+        return self._inner_dict.get('state')  # type: ignore
+    
+    @state.setter
+    def state(self, value: str) -> None:
+        """Setter: The state of policy, ACTIVE or INACTIVE"""
+        self._inner_dict['state'] = value
+    
+    
+    @property
+    def resources(self) -> Union[None, "DataHubResourceFilterClass"]:
+        """Getter: The resource that the policy applies to. Not required for some 'Platform' privileges."""
+        return self._inner_dict.get('resources')  # type: ignore
+    
+    @resources.setter
+    def resources(self, value: Union[None, "DataHubResourceFilterClass"]) -> None:
+        """Setter: The resource that the policy applies to. Not required for some 'Platform' privileges."""
+        self._inner_dict['resources'] = value
+    
+    
+    @property
+    def privileges(self) -> List[str]:
+        """Getter: The privileges that the policy grants."""
+        return self._inner_dict.get('privileges')  # type: ignore
+    
+    @privileges.setter
+    def privileges(self, value: List[str]) -> None:
+        """Setter: The privileges that the policy grants."""
+        self._inner_dict['privileges'] = value
+    
+    
+    @property
+    def actors(self) -> "DataHubActorFilterClass":
+        """Getter: The actors that the policy applies to."""
+        return self._inner_dict.get('actors')  # type: ignore
+    
+    @actors.setter
+    def actors(self, value: "DataHubActorFilterClass") -> None:
+        """Setter: The actors that the policy applies to."""
+        self._inner_dict['actors'] = value
+    
+    
+    @property
+    def editable(self) -> bool:
+        """Getter: Whether the policy should be editable via the UI"""
+        return self._inner_dict.get('editable')  # type: ignore
+    
+    @editable.setter
+    def editable(self, value: bool) -> None:
+        """Setter: Whether the policy should be editable via the UI"""
+        self._inner_dict['editable'] = value
+    
+    
+class DataHubResourceFilterClass(DictWrapper):
+    """Information used to filter DataHub resource."""
+    
+    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.policy.DataHubResourceFilter")
+    def __init__(self,
+        type: Union[None, str]=None,
+        resources: Union[None, List[str]]=None,
+        allResources: Optional[bool]=None,
+    ):
+        super().__init__()
+        
+        self.type = type
+        self.resources = resources
+        if allResources is None:
+            # default: False
+            self.allResources = self.RECORD_SCHEMA.field_map["allResources"].default
+        else:
+            self.allResources = allResources
+    
+    @classmethod
+    def construct_with_defaults(cls) -> "DataHubResourceFilterClass":
+        self = cls.construct({})
+        self._restore_defaults()
+        
+        return self
+    
+    def _restore_defaults(self) -> None:
+        self.type = self.RECORD_SCHEMA.field_map["type"].default
+        self.resources = self.RECORD_SCHEMA.field_map["resources"].default
+        self.allResources = self.RECORD_SCHEMA.field_map["allResources"].default
+    
+    
+    @property
+    def type(self) -> Union[None, str]:
+        """Getter: The type of resource that the policy applies to. This will most often be a data asset entity name, for
+    example 'dataset'. It is not strictly required because in the future we will want to support filtering a resource
+    by domain, as well."""
+        return self._inner_dict.get('type')  # type: ignore
+    
+    @type.setter
+    def type(self, value: Union[None, str]) -> None:
+        """Setter: The type of resource that the policy applies to. This will most often be a data asset entity name, for
+    example 'dataset'. It is not strictly required because in the future we will want to support filtering a resource
+    by domain, as well."""
+        self._inner_dict['type'] = value
+    
+    
+    @property
+    def resources(self) -> Union[None, List[str]]:
+        """Getter: A specific set of resources to apply the policy to, e.g. asset urns"""
+        return self._inner_dict.get('resources')  # type: ignore
+    
+    @resources.setter
+    def resources(self, value: Union[None, List[str]]) -> None:
+        """Setter: A specific set of resources to apply the policy to, e.g. asset urns"""
+        self._inner_dict['resources'] = value
+    
+    
+    @property
+    def allResources(self) -> bool:
+        """Getter: Whether the policy should be applied to all assets matching the filter."""
+        return self._inner_dict.get('allResources')  # type: ignore
+    
+    @allResources.setter
+    def allResources(self, value: bool) -> None:
+        """Setter: Whether the policy should be applied to all assets matching the filter."""
+        self._inner_dict['allResources'] = value
     
     
 class ArrayTypeClass(DictWrapper):
@@ -8154,67 +8119,6 @@ class DatasetFieldForeignKeyClass(DictWrapper):
     @parentField.setter
     def parentField(self, value: str) -> None:
         """Setter: SchemaField@fieldPath that uniquely identify field in parent dataset that this field references."""
-        self._inner_dict['parentField'] = value
-    
-    
-class DatasourceFieldForeignKeyClass(DictWrapper):
-    """For non-urn based foregin keys."""
-    
-    RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.schema.DatasourceFieldForeignKey")
-    def __init__(self,
-        parentDatasource: str,
-        currentFieldPaths: List[str],
-        parentField: str,
-    ):
-        super().__init__()
-        
-        self.parentDatasource = parentDatasource
-        self.currentFieldPaths = currentFieldPaths
-        self.parentField = parentField
-    
-    @classmethod
-    def construct_with_defaults(cls) -> "DatasourceFieldForeignKeyClass":
-        self = cls.construct({})
-        self._restore_defaults()
-        
-        return self
-    
-    def _restore_defaults(self) -> None:
-        self.parentDatasource = str()
-        self.currentFieldPaths = list()
-        self.parentField = str()
-    
-    
-    @property
-    def parentDatasource(self) -> str:
-        """Getter: datasource that stores the resource."""
-        return self._inner_dict.get('parentDatasource')  # type: ignore
-    
-    @parentDatasource.setter
-    def parentDatasource(self, value: str) -> None:
-        """Setter: datasource that stores the resource."""
-        self._inner_dict['parentDatasource'] = value
-    
-    
-    @property
-    def currentFieldPaths(self) -> List[str]:
-        """Getter: List of fields in hosting(current) SchemaMetadata that conform a foreign key. List can contain a single entry or multiple entries if several entries in hosting schema conform a foreign key in a single parent datasource."""
-        return self._inner_dict.get('currentFieldPaths')  # type: ignore
-    
-    @currentFieldPaths.setter
-    def currentFieldPaths(self, value: List[str]) -> None:
-        """Setter: List of fields in hosting(current) SchemaMetadata that conform a foreign key. List can contain a single entry or multiple entries if several entries in hosting schema conform a foreign key in a single parent datasource."""
-        self._inner_dict['currentFieldPaths'] = value
-    
-    
-    @property
-    def parentField(self) -> str:
-        """Getter: SchemaField@fieldPath that uniquely identify field in parent datasource that this field references."""
-        return self._inner_dict.get('parentField')  # type: ignore
-    
-    @parentField.setter
-    def parentField(self, value: str) -> None:
-        """Setter: SchemaField@fieldPath that uniquely identify field in parent datasource that this field references."""
         self._inner_dict['parentField'] = value
     
     
@@ -8475,7 +8379,7 @@ class ForeignKeySpecClass(DictWrapper):
     
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.schema.ForeignKeySpec")
     def __init__(self,
-        foreignKey: Union["DatasetFieldForeignKeyClass", "DatasourceFieldForeignKeyClass", "UrnForeignKeyClass"],
+        foreignKey: Union["DatasetFieldForeignKeyClass", "UrnForeignKeyClass"],
     ):
         super().__init__()
         
@@ -8493,12 +8397,12 @@ class ForeignKeySpecClass(DictWrapper):
     
     
     @property
-    def foreignKey(self) -> Union["DatasetFieldForeignKeyClass", "DatasourceFieldForeignKeyClass", "UrnForeignKeyClass"]:
+    def foreignKey(self) -> Union["DatasetFieldForeignKeyClass", "UrnForeignKeyClass"]:
         """Getter: Foreign key definition in metadata schema."""
         return self._inner_dict.get('foreignKey')  # type: ignore
     
     @foreignKey.setter
-    def foreignKey(self, value: Union["DatasetFieldForeignKeyClass", "DatasourceFieldForeignKeyClass", "UrnForeignKeyClass"]) -> None:
+    def foreignKey(self, value: Union["DatasetFieldForeignKeyClass", "UrnForeignKeyClass"]) -> None:
         """Setter: Foreign key definition in metadata schema."""
         self._inner_dict['foreignKey'] = value
     
@@ -8509,10 +8413,12 @@ class KafkaSchemaClass(DictWrapper):
     RECORD_SCHEMA = get_schema_type("com.linkedin.pegasus2avro.schema.KafkaSchema")
     def __init__(self,
         documentSchema: str,
+        keySchema: Union[None, str]=None,
     ):
         super().__init__()
         
         self.documentSchema = documentSchema
+        self.keySchema = keySchema
     
     @classmethod
     def construct_with_defaults(cls) -> "KafkaSchemaClass":
@@ -8523,6 +8429,7 @@ class KafkaSchemaClass(DictWrapper):
     
     def _restore_defaults(self) -> None:
         self.documentSchema = str()
+        self.keySchema = self.RECORD_SCHEMA.field_map["keySchema"].default
     
     
     @property
@@ -8534,6 +8441,17 @@ class KafkaSchemaClass(DictWrapper):
     def documentSchema(self, value: str) -> None:
         """Setter: The native kafka document schema. This is a human readable avro document schema."""
         self._inner_dict['documentSchema'] = value
+    
+    
+    @property
+    def keySchema(self) -> Union[None, str]:
+        """Getter: The native kafka key schema as retrieved from Schema Registry"""
+        return self._inner_dict.get('keySchema')  # type: ignore
+    
+    @keySchema.setter
+    def keySchema(self, value: Union[None, str]) -> None:
+        """Setter: The native kafka key schema as retrieved from Schema Registry"""
+        self._inner_dict['keySchema'] = value
     
     
 class KeyValueSchemaClass(DictWrapper):
@@ -8869,6 +8787,7 @@ class SchemaFieldClass(DictWrapper):
         recursive: Optional[bool]=None,
         globalTags: Union[None, "GlobalTagsClass"]=None,
         glossaryTerms: Union[None, "GlossaryTermsClass"]=None,
+        isPartOfKey: Optional[bool]=None,
     ):
         super().__init__()
         
@@ -8889,6 +8808,11 @@ class SchemaFieldClass(DictWrapper):
             self.recursive = recursive
         self.globalTags = globalTags
         self.glossaryTerms = glossaryTerms
+        if isPartOfKey is None:
+            # default: False
+            self.isPartOfKey = self.RECORD_SCHEMA.field_map["isPartOfKey"].default
+        else:
+            self.isPartOfKey = isPartOfKey
     
     @classmethod
     def construct_with_defaults(cls) -> "SchemaFieldClass":
@@ -8907,6 +8831,7 @@ class SchemaFieldClass(DictWrapper):
         self.recursive = self.RECORD_SCHEMA.field_map["recursive"].default
         self.globalTags = self.RECORD_SCHEMA.field_map["globalTags"].default
         self.glossaryTerms = self.RECORD_SCHEMA.field_map["glossaryTerms"].default
+        self.isPartOfKey = self.RECORD_SCHEMA.field_map["isPartOfKey"].default
     
     
     @property
@@ -9006,6 +8931,19 @@ class SchemaFieldClass(DictWrapper):
     def glossaryTerms(self, value: Union[None, "GlossaryTermsClass"]) -> None:
         """Setter: Glossary terms associated with the field"""
         self._inner_dict['glossaryTerms'] = value
+    
+    
+    @property
+    def isPartOfKey(self) -> bool:
+        """Getter: For schema fields that are part of complex keys, set this field to true
+    We do this to easily distinguish between value and key fields"""
+        return self._inner_dict.get('isPartOfKey')  # type: ignore
+    
+    @isPartOfKey.setter
+    def isPartOfKey(self, value: bool) -> None:
+        """Setter: For schema fields that are part of complex keys, set this field to true
+    We do this to easily distinguish between value and key fields"""
+        self._inner_dict['isPartOfKey'] = value
     
     
 class SchemaFieldDataTypeClass(DictWrapper):
@@ -9755,28 +9693,24 @@ __SCHEMA_TYPES = {
     'com.linkedin.pegasus2avro.dataset.Upstream': UpstreamClass,
     'com.linkedin.pegasus2avro.dataset.UpstreamLineage': UpstreamLineageClass,
     'com.linkedin.pegasus2avro.dataset.ValueFrequency': ValueFrequencyClass,
-    'com.linkedin.pegasus2avro.datasource.DatasourceCluster': DatasourceClusterClass,
-    'com.linkedin.pegasus2avro.datasource.DatasourceConnInfo': DatasourceConnInfoClass,
-    'com.linkedin.pegasus2avro.datasource.DatasourceConnections': DatasourceConnectionsClass,
-    'com.linkedin.pegasus2avro.datasource.DatasourceDeprecation': DatasourceDeprecationClass,
-    'com.linkedin.pegasus2avro.datasource.DatasourceProperties': DatasourcePropertiesClass,
-    'com.linkedin.pegasus2avro.datasource.EditableDatasourceProperties': EditableDatasourcePropertiesClass,
     'com.linkedin.pegasus2avro.events.metadata.ChangeType': ChangeTypeClass,
     'com.linkedin.pegasus2avro.glossary.GlossaryNodeInfo': GlossaryNodeInfoClass,
+    'com.linkedin.pegasus2avro.glossary.GlossaryRelatedTerms': GlossaryRelatedTermsClass,
     'com.linkedin.pegasus2avro.glossary.GlossaryTermInfo': GlossaryTermInfoClass,
     'com.linkedin.pegasus2avro.identity.CorpGroupInfo': CorpGroupInfoClass,
     'com.linkedin.pegasus2avro.identity.CorpUserEditableInfo': CorpUserEditableInfoClass,
     'com.linkedin.pegasus2avro.identity.CorpUserInfo': CorpUserInfoClass,
+    'com.linkedin.pegasus2avro.identity.GroupMembership': GroupMembershipClass,
     'com.linkedin.pegasus2avro.metadata.key.ChartKey': ChartKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.CorpGroupKey': CorpGroupKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.CorpUserKey': CorpUserKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.DashboardKey': DashboardKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.DataFlowKey': DataFlowKeyClass,
+    'com.linkedin.pegasus2avro.metadata.key.DataHubPolicyKey': DataHubPolicyKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.DataJobKey': DataJobKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.DataPlatformKey': DataPlatformKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.DataProcessKey': DataProcessKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.DatasetKey': DatasetKeyClass,
-    'com.linkedin.pegasus2avro.metadata.key.DatasourceKey': DatasourceKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.GlossaryNodeKey': GlossaryNodeKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.GlossaryTermKey': GlossaryTermKeyClass,
     'com.linkedin.pegasus2avro.metadata.key.MLFeatureKey': MLFeatureKeyClass,
@@ -9791,11 +9725,11 @@ __SCHEMA_TYPES = {
     'com.linkedin.pegasus2avro.metadata.snapshot.CorpUserSnapshot': CorpUserSnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.DashboardSnapshot': DashboardSnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.DataFlowSnapshot': DataFlowSnapshotClass,
+    'com.linkedin.pegasus2avro.metadata.snapshot.DataHubPolicySnapshot': DataHubPolicySnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.DataJobSnapshot': DataJobSnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.DataPlatformSnapshot': DataPlatformSnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.DataProcessSnapshot': DataProcessSnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.DatasetSnapshot': DatasetSnapshotClass,
-    'com.linkedin.pegasus2avro.metadata.snapshot.DatasourceSnapshot': DatasourceSnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.GlossaryNodeSnapshot': GlossaryNodeSnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.GlossaryTermSnapshot': GlossaryTermSnapshotClass,
     'com.linkedin.pegasus2avro.metadata.snapshot.MLFeatureSnapshot': MLFeatureSnapshotClass,
@@ -9833,12 +9767,14 @@ __SCHEMA_TYPES = {
     'com.linkedin.pegasus2avro.mxe.MetadataChangeEvent': MetadataChangeEventClass,
     'com.linkedin.pegasus2avro.mxe.MetadataChangeProposal': MetadataChangeProposalClass,
     'com.linkedin.pegasus2avro.mxe.SystemMetadata': SystemMetadataClass,
+    'com.linkedin.pegasus2avro.policy.DataHubActorFilter': DataHubActorFilterClass,
+    'com.linkedin.pegasus2avro.policy.DataHubPolicyInfo': DataHubPolicyInfoClass,
+    'com.linkedin.pegasus2avro.policy.DataHubResourceFilter': DataHubResourceFilterClass,
     'com.linkedin.pegasus2avro.schema.ArrayType': ArrayTypeClass,
     'com.linkedin.pegasus2avro.schema.BinaryJsonSchema': BinaryJsonSchemaClass,
     'com.linkedin.pegasus2avro.schema.BooleanType': BooleanTypeClass,
     'com.linkedin.pegasus2avro.schema.BytesType': BytesTypeClass,
     'com.linkedin.pegasus2avro.schema.DatasetFieldForeignKey': DatasetFieldForeignKeyClass,
-    'com.linkedin.pegasus2avro.schema.DatasourceFieldForeignKey': DatasourceFieldForeignKeyClass,
     'com.linkedin.pegasus2avro.schema.DateType': DateTypeClass,
     'com.linkedin.pegasus2avro.schema.EditableSchemaFieldInfo': EditableSchemaFieldInfoClass,
     'com.linkedin.pegasus2avro.schema.EditableSchemaMetadata': EditableSchemaMetadataClass,
@@ -9928,28 +9864,24 @@ __SCHEMA_TYPES = {
     'Upstream': UpstreamClass,
     'UpstreamLineage': UpstreamLineageClass,
     'ValueFrequency': ValueFrequencyClass,
-    'DatasourceCluster': DatasourceClusterClass,
-    'DatasourceConnInfo': DatasourceConnInfoClass,
-    'DatasourceConnections': DatasourceConnectionsClass,
-    'DatasourceDeprecation': DatasourceDeprecationClass,
-    'DatasourceProperties': DatasourcePropertiesClass,
-    'EditableDatasourceProperties': EditableDatasourcePropertiesClass,
     'ChangeType': ChangeTypeClass,
     'GlossaryNodeInfo': GlossaryNodeInfoClass,
+    'GlossaryRelatedTerms': GlossaryRelatedTermsClass,
     'GlossaryTermInfo': GlossaryTermInfoClass,
     'CorpGroupInfo': CorpGroupInfoClass,
     'CorpUserEditableInfo': CorpUserEditableInfoClass,
     'CorpUserInfo': CorpUserInfoClass,
+    'GroupMembership': GroupMembershipClass,
     'ChartKey': ChartKeyClass,
     'CorpGroupKey': CorpGroupKeyClass,
     'CorpUserKey': CorpUserKeyClass,
     'DashboardKey': DashboardKeyClass,
     'DataFlowKey': DataFlowKeyClass,
+    'DataHubPolicyKey': DataHubPolicyKeyClass,
     'DataJobKey': DataJobKeyClass,
     'DataPlatformKey': DataPlatformKeyClass,
     'DataProcessKey': DataProcessKeyClass,
     'DatasetKey': DatasetKeyClass,
-    'DatasourceKey': DatasourceKeyClass,
     'GlossaryNodeKey': GlossaryNodeKeyClass,
     'GlossaryTermKey': GlossaryTermKeyClass,
     'MLFeatureKey': MLFeatureKeyClass,
@@ -9964,11 +9896,11 @@ __SCHEMA_TYPES = {
     'CorpUserSnapshot': CorpUserSnapshotClass,
     'DashboardSnapshot': DashboardSnapshotClass,
     'DataFlowSnapshot': DataFlowSnapshotClass,
+    'DataHubPolicySnapshot': DataHubPolicySnapshotClass,
     'DataJobSnapshot': DataJobSnapshotClass,
     'DataPlatformSnapshot': DataPlatformSnapshotClass,
     'DataProcessSnapshot': DataProcessSnapshotClass,
     'DatasetSnapshot': DatasetSnapshotClass,
-    'DatasourceSnapshot': DatasourceSnapshotClass,
     'GlossaryNodeSnapshot': GlossaryNodeSnapshotClass,
     'GlossaryTermSnapshot': GlossaryTermSnapshotClass,
     'MLFeatureSnapshot': MLFeatureSnapshotClass,
@@ -10006,12 +9938,14 @@ __SCHEMA_TYPES = {
     'MetadataChangeEvent': MetadataChangeEventClass,
     'MetadataChangeProposal': MetadataChangeProposalClass,
     'SystemMetadata': SystemMetadataClass,
+    'DataHubActorFilter': DataHubActorFilterClass,
+    'DataHubPolicyInfo': DataHubPolicyInfoClass,
+    'DataHubResourceFilter': DataHubResourceFilterClass,
     'ArrayType': ArrayTypeClass,
     'BinaryJsonSchema': BinaryJsonSchemaClass,
     'BooleanType': BooleanTypeClass,
     'BytesType': BytesTypeClass,
     'DatasetFieldForeignKey': DatasetFieldForeignKeyClass,
-    'DatasourceFieldForeignKey': DatasourceFieldForeignKeyClass,
     'DateType': DateTypeClass,
     'EditableSchemaFieldInfo': EditableSchemaFieldInfoClass,
     'EditableSchemaMetadata': EditableSchemaMetadataClass,

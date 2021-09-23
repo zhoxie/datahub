@@ -1,11 +1,19 @@
 namespace com.linkedin.datasource
 
+import com.linkedin.common.Urn
+
 @Aspect = {
   "name": "datasourceConnections"
 }
 record DatasourceConnections {
-
-  category: string
+  /**
+  * Datasource platform urn associated with the datasource
+  */
+  @Searchable = {
+    "fieldType": "URN",
+    "addToFilters": true
+  }
+  platform: Urn
 
   dataCenter: string
 

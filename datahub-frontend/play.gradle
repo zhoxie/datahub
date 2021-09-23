@@ -29,7 +29,6 @@ dependencies {
     play('org.postgresql:postgresql:42.2.14')
     play('io.netty:netty-all:4.1.44.Final')
   }
-  play project(":datahub-dao")
   play project(":datahub-graphql-core")
 
   play externalDependency.jettyJaas
@@ -44,6 +43,7 @@ dependencies {
   play externalDependency.playPac4j
   play externalDependency.shiroCore
   play externalDependency.playCache
+  play externalDependency.playWs
 
   play externalDependency.mysqlConnector
   play externalDependency.postgresql

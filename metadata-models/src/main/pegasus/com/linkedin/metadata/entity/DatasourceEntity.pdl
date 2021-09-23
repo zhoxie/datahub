@@ -1,6 +1,6 @@
 namespace com.linkedin.metadata.entity
 
-import com.linkedin.common.DataPlatformUrn
+import com.linkedin.common.DatasourceCategoryUrn
 import com.linkedin.common.DatasourceUrn
 import com.linkedin.common.FabricType
 
@@ -20,9 +20,9 @@ record DatasourceEntity includes BaseEntity {
   name: optional string
 
   /**
-   * Platform urn for the datasource in the form of urn:li:platform:{platform_name}
+   * Category urn for the datasource in the form of urn:li:datasourceCategory:{category_name}
    */
-  platform: optional DataPlatformUrn
+  category: optional DatasourceCategoryUrn
 
   /**
    * Fabric type where datasource belongs to or where it was generated.

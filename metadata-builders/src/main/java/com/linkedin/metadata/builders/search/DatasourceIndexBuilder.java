@@ -4,16 +4,19 @@ import com.linkedin.common.GlobalTags;
 import com.linkedin.common.GlossaryTerms;
 import com.linkedin.common.Ownership;
 import com.linkedin.common.Status;
+import com.linkedin.common.urn.DataPlatformUrn;
 import com.linkedin.common.urn.DatasourceUrn;
 import com.linkedin.data.template.RecordTemplate;
 import com.linkedin.data.template.StringArray;
 import com.linkedin.datasource.DatasourceDeprecation;
 import com.linkedin.datasource.DatasourceProperties;
+import com.linkedin.datasource.DatasourceConnections;
 import com.linkedin.metadata.search.DatasourceDocument;
 import com.linkedin.metadata.snapshot.DatasourceSnapshot;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nonnull;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +32,7 @@ public class DatasourceIndexBuilder extends BaseIndexBuilder<DatasourceDocument>
 
   @Nonnull
   public static String buildBrowsePath(@Nonnull DatasourceUrn urn) {
-    return ("/" + urn.getOriginEntity() + "/" + urn.getPlatformEntity().getPlatformNameEntity() + "/"
+    return ("/" + urn.getOriginEntity() + "/" + urn.getCategoryEntity().getCategoryNameEntity() + "/"
         + urn.getDatasourceNameEntity()).replace('.', '/').toLowerCase();
   }
 
@@ -43,7 +46,7 @@ public class DatasourceIndexBuilder extends BaseIndexBuilder<DatasourceDocument>
   private static DatasourceDocument setUrnDerivedFields(@Nonnull DatasourceUrn urn) {
     return new DatasourceDocument().setName(urn.getDatasourceNameEntity())
         .setOrigin(urn.getOriginEntity())
-        .setPlatform(urn.getPlatformEntity().getPlatformNameEntity())
+        .setCategory(urn.getCategoryEntity().getCategoryNameEntity())
         .setUrn(urn)
         .setBrowsePaths(new StringArray(Collections.singletonList(buildBrowsePath(urn))));
   }
@@ -71,6 +74,18 @@ public class DatasourceIndexBuilder extends BaseIndexBuilder<DatasourceDocument>
     final DatasourceDocument doc = new DatasourceDocument().setUrn(urn);
     if (datasourceProperties.getDescription() != null) {
       doc.setDescription(datasourceProperties.getDescription());
+    }
+    return doc;
+  }
+
+  @Nonnull
+  private DatasourceDocument getDocumentToUpdateFromAspect(@Nonnull DatasourceUrn urn,
+                                                           @Nonnull DatasourceConnections datasourceConnections) {
+    final DatasourceDocument doc = new DatasourceDocument().setUrn(urn);
+    try {
+      doc.setPlatform(DataPlatformUrn.createFromUrn(datasourceConnections.getPlatform()).getPlatformNameEntity());
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
     }
     return doc;
   }
@@ -114,6 +129,8 @@ public class DatasourceIndexBuilder extends BaseIndexBuilder<DatasourceDocument>
         return getDocumentToUpdateFromAspect(urn, aspect.getGlobalTags());
       } else if (aspect.isGlossaryTerms()) {
         return getDocumentToUpdateFromAspect(urn, aspect.getGlossaryTerms());
+      } else if (aspect.isDatasourceConnections()) {
+        return getDocumentToUpdateFromAspect(urn, aspect.getDatasourceConnections());
       }
       return null;
     }).filter(Objects::nonNull).collect(Collectors.toList());

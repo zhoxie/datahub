@@ -24,6 +24,11 @@ record DatasourceDocument includes BaseDocument {
   platform: optional string
 
   /**
+   * Category name for the datasource
+   */
+  category: optional string
+
+  /**
    * Fabric type where datasource belongs to or where it was generated
    */
   origin: optional FabricType

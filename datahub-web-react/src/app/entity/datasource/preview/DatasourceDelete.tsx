@@ -2,7 +2,7 @@ import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import axios from 'axios';
 import React from 'react';
-import { showRequestResult } from '../service/NotificationUtil';
+import { showRequestResult } from '../../shared/tabs/Datasource/Connection/NotificationUtil';
 
 export type Props = {
     urn: string;

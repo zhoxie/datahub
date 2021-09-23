@@ -175,11 +175,8 @@ fragment nonRecursiveDatasourceFields on Datasource {
     origin
     description
     uri
-    platform {
+    category {
         name
-        info {
-            logoUrl
-        }
     }
     platformNativeType
     tags
@@ -194,7 +191,12 @@ fragment nonRecursiveDatasourceFields on Datasource {
         ...ownershipFields
     }
     connections {
-        category
+        platform {
+            name
+            info {
+                logoUrl
+            }
+        }
         dataCenter
         connections {
             ...nonRecursiveDatasourceConnInfoFields

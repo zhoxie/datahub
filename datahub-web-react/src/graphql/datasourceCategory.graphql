@@ -1,0 +1,12 @@
+query allDatasourceCategories {
+    allDatasourceCategories {
+        urn
+        type
+        categories {
+            urn
+            name
+            displayName
+        }
+
+    }
+}

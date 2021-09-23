@@ -3,8 +3,7 @@ namespace com.linkedin.metadata.relationship
 /**
  * A generic model for the Is-Part-Of relationship
  */
-@pairings = [
-{
+@pairings = [ {
   "destination" : "com.linkedin.common.urn.DataFlowUrn",
   "source" : "com.linkedin.common.urn.DataJobUrn"
 } ]

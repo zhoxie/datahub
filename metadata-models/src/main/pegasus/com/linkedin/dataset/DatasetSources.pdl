@@ -1,0 +1,22 @@
+namespace com.linkedin.dataset
+
+import com.linkedin.common.DatasourceUrn
+
+/**
+ * the data sources of the dataset
+ */
+@Aspect = {
+  "name": "datasetSources"
+}
+record DatasetSources {
+  /**
+  * Data sources for the chart
+  */
+  @Relationship = {
+    "/*": {
+      "name": "Sources",
+      "entityTypes": [ "datasource" ]
+    }
+  }
+  sources: optional array[DatasourceUrn]
+}

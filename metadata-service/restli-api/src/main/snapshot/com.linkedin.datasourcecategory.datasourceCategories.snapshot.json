@@ -1,0 +1,154 @@
+{
+  "models" : [ {
+    "type" : "typeref",
+    "name" : "DatasourceCategoryUrn",
+    "namespace" : "com.linkedin.common",
+    "doc" : "Standardized datasource category available",
+    "ref" : "string",
+    "java" : {
+      "class" : "com.linkedin.common.urn.DatasourceCategoryUrn"
+    },
+    "validate" : {
+      "com.linkedin.common.validator.TypedUrnValidator" : {
+        "accessible" : true,
+        "constructable" : true,
+        "doc" : "Standardizeddatasource category available",
+        "entityType" : "datasourceCategory",
+        "fields" : [ {
+          "doc" : "datasource category name i.e. calling, device",
+          "maxLength" : 25,
+          "name" : "categoryName",
+          "type" : "string"
+        } ],
+        "maxLength" : 45,
+        "name" : "DatasourceCategory",
+        "namespace" : "li",
+        "owners" : [ "urn:li:corpuser:fbar", "urn:li:corpuser:bfoo" ],
+        "owningTeam" : "urn:li:internalTeam:wherehows"
+      }
+    }
+  }, {
+    "type" : "record",
+    "name" : "DatasourceCategory",
+    "namespace" : "com.linkedin.datasourceCategories",
+    "doc" : "Value Class for datasourceCategory resource",
+    "fields" : [ {
+      "name" : "name",
+      "type" : "string",
+      "doc" : "Name of the datasource category"
+    }, {
+      "name" : "datasourceCategoryInfo",
+      "type" : {
+        "type" : "record",
+        "name" : "DatasourceCategoryInfo",
+        "namespace" : "com.linkedin.datasourcecategory",
+        "doc" : "Information about a data platform",
+        "fields" : [ {
+          "name" : "name",
+          "type" : "string",
+          "doc" : "Name of the data platform",
+          "validate" : {
+            "strlen" : {
+              "max" : 15
+            }
+          }
+        }, {
+          "name" : "displayName",
+          "type" : "string",
+          "doc" : "The name that will be used for displaying a platform type.",
+          "optional" : true
+        } ],
+        "Aspect" : {
+          "name" : "datasourceCategoryInfo"
+        }
+      },
+      "doc" : "Metadata associated with a datasourceCategory information",
+      "optional" : true
+    } ]
+  }, "com.linkedin.datasourcecategory.DatasourceCategoryInfo", {
+    "type" : "typeref",
+    "name" : "DatasourceCategoryAspect",
+    "namespace" : "com.linkedin.metadata.aspect",
+    "doc" : "A union of all supported metadata aspects for a Datasource Category",
+    "ref" : [ {
+      "type" : "record",
+      "name" : "DatasourceCategoryKey",
+      "namespace" : "com.linkedin.metadata.key",
+      "doc" : "Key for a Datasource Category",
+      "fields" : [ {
+        "name" : "categoryName",
+        "type" : "string",
+        "doc" : "Datasource category name"
+      } ],
+      "Aspect" : {
+        "name" : "datasourceCategoryKey"
+      }
+    }, "com.linkedin.datasourcecategory.DatasourceCategoryInfo" ]
+  }, "com.linkedin.metadata.key.DatasourceCategoryKey", {
+    "type" : "record",
+    "name" : "DatasourceCategorySnapshot",
+    "namespace" : "com.linkedin.metadata.snapshot",
+    "doc" : "A metadata snapshot for a specific datasourcecategory entity.",
+    "fields" : [ {
+      "name" : "urn",
+      "type" : "com.linkedin.common.DatasourceCategoryUrn",
+      "doc" : "URN for the entity the metadata snapshot is associated with."
+    }, {
+      "name" : "aspects",
+      "type" : {
+        "type" : "array",
+        "items" : "com.linkedin.metadata.aspect.DatasourceCategoryAspect"
+      },
+      "doc" : "The list of metadata aspects associated with the datasource category. Depending on the use case, this can either be all, or a selection, of supported aspects."
+    } ],
+    "Entity" : {
+      "keyAspect" : "datasourceCategoryKey",
+      "name" : "datasourceCategory"
+    }
+  } ],
+  "schema" : {
+    "name" : "datasourceCategories",
+    "namespace" : "com.linkedin.datasourcecategory",
+    "path" : "/datasourceCategories",
+    "schema" : "com.linkedin.datasourceCategories.DatasourceCategory",
+    "doc" : "Resource provides information about various data platforms.\n\ngenerated from: com.linkedin.metadata.resources.datasourcecategory.DatasoureCategories",
+    "collection" : {
+      "identifier" : {
+        "name" : "categoryName",
+        "type" : "string"
+      },
+      "supports" : [ "get", "get_all" ],
+      "methods" : [ {
+        "method" : "get",
+        "doc" : "Get datasource category.",
+        "parameters" : [ {
+          "name" : "aspects",
+          "type" : "{ \"type\" : \"array\", \"items\" : \"string\" }",
+          "doc" : "list of aspects to be retrieved. Null to retrieve all aspects of the datasourceCategories."
+        } ]
+      }, {
+        "method" : "get_all",
+        "doc" : "Get all datasource categories.",
+        "pagingSupported" : true
+      } ],
+      "actions" : [ {
+        "name" : "getSnapshot",
+        "doc" : "Get the snapshot of datasource category.\nService Returns: Snapshot of datasource category with the requested aspects.",
+        "parameters" : [ {
+          "name" : "urn",
+          "type" : "string",
+          "doc" : "data datasource category urn."
+        }, {
+          "name" : "aspects",
+          "type" : "{ \"type\" : \"array\", \"items\" : \"string\" }",
+          "optional" : true,
+          "doc" : "list of aspects to be returned. null, when all aspects are to be returned."
+        } ],
+        "returns" : "com.linkedin.metadata.snapshot.DatasourceCategorySnapshot"
+      } ],
+      "entity" : {
+        "path" : "/datasourceCategories/{categoryName}"
+      }
+    }
+  }
+}

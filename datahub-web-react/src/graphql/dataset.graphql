@@ -56,6 +56,43 @@ query getDataset($urn: String!) {
                 globalTags {
                     ...globalTagsFields
                 }
+                glossaryTerms {
+                    ...glossaryTerms
+                }
+            }
+        }
+        sources {
+            sources {
+                urn
+                name
+                origin
+                description
+                category {
+                    name
+                }
+                platformNativeType
+                tags
+                ownership {
+                    ...ownershipFields
+                }
+                connections {
+                    platform {
+                        name
+                        info {
+                            logoUrl
+                        }
+                    }
+                    dataCenter
+                    connections {
+                        ...nonRecursiveDatasourceConnInfoFields
+                    }
+                }
+                downstreamLineage {
+                    ...downstreamRelationshipFields
+                }
+                upstreamLineage {
+                    ...upstreamRelationshipFields
+                }
             }
         }
         deprecation {
