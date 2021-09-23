@@ -1,0 +1,9 @@
+entities:
+  - name: dataset
+    keyAspect: datasetKey
+    aspects:
+      - datasetProfile
+  - name: datasource
+    keyAspect: datasourceKey
+    aspects:
+      - datasourceConnections
