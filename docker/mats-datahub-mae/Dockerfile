@@ -19,7 +19,10 @@ COPY --from=prod-build /mae-consumer-job.jar /datahub/datahub-mae-consumer/bin/
 COPY --from=prod-build /datahub-src/entity-registry.yml /datahub/datahub-mae-consumer/resources/entity-registry.yml
 COPY --from=prod-build /datahub-src/start.sh /datahub/datahub-mae-consumer/scripts/
 COPY --from=prod-build /datahub-src/client-prometheus-config.yaml /datahub/datahub-mae-consumer/scripts/prometheus-config.yaml
-RUN chmod +x /datahub/datahub-mae-consumer/scripts/start.sh
+RUN chmod 777 /datahub/datahub-mae-consumer/scripts/start.sh
+RUN chmod 777 /datahub/datahub-mae-consumer/scripts/prometheus-config.yaml
+RUN chmod 777 /datahub/datahub-mae-consumer/resources/entity-registry.yml
+RUN chmod 777 /datahub/datahub-mae-consumer/bin/mae-consumer-job.jar
 
 FROM base as dev-install
 # Dummy stage for development. Assumes code is built on your machine and mounted to this image.
