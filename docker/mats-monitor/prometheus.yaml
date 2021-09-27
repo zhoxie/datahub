@@ -1,0 +1,7 @@
+scrape_configs:
+  - job_name: 'jmx'
+    scrape_interval: 10s
+    static_configs:
+      - targets:
+        - 'mats-datahub-gms:4318'
+        - 'mats-datahub-mae:4318'
