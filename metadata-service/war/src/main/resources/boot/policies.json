@@ -7,7 +7,12 @@
         "allUsers":false,
         "allGroups":false,
         "users":[
-          "urn:li:corpuser:datahub"
+          "urn:li:corpuser:datahub",
+          "urn:li:corpuser:zhoxie",
+          "urn:li:corpuser:yashen2",
+          "urn:li:corpuser:silv",
+          "urn:li:corpuser:shunqliu",
+          "urn:li:corpuser:liwan5"
         ]
       },
       "privileges":[
@@ -30,7 +35,12 @@
         "allUsers":false,
         "allGroups":false,
         "users":[
-          "urn:li:corpuser:datahub"
+          "urn:li:corpuser:datahub",
+          "urn:li:corpuser:zhoxie",
+          "urn:li:corpuser:yashen2",
+          "urn:li:corpuser:silv",
+          "urn:li:corpuser:shunqliu",
+          "urn:li:corpuser:liwan5"
         ]
       },
       "privileges":[
@@ -55,7 +65,12 @@
         "allUsers":false,
         "allGroups":false,
         "users":[
-          "urn:li:corpuser:datahub"
+          "urn:li:corpuser:datahub",
+          "urn:li:corpuser:zhoxie",
+          "urn:li:corpuser:yashen2",
+          "urn:li:corpuser:silv",
+          "urn:li:corpuser:shunqliu",
+          "urn:li:corpuser:liwan5"
         ]
       },
       "privileges":[
@@ -80,7 +95,12 @@
         "allUsers":false,
         "allGroups":false,
         "users":[
-          "urn:li:corpuser:datahub"
+          "urn:li:corpuser:datahub",
+          "urn:li:corpuser:zhoxie",
+          "urn:li:corpuser:yashen2",
+          "urn:li:corpuser:silv",
+          "urn:li:corpuser:shunqliu",
+          "urn:li:corpuser:liwan5"
         ]
       },
       "privileges":[
@@ -105,7 +125,12 @@
         "allUsers":false,
         "allGroups":false,
         "users":[
-          "urn:li:corpuser:datahub"
+          "urn:li:corpuser:datahub",
+          "urn:li:corpuser:zhoxie",
+          "urn:li:corpuser:yashen2",
+          "urn:li:corpuser:silv",
+          "urn:li:corpuser:shunqliu",
+          "urn:li:corpuser:liwan5"
         ]
       },
       "privileges":[
@@ -130,7 +155,12 @@
         "allUsers":false,
         "allGroups":false,
         "users":[
-          "urn:li:corpuser:datahub"
+          "urn:li:corpuser:datahub",
+          "urn:li:corpuser:zhoxie",
+          "urn:li:corpuser:yashen2",
+          "urn:li:corpuser:silv",
+          "urn:li:corpuser:shunqliu",
+          "urn:li:corpuser:liwan5"
         ]
       },
       "privileges":[
@@ -155,7 +185,12 @@
         "allUsers":false,
         "allGroups":false,
         "users":[
-          "urn:li:corpuser:datahub"
+          "urn:li:corpuser:datahub",
+          "urn:li:corpuser:zhoxie",
+          "urn:li:corpuser:yashen2",
+          "urn:li:corpuser:silv",
+          "urn:li:corpuser:shunqliu",
+          "urn:li:corpuser:liwan5"
         ]
       },
       "privileges":[
@@ -199,7 +234,12 @@
         "allUsers":false,
         "allGroups":false,
         "users":[
-          "urn:li:corpuser:datahub"
+          "urn:li:corpuser:datahub",
+          "urn:li:corpuser:zhoxie",
+          "urn:li:corpuser:yashen2",
+          "urn:li:corpuser:silv",
+          "urn:li:corpuser:shunqliu",
+          "urn:li:corpuser:liwan5"
         ]
       },
       "privileges":[
