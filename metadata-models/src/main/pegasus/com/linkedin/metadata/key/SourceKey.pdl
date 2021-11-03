@@ -1,0 +1,32 @@
+namespace com.linkedin.metadata.key
+
+import com.linkedin.common.Urn
+import com.linkedin.common.FabricType
+
+/**
+ * Key for a metadata source
+ */
+@Aspect = {
+  "name": "sourceKey"
+}
+record SourceKey {
+  @Searchable = {
+    "fieldType": "URN",
+    "addToFilters": true
+  }
+  platform: Urn
+
+  @Searchable = {
+    "fieldType": "TEXT_PARTIAL",
+    "enableAutocomplete": true,
+    "boostScore": 10.0
+  }
+  name: string
+
+  @Searchable = {
+    "fieldType": "TEXT_PARTIAL",
+    "addToFilters": true,
+    "queryByDefault": false
+  }
+  origin: FabricType
+}

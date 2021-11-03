@@ -24,6 +24,7 @@ from ......schema_classes import MLModelDeploymentSnapshotClass
 from ......schema_classes import MLModelGroupSnapshotClass
 from ......schema_classes import MLModelSnapshotClass
 from ......schema_classes import MLPrimaryKeySnapshotClass
+from ......schema_classes import MetadataSourceSnapshotClass
 from ......schema_classes import TagSnapshotClass
 
 
@@ -47,5 +48,6 @@ MLModelDeploymentSnapshot = MLModelDeploymentSnapshotClass
 MLModelGroupSnapshot = MLModelGroupSnapshotClass
 MLModelSnapshot = MLModelSnapshotClass
 MLPrimaryKeySnapshot = MLPrimaryKeySnapshotClass
+MetadataSourceSnapshot = MetadataSourceSnapshotClass
 TagSnapshot = TagSnapshotClass
 # fmt: on

@@ -1,0 +1,24 @@
+namespace com.linkedin.metadata.snapshot
+
+import com.linkedin.common.MetadataSourceUrn
+import com.linkedin.metadata.aspect.MetadataSourceAspect
+
+/*BrowsePathUtils.java*
+ * A metadata snapshot for a specific datasource entity.
+ */
+@Entity = {
+  "name": "metadataSource",
+  "keyAspect": "sourceKey"
+}
+record MetadataSourceSnapshot {
+
+  /**
+   * URN for the entity the metadata snapshot is associated with.
+   */
+  urn: MetadataSourceUrn
+
+  /**
+   * The list of metadata aspects associated with the datasource. Depending on the use case, this can either be all, or a selection, of supported aspects.
+   */
+  aspects: array[MetadataSourceAspect]
+}

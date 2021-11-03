@@ -1,0 +1,19 @@
+namespace com.linkedin.metadata.source
+
+@Aspect = {
+  "name": "oracle"
+}
+record Oracle {
+  host_port: string
+  username: string
+  password: string
+  database: optional string
+  service_name: optional string
+  database_alias: optional string
+  env: optional string
+  table_pattern: optional TablePattern
+  schema_pattern: optional SchemaPattern
+  view_pattern: optional ViewPattern
+  include_tables: optional boolean
+  include_views: optional boolean
+}

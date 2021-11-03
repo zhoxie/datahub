@@ -1975,6 +1975,37 @@
                     {
                       "type": "record",
                       "Aspect": {
+                        "name": "datasetSources"
+                      },
+                      "name": "DatasetSources",
+                      "namespace": "com.linkedin.pegasus2avro.dataset",
+                      "fields": [
+                        {
+                          "Relationship": {
+                            "/*": {
+                              "entityTypes": [
+                                "datasource"
+                              ],
+                              "name": "Sources"
+                            }
+                          },
+                          "type": [
+                            "null",
+                            {
+                              "type": "array",
+                              "items": "string"
+                            }
+                          ],
+                          "name": "sources",
+                          "default": null,
+                          "doc": "Data sources for the chart"
+                        }
+                      ],
+                      "doc": "the data sources of the dataset"
+                    },
+                    {
+                      "type": "record",
+                      "Aspect": {
                         "name": "datasetProperties"
                       },
                       "name": "DatasetProperties",
@@ -3074,6 +3105,22 @@
                                   "name": "globalTags",
                                   "default": null,
                                   "doc": "Tags associated with the field"
+                                },
+                                {
+                                  "Searchable": {
+                                    "/terms/*/urn": {
+                                      "boostScore": 0.5,
+                                      "fieldName": "editedFieldGlossaryTerms",
+                                      "fieldType": "URN_PARTIAL"
+                                    }
+                                  },
+                                  "type": [
+                                    "null",
+                                    "com.linkedin.pegasus2avro.common.GlossaryTerms"
+                                  ],
+                                  "name": "glossaryTerms",
+                                  "default": null,
+                                  "doc": "Glossary terms associated with the field"
                                 }
                               ],
                               "doc": "SchemaField to describe metadata related to dataset schema."
@@ -3168,6 +3215,11 @@
                       "namespace": "com.linkedin.pegasus2avro.datasource",
                       "fields": [
                         {
+                          "Searchable": {
+                            "/*": {
+                              "queryByDefault": true
+                            }
+                          },
                           "type": {
                             "type": "map",
                             "values": "string"
@@ -3366,6 +3418,11 @@
                               "namespace": "com.linkedin.pegasus2avro.datasource",
                               "fields": [
                                 {
+                                  "Searchable": {
+                                    "/*": {
+                                      "queryByDefault": true
+                                    }
+                                  },
                                   "type": {
                                     "type": "map",
                                     "values": "string"
@@ -6035,6 +6092,361 @@
               }
             ],
             "doc": "A metadata snapshot for DataHub Access Policy data."
+          },
+          {
+            "type": "record",
+            "Entity": {
+              "keyAspect": "sourceKey",
+              "name": "metadataSource"
+            },
+            "name": "MetadataSourceSnapshot",
+            "namespace": "com.linkedin.pegasus2avro.metadata.snapshot",
+            "fields": [
+              {
+                "java": {
+                  "class": "com.linkedin.pegasus2avro.common.urn.MetadataSourceUrn"
+                },
+                "type": "string",
+                "name": "urn",
+                "doc": "URN for the entity the metadata snapshot is associated with."
+              },
+              {
+                "type": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "record",
+                      "Aspect": {
+                        "name": "sourceKey"
+                      },
+                      "name": "SourceKey",
+                      "namespace": "com.linkedin.pegasus2avro.metadata.key",
+                      "fields": [
+                        {
+                          "Searchable": {
+                            "addToFilters": true,
+                            "fieldType": "URN"
+                          },
+                          "java": {
+                            "class": "com.linkedin.pegasus2avro.common.urn.Urn"
+                          },
+                          "type": "string",
+                          "name": "platform"
+                        },
+                        {
+                          "Searchable": {
+                            "boostScore": 10.0,
+                            "enableAutocomplete": true,
+                            "fieldType": "TEXT_PARTIAL"
+                          },
+                          "type": "string",
+                          "name": "name"
+                        },
+                        {
+                          "Searchable": {
+                            "addToFilters": true,
+                            "fieldType": "TEXT_PARTIAL",
+                            "queryByDefault": false
+                          },
+                          "type": "com.linkedin.pegasus2avro.common.FabricType",
+                          "name": "origin"
+                        }
+                      ],
+                      "doc": "Key for a metadata source"
+                    },
+                    {
+                      "type": "record",
+                      "Aspect": {
+                        "name": "source"
+                      },
+                      "name": "MetadataSource",
+                      "namespace": "com.linkedin.pegasus2avro.metadata.source",
+                      "fields": [
+                        {
+                          "type": [
+                            {
+                              "type": "record",
+                              "Aspect": {
+                                "name": "mysql"
+                              },
+                              "name": "Mysql",
+                              "namespace": "com.linkedin.pegasus2avro.metadata.source",
+                              "fields": [
+                                {
+                                  "type": "string",
+                                  "name": "host_port"
+                                },
+                                {
+                                  "type": "string",
+                                  "name": "username"
+                                },
+                                {
+                                  "type": "string",
+                                  "name": "password"
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "string"
+                                  ],
+                                  "name": "database",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "string"
+                                  ],
+                                  "name": "database_alias",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "string"
+                                  ],
+                                  "name": "env",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    {
+                                      "type": "record",
+                                      "name": "TablePattern",
+                                      "namespace": "com.linkedin.pegasus2avro.metadata.source",
+                                      "fields": [
+                                        {
+                                          "type": [
+                                            "null",
+                                            "string"
+                                          ],
+                                          "name": "allow",
+                                          "default": null
+                                        },
+                                        {
+                                          "type": [
+                                            "null",
+                                            "string"
+                                          ],
+                                          "name": "deny",
+                                          "default": null
+                                        },
+                                        {
+                                          "type": [
+                                            "null",
+                                            "boolean"
+                                          ],
+                                          "name": "ignoreCase",
+                                          "default": null
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "name": "table_pattern",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    {
+                                      "type": "record",
+                                      "name": "SchemaPattern",
+                                      "namespace": "com.linkedin.pegasus2avro.metadata.source",
+                                      "fields": [
+                                        {
+                                          "type": [
+                                            "null",
+                                            "string"
+                                          ],
+                                          "name": "allow",
+                                          "default": null
+                                        },
+                                        {
+                                          "type": [
+                                            "null",
+                                            "string"
+                                          ],
+                                          "name": "deny",
+                                          "default": null
+                                        },
+                                        {
+                                          "type": [
+                                            "null",
+                                            "boolean"
+                                          ],
+                                          "name": "ignoreCase",
+                                          "default": null
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "name": "schema_pattern",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    {
+                                      "type": "record",
+                                      "name": "ViewPattern",
+                                      "namespace": "com.linkedin.pegasus2avro.metadata.source",
+                                      "fields": [
+                                        {
+                                          "type": [
+                                            "null",
+                                            "string"
+                                          ],
+                                          "name": "allow",
+                                          "default": null
+                                        },
+                                        {
+                                          "type": [
+                                            "null",
+                                            "string"
+                                          ],
+                                          "name": "deny",
+                                          "default": null
+                                        },
+                                        {
+                                          "type": [
+                                            "null",
+                                            "boolean"
+                                          ],
+                                          "name": "ignoreCase",
+                                          "default": null
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "name": "view_pattern",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "boolean"
+                                  ],
+                                  "name": "include_tables",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "boolean"
+                                  ],
+                                  "name": "include_views",
+                                  "default": null
+                                }
+                              ]
+                            },
+                            {
+                              "type": "record",
+                              "Aspect": {
+                                "name": "oracle"
+                              },
+                              "name": "Oracle",
+                              "namespace": "com.linkedin.pegasus2avro.metadata.source",
+                              "fields": [
+                                {
+                                  "type": "string",
+                                  "name": "host_port"
+                                },
+                                {
+                                  "type": "string",
+                                  "name": "username"
+                                },
+                                {
+                                  "type": "string",
+                                  "name": "password"
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "string"
+                                  ],
+                                  "name": "database",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "string"
+                                  ],
+                                  "name": "service_name",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "string"
+                                  ],
+                                  "name": "database_alias",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "string"
+                                  ],
+                                  "name": "env",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "com.linkedin.pegasus2avro.metadata.source.TablePattern"
+                                  ],
+                                  "name": "table_pattern",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "com.linkedin.pegasus2avro.metadata.source.SchemaPattern"
+                                  ],
+                                  "name": "schema_pattern",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "com.linkedin.pegasus2avro.metadata.source.ViewPattern"
+                                  ],
+                                  "name": "view_pattern",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "boolean"
+                                  ],
+                                  "name": "include_tables",
+                                  "default": null
+                                },
+                                {
+                                  "type": [
+                                    "null",
+                                    "boolean"
+                                  ],
+                                  "name": "include_views",
+                                  "default": null
+                                }
+                              ]
+                            }
+                          ],
+                          "name": "source"
+                        }
+                      ]
+                    },
+                    "com.linkedin.pegasus2avro.common.Ownership",
+                    "com.linkedin.pegasus2avro.common.GlobalTags"
+                  ]
+                },
+                "name": "aspects",
+                "doc": "The list of metadata aspects associated with the datasource. Depending on the use case, this can either be all, or a selection, of supported aspects."
+              }
+            ]
           }
         ],
         "name": "proposedSnapshot",

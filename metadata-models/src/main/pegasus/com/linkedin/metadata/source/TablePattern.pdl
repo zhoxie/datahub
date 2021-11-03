@@ -1,0 +1,11 @@
+namespace com.linkedin.metadata.source
+
+record TablePattern {
+
+  allow: optional string
+
+  deny: optional string
+
+  ignoreCase: optional boolean
+
+}

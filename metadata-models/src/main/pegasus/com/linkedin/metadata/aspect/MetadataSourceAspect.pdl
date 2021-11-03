@@ -1,0 +1,16 @@
+namespace com.linkedin.metadata.aspect
+
+import com.linkedin.metadata.key.SourceKey
+import com.linkedin.metadata.source.MetadataSource
+import com.linkedin.common.Ownership
+import com.linkedin.common.GlobalTags
+
+/**
+ * A union of all supported metadata aspects for a Datasource
+ */
+typeref MetadataSourceAspect = union[
+  SourceKey,
+  MetadataSource,
+  Ownership,
+  GlobalTags
+]

@@ -1,0 +1,9 @@
+namespace com.linkedin.metadata.source
+
+@Aspect = {
+  "name": "source"
+}
+record MetadataSource {
+
+  source: union[Mysql, Oracle]
+}

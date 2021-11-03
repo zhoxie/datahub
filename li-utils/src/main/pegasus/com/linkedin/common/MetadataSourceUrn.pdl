@@ -1,0 +1,32 @@
+namespace com.linkedin.common
+
+/**
+ * Standardized metadata source identifier.
+ */
+@java.class = "com.linkedin.common.urn.MetadataSourceUrn"
+@validate.`com.linkedin.common.validator.TypedUrnValidator` = {
+  "accessible" : true,
+  "owningTeam" : "urn:li:internalTeam:datahub",
+  "entityType" : "metadataSource",
+  "constructable" : true,
+  "namespace" : "li",
+  "name" : "MetadataSource",
+  "doc" : "Standardized metadata source identifier.",
+  "owners" : [ "urn:li:corpuser:fbar", "urn:li:corpuser:bfoo" ],
+  "fields" : [ {
+    "type" : "com.linkedin.common.urn.DataPlatformUrn",
+    "name" : "platform",
+    "doc" : "Standardized platform urn where metadata source is defined."
+  }, {
+    "name" : "sourceName",
+    "doc" : "Source native name e.g. db.table>, /dir/subdir/name, or name",
+    "type" : "string",
+    "maxLength" : 210
+  }, {
+    "type" : "com.linkedin.common.FabricType",
+    "name" : "origin",
+    "doc" : "Fabric type where metadata source belongs to or where it was generated."
+  } ],
+  "maxLength" : 284
+}
+typeref MetadataSourceUrn = string
