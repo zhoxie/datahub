@@ -253,7 +253,7 @@ public class GmsGraphQLEngine {
         // Init Lists
         this.entityTypes = ImmutableList.of(datasetType, datasourceType, corpUserType, corpGroupType,
             dataPlatformType, chartType, dashboardType, tagType, mlModelType, mlModelGroupType, mlFeatureType,
-            mlFeatureTableType, mlPrimaryKeyType, dataFlowType, dataJobType, glossaryTermType
+            mlFeatureTableType, mlPrimaryKeyType, dataFlowType, dataJobType, glossaryTermType, allDatasourceCategories
         );
         this.relationshipTypes = ImmutableList.of(
             dataFlowDataJobsRelationshipType
