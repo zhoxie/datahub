@@ -251,7 +251,7 @@ public class GmsGraphQLEngine {
         this.usageType = new UsageType(GmsClientFactory.getUsageClient());
 
         // Init Lists
-        this.entityTypes = ImmutableList.of(datasetType, corpUserType, corpGroupType,
+        this.entityTypes = ImmutableList.of(datasetType, datasourceType, corpUserType, corpGroupType,
             dataPlatformType, chartType, dashboardType, tagType, mlModelType, mlModelGroupType, mlFeatureType,
             mlFeatureTableType, mlPrimaryKeyType, dataFlowType, dataJobType, glossaryTermType
         );
