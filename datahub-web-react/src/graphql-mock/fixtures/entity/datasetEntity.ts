@@ -53,7 +53,6 @@ export const datasetEntity = ({
         uri: null,
         platform: generatePlatform({ platform, urn: platformURN }),
         platformNativeType: null,
-        tags: [],
         sources: null,
         properties: null,
         editableProperties: null,
@@ -73,15 +72,12 @@ export const datasetEntity = ({
             },
             __typename: 'Ownership',
         },
-        globalTags: {
-            tags: [],
-            __typename: 'GlobalTags',
-        },
         institutionalMemory: null,
         usageStats: null,
         glossaryTerms: null,
         schemaMetadata: null,
         previousSchemaMetadata: null,
         __typename: 'Dataset',
+        subTypes: null,
     };
 };

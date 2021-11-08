@@ -168,6 +168,10 @@ type PropertyTuple {
     value: String
 }
 
+type SubTypes {
+    typeNames: [String!]
+}
+
 type Dataset {
     urn: String!
 
@@ -190,6 +194,28 @@ type Dataset {
     createdTime: Long!
 
     modifiedTime: Long!
+
+    ownership: Ownership
+
+    subTypes: SubTypes
+}
+
+type Datasource {
+    urn: String!
+
+    name: String!
+
+    origin: FabricType!
+
+    description: String
+
+    platformNativeType: PlatformNativeType
+
+    uri: String
+
+    tags: [String!]!
+
+    properties: DatasourceProperties
 
     ownership: Ownership
 }
@@ -285,6 +311,7 @@ type CorpGroupInfo {
 
 enum EntityType {
     DATASET
+    DATASOURCE
     USER
     DATA_FLOW
     DATA_JOB

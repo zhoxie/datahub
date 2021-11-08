@@ -9,7 +9,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-
+@SuppressWarnings("all")
 public class MappingsBuilderTest {
 
   @Test
@@ -17,12 +17,13 @@ public class MappingsBuilderTest {
     Map<String, Object> result = MappingsBuilder.getMappings(TestEntitySpecBuilder.getSpec());
     assertEquals(result.size(), 1);
     Map<String, Object> properties = (Map<String, Object>) result.get("properties");
-    assertEquals(properties.size(), 11);
+    assertEquals(properties.size(), 12);
     assertEquals(properties.get("urn"), ImmutableMap.of("type", "keyword"));
     assertTrue(properties.containsKey("browsePaths"));
     // KEYWORD
     assertEquals(properties.get("keyPart3"), ImmutableMap.of("type", "keyword", "normalizer", "keyword_normalizer"));
-
+    assertEquals(properties.get("customProperties"),
+        ImmutableMap.of("type", "keyword", "normalizer", "keyword_normalizer"));
     // TEXT
     Map<String, Object> nestedArrayStringField = (Map<String, Object>) properties.get("nestedArrayStringField");
     assertEquals(nestedArrayStringField.get("type"), "keyword");

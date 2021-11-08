@@ -55,7 +55,12 @@ public class DatasourceSnapshotMapper implements ModelMapper<DatasourceSnapshot,
             result.setTags(new ArrayList<>());
             if (aspect instanceof DatasourceProperties) {
                 final DatasourceProperties datasourceProperties = (DatasourceProperties) aspect;
-                result.setProperties(StringMapMapper.map(datasourceProperties.getCustomProperties()));
+                com.linkedin.datahub.graphql.generated.DatasourceProperties dsProperties =
+                        new com.linkedin.datahub.graphql.generated.DatasourceProperties();
+                dsProperties.setDescription(datasourceProperties.getDescription());
+                dsProperties.setCustomProperties(StringMapMapper.map(datasourceProperties.getCustomProperties()));
+                dsProperties.setExternalUrl(datasourceProperties.getExternalUrl().toString());
+                result.setProperties(dsProperties);
                 if (datasourceProperties.getUri() != null) {
                   result.setUri(datasourceProperties.getUri().toString());
                 }

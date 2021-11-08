@@ -29,7 +29,6 @@ dependencies {
     play('org.postgresql:postgresql:42.2.14')
     play('io.netty:netty-all:4.1.44.Final')
   }
-  play project(":datahub-dao")
   play project(":datahub-graphql-core")
 
   play externalDependency.jettyJaas
@@ -48,6 +47,7 @@ dependencies {
   play externalDependency.mysqlConnector
   play externalDependency.postgresql
 
+  play externalDependency.playWs
   play externalDependency.kafkaClients
 
   playTest externalDependency.mockito
@@ -85,7 +85,7 @@ model {
   }
 }
 
-task unzipAssets(type: Copy, dependsOn: configurations.assets) {
+task unzipAssets(type: Copy, dependsOn: [configurations.assets, ':datahub-web-react:yarnBuild']) {
   into "${buildDir}/assets"
   from {
     configurations.assets.collect { zipTree(it) }

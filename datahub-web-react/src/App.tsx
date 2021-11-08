@@ -1,19 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Cookies from 'js-cookie';
+import { message } from 'antd';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache, ServerError } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from 'styled-components';
 
 import './App.less';
 import { Routes } from './app/Routes';
-import { mocks } from './Mocks';
 import EntityRegistry from './app/entity/EntityRegistry';
 import { DashboardEntity } from './app/entity/dashboard/DashboardEntity';
 import { ChartEntity } from './app/entity/chart/ChartEntity';
 import { UserEntity } from './app/entity/user/User';
-import { UserGroupEntity } from './app/entity/userGroup/UserGroup';
+import { GroupEntity } from './app/entity/group/Group';
 import { DatasetEntity } from './app/entity/dataset/DatasetEntity';
 import { DatasourceEntity } from './app/entity/datasource/DatasourceEntity';
 import { DataFlowEntity } from './app/entity/dataFlow/DataFlowEntity';
@@ -26,16 +25,18 @@ import { PageRoutes } from './conf/Global';
 import { isLoggedInVar } from './app/auth/checkAuthStatus';
 import { GlobalCfg } from './conf';
 import { GlossaryTermEntity } from './app/entity/glossaryTerm/GlossaryTermEntity';
-
-// Enable to use the Apollo MockProvider instead of a real HTTP client
-const MOCK_MODE = false;
+import { MLFeatureEntity } from './app/entity/mlFeature/MLFeatureEntity';
+import { MLPrimaryKeyEntity } from './app/entity/mlPrimaryKey/MLPrimaryKeyEntity';
+import { MLFeatureTableEntity } from './app/entity/mlFeatureTable/MLFeatureTableEntity';
+import { MLModelEntity } from './app/entity/mlModel/MLModelEntity';
+import { MLModelGroupEntity } from './app/entity/mlModelGroup/MLModelGroupEntity';
 
 /*
-    Construct Apollo Client 
+    Construct Apollo Client
 */
 const httpLink = createHttpLink({ uri: '/api/v2/graphql' });
 
-const errorLink = onError(({ networkError }) => {
+const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (networkError) {
         const serverError = networkError as ServerError;
         if (serverError.statusCode === 401) {
@@ -44,39 +45,29 @@ const errorLink = onError(({ networkError }) => {
             window.location.replace(PageRoutes.AUTHENTICATE);
         }
     }
+    if (graphQLErrors && graphQLErrors.length) {
+        const firstError = graphQLErrors[0];
+        const { extensions } = firstError;
+        console.log(firstError);
+        const errorCode = extensions && (extensions.code as number);
+        // Fallback in case the calling component does not handle.
+        message.error(`${firstError.message} (code ${errorCode})`, 3);
+    }
 });
 
 const client = new ApolloClient({
+    connectToDevTools: true,
     link: errorLink.concat(httpLink),
-    cache: new InMemoryCache({
-        typePolicies: {
-            Dataset: {
-                keyFields: ['urn'],
-            },
-            Datasource: {
-                keyFields: ['urn'],
-            },
-            CorpUser: {
-                keyFields: ['urn'],
-            },
-            Dashboard: {
-                keyFields: ['urn'],
-            },
-            Chart: {
-                keyFields: ['urn'],
-            },
-            DataFlow: {
-                keyFields: ['urn'],
-            },
-            DataJob: {
-                keyFields: ['urn'],
-            },
-        },
-        possibleTypes: {
-            EntityWithRelationships: ['Dataset', 'Datasource', 'Chart', 'Dashboard', 'DataJob'],
-        },
-    }),
+    cache: new InMemoryCache(),
     credentials: 'include',
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'no-cache',
+        },
+        query: {
+            fetchPolicy: 'no-cache',
+        },
+    },
 });
 
 const App: React.VFC = () => {
@@ -95,11 +86,16 @@ const App: React.VFC = () => {
         register.register(new DashboardEntity());
         register.register(new ChartEntity());
         register.register(new UserEntity());
-        register.register(new UserGroupEntity());
+        register.register(new GroupEntity());
         register.register(new TagEntity());
         register.register(new DataFlowEntity());
         register.register(new DataJobEntity());
         register.register(new GlossaryTermEntity());
+        register.register(new MLFeatureEntity());
+        register.register(new MLPrimaryKeyEntity());
+        register.register(new MLFeatureTableEntity());
+        register.register(new MLModelEntity());
+        register.register(new MLModelGroupEntity());
         return register;
     }, []);
 
@@ -107,23 +103,9 @@ const App: React.VFC = () => {
         <ThemeProvider theme={dynamicThemeConfig}>
             <Router>
                 <EntityRegistryContext.Provider value={entityRegistry}>
-                    {/* Temporary: For local testing during development. */}
-                    {MOCK_MODE ? (
-                        <MockedProvider
-                            mocks={mocks}
-                            addTypename={false}
-                            defaultOptions={{
-                                watchQuery: { fetchPolicy: 'no-cache' },
-                                query: { fetchPolicy: 'no-cache' },
-                            }}
-                        >
-                            <Routes />
-                        </MockedProvider>
-                    ) : (
-                        <ApolloProvider client={client}>
-                            <Routes />
-                        </ApolloProvider>
-                    )}
+                    <ApolloProvider client={client}>
+                        <Routes />
+                    </ApolloProvider>
                 </EntityRegistryContext.Provider>
             </Router>
         </ThemeProvider>

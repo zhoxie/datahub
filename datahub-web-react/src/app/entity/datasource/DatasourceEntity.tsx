@@ -1,24 +1,29 @@
 import * as React from 'react';
 import { DatabaseFilled, DatabaseOutlined } from '@ant-design/icons';
-import { Tag, Typography } from 'antd';
-import styled from 'styled-components';
-import { Datasource, EntityType, SearchResult } from '../../../types.generated';
-import { DatasourceProfile } from './profile/DatasourceProfile';
+import { Typography } from 'antd';
+import { Datasource, EntityType, RelationshipDirection, SearchResult } from '../../../types.generated';
 import { Entity, IconStyleType, PreviewType } from '../Entity';
-import { PreviewNoDel, Preview } from './preview/Preview';
+import { Preview } from './preview/Preview';
 import { FIELDS_TO_HIGHLIGHT } from './search/highlights';
-import getChildren from '../../lineage/utils/getChildren';
-import { Direction } from '../../lineage/types';
-
-const MatchTag = styled(Tag)`
-    &&& {
-        margin-bottom: 0px;
-        margin-top: 10px;
-    }
-`;
+import { getChildrenFromRelationships } from '../../lineage/utils/getChildren';
+import { EntityProfile } from '../shared/containers/profile/EntityProfile';
+import {
+    GetDatasourceQuery,
+    useGetDatasourceQuery,
+    useUpdateDatasourceMutation,
+} from '../../../graphql/datasource.generated';
+import { PropertiesTab } from '../shared/tabs/Properties/PropertiesTab';
+import { DocumentationTab } from '../shared/tabs/Documentation/DocumentationTab';
+import { Sources } from '../shared/tabs/Datasource/Source/Sources';
+import { Datasets } from '../shared/tabs/Datasource/Datasets/Datasets';
+import { SidebarAboutSection } from '../shared/containers/profile/sidebar/SidebarAboutSection';
+import { SidebarOwnerSection } from '../shared/containers/profile/sidebar/Ownership/SidebarOwnerSection';
+import { SidebarTagsSection } from '../shared/containers/profile/sidebar/SidebarTagsSection';
+import { SidebarRecommendationsSection } from '../shared/containers/profile/sidebar/Recommendations/SidebarRecommendationsSection';
+import { getDataForEntityType } from '../shared/containers/profile/utils';
 
 /**
- * Definition of the DataHub Datasource entity.
+ * Definition of the DataHub Dataset entity.
  */
 export class DatasourceEntity implements Entity<Datasource> {
     type: EntityType = EntityType.Datasource;
@@ -58,9 +63,69 @@ export class DatasourceEntity implements Entity<Datasource> {
 
     getPathName = () => 'datasource';
 
+    getEntityName = () => 'Datasource';
+
     getCollectionName = () => 'Datasources';
 
-    renderProfile = (urn: string) => <DatasourceProfile urn={urn} />;
+    renderProfile = (urn: string) => (
+        <EntityProfile
+            urn={urn}
+            entityType={EntityType.Datasource}
+            useEntityQuery={useGetDatasourceQuery}
+            useUpdateQuery={useUpdateDatasourceMutation}
+            getOverrideProperties={this.getOverridePropertiesFromEntity}
+            tabs={[
+                {
+                    name: 'Connection',
+                    component: Sources,
+                },
+                {
+                    name: 'Documentation',
+                    component: DocumentationTab,
+                },
+                {
+                    name: 'Properties',
+                    component: PropertiesTab,
+                },
+                {
+                    name: 'Datasets',
+                    component: Datasets,
+                    display: {
+                        visible: (_, _1) => true,
+                        enabled: (_, datasource: GetDatasourceQuery) =>
+                            (datasource?.datasource?.incoming?.count || 0) > 0 ||
+                            (datasource?.datasource?.outgoing?.count || 0) > 0,
+                    },
+                },
+            ]}
+            sidebarSections={[
+                {
+                    component: SidebarAboutSection,
+                },
+                {
+                    component: SidebarTagsSection,
+                    properties: {
+                        hasTags: true,
+                        hasTerms: true,
+                    },
+                },
+                {
+                    component: SidebarOwnerSection,
+                },
+                {
+                    component: SidebarRecommendationsSection,
+                },
+            ]}
+        />
+    );
+
+    getOverridePropertiesFromEntity = () => {
+        // if dataset has subTypes filled out, pick the most specific subtype and return it
+        return {
+            externalUrl: '',
+            entityTypeOverride: '',
+        };
+    };
 
     renderPreview = (_: PreviewType, data: Datasource) => {
         return (
@@ -68,25 +133,9 @@ export class DatasourceEntity implements Entity<Datasource> {
                 urn={data.urn}
                 name={data.name}
                 origin={data.origin}
-                description={data.description}
-                platformName={data.connections?.platform?.name || 'null'}
-                platformLogo={data.connections?.platform?.info?.logoUrl || ''}
-                owners={data.ownership?.owners}
-                globalTags={data.globalTags}
-                glossaryTerms={data.glossaryTerms}
-            />
-        );
-    };
-
-    renderNoDelPreview = (_: PreviewType, data: Datasource) => {
-        return (
-            <PreviewNoDel
-                urn={data.urn}
-                name={data.name}
-                origin={data.origin}
-                description={data.description}
-                platformName={data.connections?.platform?.name || 'null'}
-                platformLogo={data.connections?.platform?.info?.logoUrl || ''}
+                description={data.editableProperties?.description || data.description}
+                platformName={data.connections?.platform?.displayName || data.connections?.platform?.name || ''}
+                platformLogo={data.connections?.platform?.info?.logoUrl}
                 owners={data.ownership?.owners}
                 globalTags={data.globalTags}
                 glossaryTerms={data.glossaryTerms}
@@ -97,25 +146,24 @@ export class DatasourceEntity implements Entity<Datasource> {
     renderSearch = (result: SearchResult) => {
         const data = result.entity as Datasource;
         return (
-            <PreviewNoDel
+            <Preview
                 urn={data.urn}
                 name={data.name}
                 origin={data.origin}
-                description={data.description}
-                platformName={data.connections?.platform?.name || 'null'}
-                platformLogo={data.connections?.platform?.info?.logoUrl || ''}
+                description={data.editableProperties?.description || data.description}
+                platformName={data.connections?.platform?.name || ''}
+                platformLogo={data.connections?.platform?.info?.logoUrl}
                 owners={data.ownership?.owners}
                 globalTags={data.globalTags}
+                glossaryTerms={data.glossaryTerms}
                 snippet={
                     // Add match highlights only if all the matched fields are in the FIELDS_TO_HIGHLIGHT
                     result.matchedFields.length > 0 &&
                     result.matchedFields.every((field) => FIELDS_TO_HIGHLIGHT.has(field.name)) && (
-                        <MatchTag>
-                            <Typography.Text>
-                                Matches {FIELDS_TO_HIGHLIGHT.get(result.matchedFields[0].name)}{' '}
-                                <b>{result.matchedFields[0].value}</b>
-                            </Typography.Text>
-                        </MatchTag>
+                        <Typography.Text>
+                            Matches {FIELDS_TO_HIGHLIGHT.get(result.matchedFields[0].name)}{' '}
+                            <b>{result.matchedFields[0].value}</b>
+                        </Typography.Text>
                     )
                 }
             />
@@ -124,17 +172,42 @@ export class DatasourceEntity implements Entity<Datasource> {
 
     getLineageVizConfig = (entity: Datasource) => {
         return {
-            urn: entity.urn,
-            name: entity.name,
+            urn: entity?.urn,
+            name: entity?.name,
             type: EntityType.Datasource,
-            upstreamChildren: getChildren({ entity, type: EntityType.Datasource }, Direction.Upstream).map(
-                (child) => child.entity.urn,
-            ),
-            downstreamChildren: getChildren({ entity, type: EntityType.Datasource }, Direction.Downstream).map(
-                (child) => child.entity.urn,
-            ),
-            icon: entity.connections?.platform?.info?.logoUrl || undefined,
-            platform: entity.connections?.platform?.name,
+            subtype: undefined,
+            downstreamChildren: getChildrenFromRelationships({
+                // eslint-disable-next-line @typescript-eslint/dot-notation
+                incomingRelationships: entity?.['incoming'],
+                // eslint-disable-next-line @typescript-eslint/dot-notation
+                outgoingRelationships: entity?.['outgoing'],
+                direction: RelationshipDirection.Incoming,
+            }),
+            upstreamChildren: getChildrenFromRelationships({
+                // eslint-disable-next-line @typescript-eslint/dot-notation
+                incomingRelationships: entity?.['incoming'],
+                // eslint-disable-next-line @typescript-eslint/dot-notation
+                outgoingRelationships: entity?.['outgoing'],
+                direction: RelationshipDirection.Outgoing,
+            }),
+            icon: entity?.connections?.platform?.info?.logoUrl || undefined,
+            platform: entity?.connections?.platform?.name,
         };
+    };
+
+    displayName = (data: Datasource) => {
+        return data?.name;
+    };
+
+    platformLogoUrl = (data: Datasource) => {
+        return data.connections?.platform?.info?.logoUrl || undefined;
+    };
+
+    getGenericEntityProperties = (data: Datasource) => {
+        return getDataForEntityType({
+            data,
+            entityType: this.type,
+            getOverrideProperties: this.getOverridePropertiesFromEntity,
+        });
     };
 }

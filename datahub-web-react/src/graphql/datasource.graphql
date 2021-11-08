@@ -1,6 +1,6 @@
-mutation updateDatasource($input: DatasourceUpdateInput!) {
-    updateDatasource(input: $input) {
-        ...nonRecursiveDatasourceFields
+mutation updateDatasource($urn: String!, $input: DatasourceUpdateInput!) {
+    updateDatasource(urn: $urn, input: $input) {
+        urn
     }
 }
 
@@ -35,11 +35,15 @@ query getDatasource($urn: String!) {
                 }
             }
         }
-        downstreamLineage {
-            ...downstreamRelationshipFields
+        incoming: relationships(
+            input: { types: ["IsPartOf"], direction: INCOMING, start: 0, count: 100 }
+        ) {
+            ...fullRelationshipResults
         }
-        upstreamLineage {
-            ...upstreamRelationshipFields
+        outgoing: relationships(
+            input: { types: ["IsPartOf"], direction: OUTGOING, start: 0, count: 100 }
+        ) {
+            ...fullRelationshipResults
         }
     }
 }

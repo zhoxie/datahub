@@ -7,7 +7,7 @@ import { AvatarsGroup } from '../../../shared/avatar';
 import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';
 import CompactContext from '../../../shared/CompactContext';
 import { useEntityRegistry } from '../../../useEntityRegistry';
-import UpdatableDescription from '../../shared/UpdatableDescription';
+import UpdatableDescription from '../../shared/components/legacy/UpdatableDescription';
 
 export type Props = {
     datasource: Datasource;
@@ -77,7 +77,7 @@ export default function DatasourceHeader({
                     urn={urn}
                     entityType={type}
                 />
-                <AvatarsGroup owners={ownership?.owners} entityRegistry={entityRegistry} size="large" />
+                <AvatarsGroup owners={ownership?.owners} entityRegistry={entityRegistry} />
                 <div>
                     {deprecation?.deprecated && (
                         <Popover
