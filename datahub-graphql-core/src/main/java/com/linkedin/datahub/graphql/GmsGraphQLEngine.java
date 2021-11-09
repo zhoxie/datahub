@@ -249,11 +249,13 @@ public class GmsGraphQLEngine {
         this.glossaryTermType = new GlossaryTermType(entityClient);
         this.aspectType = new AspectType(entityClient);
         this.usageType = new UsageType(GmsClientFactory.getUsageClient());
+        this.datasourceCategoryType = new DatasourceCategoryType(GmsClientFactory.getEntitiesClient());
 
         // Init Lists
         this.entityTypes = ImmutableList.of(datasetType, datasourceType, corpUserType, corpGroupType,
             dataPlatformType, chartType, dashboardType, tagType, mlModelType, mlModelGroupType, mlFeatureType,
-            mlFeatureTableType, mlPrimaryKeyType, dataFlowType, dataJobType, glossaryTermType, allDatasourceCategories
+            mlFeatureTableType, mlPrimaryKeyType, dataFlowType, dataJobType, glossaryTermType,
+            allDatasourceCategories, datasourceCategoryType
         );
         this.relationshipTypes = ImmutableList.of(
             dataFlowDataJobsRelationshipType
@@ -269,7 +271,6 @@ public class GmsGraphQLEngine {
             .map(type -> (BrowsableEntityType<?>) type)
             .collect(Collectors.toList());
 
-        this.datasourceCategoryType = new DatasourceCategoryType(GmsClientFactory.getEntitiesClient());
 //        this.downstreamLineageType = new DownstreamLineageType(
 //                GmsClientFactory.getLineagesClient()
 //        );
