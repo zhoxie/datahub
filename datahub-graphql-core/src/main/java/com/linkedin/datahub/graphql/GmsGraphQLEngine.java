@@ -101,6 +101,7 @@ import com.linkedin.datahub.graphql.types.datasource.DatasourceType;
 import com.linkedin.datahub.graphql.types.dataset.mappers.DatasetProfileMapper;
 import com.linkedin.datahub.graphql.types.datasourcecategory.AllDatasourceCategories;
 import com.linkedin.datahub.graphql.types.datasourcecategory.DatasourceCategoryType;
+import com.linkedin.datahub.graphql.types.lineage.SourceRelationshipsType;
 import com.linkedin.datahub.graphql.types.mlmodel.MLFeatureTableType;
 import com.linkedin.datahub.graphql.types.mlmodel.MLFeatureType;
 import com.linkedin.datahub.graphql.types.mlmodel.MLPrimaryKeyType;
@@ -172,6 +173,7 @@ public class GmsGraphQLEngine {
     private final DataFlowType dataFlowType;
     private final DataJobType dataJobType;
     private final DataFlowDataJobsRelationshipsType dataFlowDataJobsRelationshipType;
+    private final SourceRelationshipsType sourceRelationshipsType;
     private final GlossaryTermType glossaryTermType;
     private final AspectType aspectType;
     private final UsageType usageType;
@@ -246,6 +248,9 @@ public class GmsGraphQLEngine {
         this.dataFlowDataJobsRelationshipType = new DataFlowDataJobsRelationshipsType(
             GmsClientFactory.getRelationshipsClient()
         );
+        this.sourceRelationshipsType = new SourceRelationshipsType(
+                GmsClientFactory.getRelationshipsClient()
+        );
         this.glossaryTermType = new GlossaryTermType(entityClient);
         this.aspectType = new AspectType(entityClient);
         this.usageType = new UsageType(GmsClientFactory.getUsageClient());
@@ -258,7 +263,7 @@ public class GmsGraphQLEngine {
             allDatasourceCategories, datasourceCategoryType
         );
         this.relationshipTypes = ImmutableList.of(
-            dataFlowDataJobsRelationshipType
+            dataFlowDataJobsRelationshipType, sourceRelationshipsType
         );
         this.loadableTypes = Stream.concat(entityTypes.stream(), relationshipTypes.stream()).collect(Collectors.toList());
         this.ownerTypes = ImmutableList.of(corpUserType, corpGroupType);
@@ -576,6 +581,13 @@ public class GmsGraphQLEngine {
                .dataFetcher("subTypes", new AuthenticatedResolver(new SubTypesResolver(GmsClientFactory.getAspectsClient(),
                            "dataset",
                        "subTypes")))
+                .dataFetcher("sources", new AuthenticatedResolver<>(
+                    new LoadableTypeBatchResolver<>(
+                        datasourceType,
+                        (env) -> ((DatasetSources) env.getSource()).getSources().stream()
+                            .map(Datasource::getUrn)
+                            .collect(Collectors.toList())))
+                )
             )
             .type("Owner", typeWiring -> typeWiring
                     .dataFetcher("owner", new AuthenticatedResolver<>(
@@ -601,15 +613,6 @@ public class GmsGraphQLEngine {
                                 (env) -> ((InstitutionalMemoryMetadata) env.getSource()).getAuthor().getUrn()))
                 )
             );
-        builder.type("DatasetSources", typeWiring -> typeWiring
-            .dataFetcher("sources", new AuthenticatedResolver<>(
-                new LoadableTypeBatchResolver<>(
-                    datasourceType,
-                    (env) -> ((DatasetSources) env.getSource()).getSources().stream()
-                            .map(Datasource::getUrn)
-                        .collect(Collectors.toList())))
-            )
-        );
     }
 
     /**
@@ -630,6 +633,14 @@ public class GmsGraphQLEngine {
                                         datasourceCategoryType,
                                         (env) -> ((Datasource) env.getSource()).getCategory().getUrn()))
                         )
+                        .dataFetcher("datasets", new AuthenticatedResolver<>(
+                                        new LoadableTypeResolver<>(sourceRelationshipsType,
+                                                (env) -> ((Entity) env.getSource()).getUrn())
+                                )
+                        )
+                        .dataFetcher("relationships", new AuthenticatedResolver<>(
+                                new EntityRelationshipsResultResolver(graphClient)
+                        ))
 //                        .dataFetcher("downstreamLineage", new AuthenticatedResolver<>(
 //                                new LoadableTypeResolver<>(
 //                                        downstreamLineageType,

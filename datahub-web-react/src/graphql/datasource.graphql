@@ -35,6 +35,51 @@ query getDatasource($urn: String!) {
                 }
             }
         }
+        datasets: relationships(input: { types: ["IsPartOf"], direction: INCOMING, start: 0, count: 100 }) {
+            start
+            count
+            total
+            relationships {
+                entity {
+                    ... on Dataset {
+                        urn
+                        name
+                        origin
+                        description
+                        uri
+                        platform {
+                            name
+                            info {
+                                displayName
+                                logoUrl
+                            }
+                        }
+                        editableProperties {
+                            description
+                        }
+                        platformNativeType
+                        properties {
+                            customProperties {
+                                key
+                                value
+                            }
+                        }
+                        ownership {
+                            ...ownershipFields
+                        }
+                        globalTags {
+                            ...globalTagsFields
+                        }
+                        glossaryTerms {
+                            ...glossaryTerms
+                        }
+                        subTypes {
+                            typeNames
+                        }
+                    }
+                }
+            }
+        }
         incoming: relationships(
             input: { types: ["IsPartOf"], direction: INCOMING, start: 0, count: 100 }
         ) {

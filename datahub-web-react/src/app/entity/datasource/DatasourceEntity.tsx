@@ -93,8 +93,7 @@ export class DatasourceEntity implements Entity<Datasource> {
                     display: {
                         visible: (_, _1) => true,
                         enabled: (_, datasource: GetDatasourceQuery) =>
-                            (datasource?.datasource?.incoming?.count || 0) > 0 ||
-                            (datasource?.datasource?.outgoing?.count || 0) > 0,
+                            (datasource?.datasource?.datasets?.count || 0) > 0,
                     },
                 },
             ]}

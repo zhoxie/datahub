@@ -18,6 +18,7 @@ import { SidebarOwnerSection } from '../shared/containers/profile/sidebar/Owners
 import { SidebarTagsSection } from '../shared/containers/profile/sidebar/SidebarTagsSection';
 import { SidebarStatsSection } from '../shared/containers/profile/sidebar/Dataset/StatsSidebarSection';
 import StatsTab from '../shared/tabs/Dataset/Stats/StatsTab';
+import { DatasourcesTab } from '../shared/tabs/Dataset/Source/DatasourcesTab';
 import { LineageTab } from '../shared/tabs/Lineage/LineageTab';
 import { capitalizeFirstLetter } from '../../shared/capitalizeFirstLetter';
 import ViewDefinitionTab from '../shared/tabs/Dataset/View/ViewDefinitionTab';
@@ -112,6 +113,14 @@ export class DatasetEntity implements Entity<Dataset> {
                         enabled: (_, dataset: GetDatasetQuery) =>
                             (dataset?.dataset?.incoming?.count || 0) > 0 ||
                             (dataset?.dataset?.outgoing?.count || 0) > 0,
+                    },
+                },
+                {
+                    name: 'Sources',
+                    component: DatasourcesTab,
+                    display: {
+                        visible: (_, _1) => true,
+                        enabled: (_, dataset: GetDatasetQuery) => (dataset?.dataset?.sources?.count || 0) > 0,
                     },
                 },
                 {
