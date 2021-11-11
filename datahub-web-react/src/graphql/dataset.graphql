@@ -43,7 +43,7 @@ query getDataset($urn: String!) {
                 }
             }
         }
-        sources: relationships(input: { types: ["IsPartOf"], direction: OUTGOING, start: 0, count: 1 }) {
+        sources: relationships(input: { types: ["Sources"], direction: OUTGOING, start: 0, count: 1 }) {
             ...fullRelationshipResults
         }
         deprecation {
