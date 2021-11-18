@@ -43,33 +43,20 @@ export default function CustomAvatar({
     isGroup = false,
 }: Props) {
     const avatarWithInitial = name ? (
-        <AvatarStyled shape="square" style={style} size={size} $backgroundColor={getAvatarColor(name)}>
+        <AvatarStyled style={style} size={size} $backgroundColor={getAvatarColor(name)}>
             {name.charAt(0).toUpperCase()}
         </AvatarStyled>
     ) : (
-        <AvatarStyled
-            shape="square"
-            src={defaultAvatar}
-            style={style}
-            size={size}
-            $backgroundColor={getAvatarColor(name)}
-        />
+        <AvatarStyled src={defaultAvatar} style={style} size={size} $backgroundColor={getAvatarColor(name)} />
     );
     const avatarWithDefault = useDefaultAvatar ? (
-        <AvatarStyled
-            shape="square"
-            src={defaultAvatar}
-            style={style}
-            size={size}
-            $backgroundColor={getAvatarColor(name)}
-        />
+        <AvatarStyled src={defaultAvatar} style={style} size={size} $backgroundColor={getAvatarColor(name)} />
     ) : (
         avatarWithInitial
     );
     const avatar =
         photoUrl && photoUrl !== '' ? (
             <AvatarStyled
-                shape="square"
                 src={<Image src={photoUrl} style={style} />}
                 size={size}
                 $backgroundColor={getAvatarColor(name)}
