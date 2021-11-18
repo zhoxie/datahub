@@ -55,7 +55,7 @@ export default function UserHeader({ profileSrc, name, title, skills, teams, ema
             <div>
                 <HeaderContainer>
                     <AvatarWrapper>
-                        <CustomAvatar size={100} photoUrl={profileSrc || undefined} name={name || undefined} />
+                        <CustomAvatar size={60} photoUrl={profileSrc || undefined} name={name || undefined} />
                     </AvatarWrapper>
                     <NameContainer>
                         <Typography.Title level={3}>{name}</Typography.Title>

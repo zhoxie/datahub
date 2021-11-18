@@ -10,6 +10,7 @@ import { LegacyEntityProfile } from '../../shared/LegacyEntityProfile';
 import { CorpUser, EntityType, SearchResult, EntityRelationshipsResult } from '../../../types.generated';
 import UserGroups from './UserGroups';
 import { useEntityRegistry } from '../../useEntityRegistry';
+import { getUserAvatar } from '../../../utils/formatter/dataProcess';
 
 const messageStyle = { marginTop: '10%' };
 
@@ -82,7 +83,7 @@ export default function UserProfile() {
         const displayName = entityRegistry.getDisplayName(EntityType.CorpUser, user);
         return (
             <UserHeader
-                profileSrc={editableInfo?.pictureLink}
+                profileSrc={getUserAvatar(username)}
                 name={displayName}
                 title={info?.title}
                 email={info?.email}

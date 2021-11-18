@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { useRemoveOwnerMutation } from '../../../../../graphql/mutations.generated';
 
 import { EntityType, Owner } from '../../../../../types.generated';
+import { getUserAvatar } from '../../../../../utils/formatter/dataProcess';
 import { CustomAvatar } from '../../../../shared/avatar';
 import { useEntityRegistry } from '../../../../useEntityRegistry';
 
@@ -34,7 +35,7 @@ export const ExpandedOwner = ({ entityUrn, owner, refetch }: Props) => {
         name = entityRegistry.getDisplayName(EntityType.CorpUser, owner.owner);
     }
 
-    const pictureLink = (owner.owner.__typename === 'CorpUser' && owner.owner.editableInfo?.pictureLink) || undefined;
+    const pictureLink = (owner.owner.__typename === 'CorpUser' && getUserAvatar(owner.owner.username)) || undefined;
 
     const onDelete = async () => {
         try {

@@ -7,6 +7,7 @@ import { CorpUser, EntityType, SearchResult } from '../../../types.generated';
 import { CustomAvatar } from '../../shared/avatar';
 import { useGetSearchResultsLazyQuery } from '../../../graphql/search.generated';
 import { useEntityRegistry } from '../../useEntityRegistry';
+import { getUserAvatar } from '../../../utils/formatter/dataProcess';
 
 type Props = {
     urn: string;
@@ -97,7 +98,7 @@ export const AddGroupMembersModal = ({ urn, visible, onClose, onSubmit }: Props)
 
     // Renders a search result in the select dropdown.
     const renderSearchResult = (result: SearchResult) => {
-        const avatarUrl = (result.entity as CorpUser).editableProperties?.pictureLink || undefined;
+        const avatarUrl = getUserAvatar((result.entity as CorpUser).username) || undefined;
         const displayName = entityRegistry.getDisplayName(result.entity.type, result.entity);
         return (
             <SearchResultContainer>
