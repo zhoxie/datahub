@@ -133,12 +133,14 @@ export const HomePageHeader = () => {
     const entityRegistry = useEntityRegistry();
     const [getAutoCompleteResultsForMultiple, { data: suggestionsData }] = useGetAutoCompleteMultipleResultsLazyQuery();
     const user = useGetAuthenticatedUser()?.corpUser;
+    console.log('user info ....', user);
     let userName = '';
+    let pictureLink = '';
     if (user) {
         userName = user.info?.email || user.info?.displayName || user.username || '';
+        pictureLink = user?.editableInfo?.pictureLink || '';
     }
     const themeConfig = useTheme();
-
     const onSearch = (query: string, type?: EntityType) => {
         if (!query || query.trim().length === 0) {
             return;
@@ -214,11 +216,7 @@ export const HomePageHeader = () => {
                 </WelcomeText>
                 <NavGroup>
                     <AdminHeaderLinks />
-                    <ManageAccount
-                        urn={user?.urn || ''}
-                        pictureLink={user?.editableInfo?.pictureLink || ''}
-                        name={userName}
-                    />
+                    <ManageAccount urn={user?.urn || ''} pictureLink={pictureLink} name={userName} />
                 </NavGroup>
             </Row>
             <HeaderContainer>
