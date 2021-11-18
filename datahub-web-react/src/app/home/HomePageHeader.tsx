@@ -133,6 +133,10 @@ export const HomePageHeader = () => {
     const entityRegistry = useEntityRegistry();
     const [getAutoCompleteResultsForMultiple, { data: suggestionsData }] = useGetAutoCompleteMultipleResultsLazyQuery();
     const user = useGetAuthenticatedUser()?.corpUser;
+    let userName = '';
+    if (user) {
+        userName = user.info?.email || user.info?.displayName || user.username || '';
+    }
     const themeConfig = useTheme();
 
     const onSearch = (query: string, type?: EntityType) => {
@@ -204,7 +208,7 @@ export const HomePageHeader = () => {
                 <WelcomeText>
                     {!!user && (
                         <>
-                            Welcome back, <b>{user.info?.firstName || user.username}</b>.
+                            Welcome back, <b>{userName}</b>
                         </>
                     )}
                 </WelcomeText>
@@ -213,7 +217,7 @@ export const HomePageHeader = () => {
                     <ManageAccount
                         urn={user?.urn || ''}
                         pictureLink={user?.editableInfo?.pictureLink || ''}
-                        name={user?.info?.firstName || user?.username || undefined}
+                        name={userName}
                     />
                 </NavGroup>
             </Row>
