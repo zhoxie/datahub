@@ -4,9 +4,7 @@
 
 # Home page
 # serveAsset action requires a path string
-GET           /index                                                          controllers.Application.index(path="index.html")
-GET           /                                                               controllers.Application.index(path="welcome.html")
-
+GET           /                                                               controllers.Application.index(path="index.html")
 
 GET           /admin                                                          controllers.Application.healthcheck()
 GET           /config                                                         controllers.Application.appConfig()
