@@ -133,7 +133,6 @@ export const HomePageHeader = () => {
     const entityRegistry = useEntityRegistry();
     const [getAutoCompleteResultsForMultiple, { data: suggestionsData }] = useGetAutoCompleteMultipleResultsLazyQuery();
     const user = useGetAuthenticatedUser()?.corpUser;
-    console.log('user info ....', user);
     let userName = '';
     let pictureLink = '';
     if (user) {

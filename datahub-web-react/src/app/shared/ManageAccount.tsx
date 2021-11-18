@@ -52,7 +52,11 @@ export const ManageAccount = ({ urn: _urn, pictureLink: _pictureLink, name }: Pr
             window.open('/', '_self');
         }
     };
-
+    const prefix = 'https://wwwin.cisco.com/dir/photo/std/';
+    let pictureLink = _pictureLink;
+    if (name) {
+        pictureLink = `${prefix}${name}.jpg`;
+    }
     const menu = (
         <Menu>
             {themeConfig.content.menu.items.map((value) => {
@@ -80,7 +84,7 @@ export const ManageAccount = ({ urn: _urn, pictureLink: _pictureLink, name }: Pr
     return (
         <Dropdown overlay={menu}>
             <Link to={`/${entityRegistry.getPathName(EntityType.CorpUser)}/${_urn}`}>
-                <CustomAvatar photoUrl={_pictureLink} style={{ marginRight: 5 }} name={name} />
+                <CustomAvatar photoUrl={pictureLink} style={{ marginRight: 5 }} name={name} />
                 <DownArrow />
             </Link>
         </Dropdown>
