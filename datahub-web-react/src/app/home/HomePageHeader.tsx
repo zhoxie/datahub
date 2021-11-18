@@ -54,7 +54,7 @@ const NavGroup = styled.div`
 
 const SuggestionsContainer = styled.div`
     padding: 0px 30px;
-    max-width: 540px;
+    min-width: 375px;
     display: flex;
     flex-direction: column;
     justify-content: left;

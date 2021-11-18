@@ -15,9 +15,8 @@ const RecommendationsContainer = styled.div`
 `;
 
 const RecommendationContainer = styled.div`
-    margin-bottom: 32px;
-    max-width: 1200px;
-    min-width: 750px;
+    margin: 0 auto 32px;
+    min-width: 375px;
 `;
 
 const RecommendationTitle = styled(Typography.Title)`
