@@ -133,12 +133,22 @@ export const HomePageHeader = () => {
     const entityRegistry = useEntityRegistry();
     const [getAutoCompleteResultsForMultiple, { data: suggestionsData }] = useGetAutoCompleteMultipleResultsLazyQuery();
     const user = useGetAuthenticatedUser()?.corpUser;
+    let name = '';
     let userName = '';
     let pictureLink = '';
+
+    try {
+        localStorage.setItem('datahub.user', JSON.stringify(user));
+    } catch (e) {
+        console.log('save user error', e);
+    }
+
     if (user) {
-        userName = user.info?.email || user.info?.displayName || user.username || '';
+        name = user.info?.email || user.info?.displayName || user.username || '';
+        userName = user.username || '';
         pictureLink = user?.editableInfo?.pictureLink || '';
     }
+
     const themeConfig = useTheme();
     const onSearch = (query: string, type?: EntityType) => {
         if (!query || query.trim().length === 0) {
@@ -209,13 +219,13 @@ export const HomePageHeader = () => {
                 <WelcomeText>
                     {!!user && (
                         <>
-                            Welcome back, <b>{userName}</b>
+                            Welcome back, <b>{name}</b>
                         </>
                     )}
                 </WelcomeText>
                 <NavGroup>
                     <AdminHeaderLinks />
-                    <ManageAccount urn={user?.urn || ''} pictureLink={pictureLink} name={userName} />
+                    <ManageAccount urn={user?.urn || ''} pictureLink={pictureLink} name={name} userName={userName} />
                 </NavGroup>
             </Row>
             <HeaderContainer>

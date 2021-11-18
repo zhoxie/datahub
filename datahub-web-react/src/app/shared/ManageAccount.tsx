@@ -35,13 +35,14 @@ interface Props {
     urn: string;
     pictureLink?: string;
     name?: string;
+    userName?: string;
 }
 
 const defaultProps = {
     pictureLink: undefined,
 };
 
-export const ManageAccount = ({ urn: _urn, pictureLink: _pictureLink, name }: Props) => {
+export const ManageAccount = ({ urn: _urn, pictureLink: _pictureLink, name, userName }: Props) => {
     const entityRegistry = useEntityRegistry();
     const themeConfig = useTheme();
     const handleLogout = () => {
@@ -54,8 +55,8 @@ export const ManageAccount = ({ urn: _urn, pictureLink: _pictureLink, name }: Pr
     };
     const prefix = 'https://wwwin.cisco.com/dir/photo/std/';
     let pictureLink = _pictureLink;
-    if (name) {
-        pictureLink = `${prefix}${name}.jpg`;
+    if (userName) {
+        pictureLink = `${prefix}${userName}.jpg`;
     }
     const menu = (
         <Menu>
