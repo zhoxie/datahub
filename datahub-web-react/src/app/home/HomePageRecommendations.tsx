@@ -16,7 +16,7 @@ const RecommendationsContainer = styled.div`
 
 const RecommendationContainer = styled.div`
     margin-bottom: 32px;
-    max-width: 1000px;
+    max-width: 1200px;
     min-width: 750px;
 `;
 
