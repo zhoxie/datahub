@@ -17,11 +17,6 @@ const ProtectedRoute = ({
 } & RouteProps) => {
     const currentPath = window.location.pathname + window.location.search;
     if (!isLoggedIn) {
-        if (window.location.pathname === '/welcome') {
-            const indexPath = '/index';
-            window.location.replace(`${PageRoutes.AUTHENTICATE}?redirect_uri=${encodeURIComponent(indexPath)}`);
-            return null;
-        }
         window.location.replace(`${PageRoutes.AUTHENTICATE}?redirect_uri=${encodeURIComponent(currentPath)}`);
         return null;
     }

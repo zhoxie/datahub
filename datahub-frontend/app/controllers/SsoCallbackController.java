@@ -30,7 +30,7 @@ public class SsoCallbackController extends CallbackController {
   @Inject
   public SsoCallbackController(SsoManager ssoManager) {
     _ssoManager = ssoManager;
-    setDefaultUrl("/"); // By default, redirects to Home Page on log in.
+    setDefaultUrl("/index"); // By default, redirects to Home Page on log in.
     setCallbackLogic(new SsoCallbackLogic(ssoManager));
   }
 
