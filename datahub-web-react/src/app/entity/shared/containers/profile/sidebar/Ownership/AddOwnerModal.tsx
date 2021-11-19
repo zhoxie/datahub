@@ -8,6 +8,7 @@ import { CorpUser, EntityType, OwnerEntityType, SearchResult } from '../../../..
 import { useEntityRegistry } from '../../../../../../useEntityRegistry';
 import { useEntityData } from '../../../../EntityContext';
 import { CustomAvatar } from '../../../../../../shared/avatar';
+import { getUserAvatar } from '../../../../../../../utils/formatter/dataProcess';
 
 type Props = {
     visible: boolean;
@@ -131,7 +132,7 @@ export const AddOwnerModal = ({ visible, onClose, refetch }: Props) => {
     const renderSearchResult = (result: SearchResult) => {
         const avatarUrl =
             result.entity.type === EntityType.CorpUser
-                ? (result.entity as CorpUser).editableProperties?.pictureLink || undefined
+                ? getUserAvatar((result.entity as CorpUser).username) || undefined
                 : undefined;
         const displayName = entityRegistry.getDisplayName(result.entity.type, result.entity);
         return (

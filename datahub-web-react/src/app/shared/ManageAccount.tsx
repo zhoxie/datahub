@@ -11,6 +11,7 @@ import { isLoggedInVar } from '../auth/checkAuthStatus';
 import CustomAvatar from './avatar/CustomAvatar';
 import analytics, { EventType } from '../analytics';
 import { ANTD_GRAY } from '../entity/shared/constants';
+import { getUserAvatar } from '../../utils/formatter/dataProcess';
 
 const MenuItem = styled(Menu.Item)`
     && {
@@ -53,11 +54,7 @@ export const ManageAccount = ({ urn: _urn, pictureLink: _pictureLink, name, user
             window.open('/', '_self');
         }
     };
-    const prefix = 'https://wwwin.cisco.com/dir/photo/std/';
-    let pictureLink = _pictureLink;
-    if (userName) {
-        pictureLink = `${prefix}${userName}.jpg`;
-    }
+    const pictureLink = getUserAvatar(userName, _pictureLink);
     const menu = (
         <Menu>
             {themeConfig.content.menu.items.map((value) => {

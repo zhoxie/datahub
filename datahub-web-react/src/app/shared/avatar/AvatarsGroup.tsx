@@ -3,6 +3,7 @@ import { EntityType, Owner } from '../../../types.generated';
 import CustomAvatar from './CustomAvatar';
 import EntityRegistry from '../../entity/EntityRegistry';
 import { SpacedAvatarGroup } from './SpaceAvatarGroup';
+import { getUserAvatar } from '../../../utils/formatter/dataProcess';
 
 type Props = {
     owners?: Array<Owner> | null;
@@ -24,14 +25,9 @@ export default function AvatarsGroup({ owners, entityRegistry, maxCount = 6, siz
                     {owner.owner.__typename === 'CorpUser' ? (
                         <CustomAvatar
                             size={size}
-                            name={
-                                owner.owner.info?.fullName ||
-                                owner.owner.info?.firstName ||
-                                owner.owner.info?.email ||
-                                owner.owner.username
-                            }
+                            name={owner.owner.info?.email || owner.owner.info?.displayName || owner.owner.username}
                             url={`/${entityRegistry.getPathName(owner.owner.type)}/${owner.owner.urn}`}
-                            photoUrl={owner.owner?.editableInfo?.pictureLink || undefined}
+                            photoUrl={getUserAvatar(owner.owner.username)}
                         />
                     ) : (
                         owner.owner.__typename === 'CorpGroup' && (

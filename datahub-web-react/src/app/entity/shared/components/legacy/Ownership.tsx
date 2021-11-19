@@ -12,6 +12,7 @@ import {
 import CustomAvatar from '../../../../shared/avatar/CustomAvatar';
 import { useGetAutoCompleteResultsLazyQuery } from '../../../../../graphql/search.generated';
 import { useEntityRegistry } from '../../../../useEntityRegistry';
+import { getUserAvatar } from '../../../../../utils/formatter/dataProcess';
 
 const UpdatedText = styled(Typography.Text)`
     position: absolute;
@@ -57,7 +58,7 @@ export const Ownership: React.FC<Props> = ({ owners, lastModifiedAt, updateOwner
                         ldap: owner.owner.username,
                         fullName: owner.owner.info?.fullName || owner.owner.username,
                         role: owner.type,
-                        pictureLink: owner.owner.editableInfo?.pictureLink,
+                        pictureLink: getUserAvatar((owner.owner as CorpUser).username),
                         type: EntityType.CorpUser,
                     };
                 }
@@ -211,7 +212,7 @@ export const Ownership: React.FC<Props> = ({ owners, lastModifiedAt, updateOwner
                         placement="left"
                         name={record.fullName}
                         url={`/${entityRegistry.getPathName(record.type)}/${record.urn}`}
-                        photoUrl={record.pictureLink}
+                        photoUrl={getUserAvatar(record.username)}
                         style={{ marginRight: '15px' }}
                         isGroup={record.type === EntityType.CorpGroup}
                     />
