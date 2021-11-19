@@ -71,6 +71,17 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
 
     const baseBrowsePath = `${PageRoutes.BROWSE}/${entityRegistry.getPathName(type)}`;
 
+    console.log(
+        `[LegacyBrowsePath] baseBrowsePath.... ${baseBrowsePath},
+    Props:`,
+        type,
+        path,
+        lineageSupported,
+        isProfilePage,
+        isBrowsable,
+    );
+
+    // child path
     const pathCrumbs = path.map((part, index) => (
         <Breadcrumb.Item key={`${part || index}`}>
             <Link
@@ -84,13 +95,17 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
             </Link>
         </Breadcrumb.Item>
     ));
-
     const showAdd = () => {
         return type === EntityType.Datasource && path.length < 1;
     };
     return (
         <BrowseRow>
             <Breadcrumb style={{ fontSize: '16px' }}>
+                {isBrowsable && (
+                    <Breadcrumb.Item key="homeIndex">
+                        <Link to={PageRoutes.HOME}>Home</Link>
+                    </Breadcrumb.Item>
+                )}
                 <Breadcrumb.Item>
                     <Link to={isBrowsable ? baseBrowsePath : '#'}>{entityRegistry.getCollectionName(type)}</Link>
                 </Breadcrumb.Item>
