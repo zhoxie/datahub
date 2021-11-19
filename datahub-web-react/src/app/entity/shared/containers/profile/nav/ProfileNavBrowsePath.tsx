@@ -130,10 +130,17 @@ export const ProfileNavBrowsePath = ({
 
     const upstreamText = upstreams === 100 ? '100+' : upstreams;
     const downstreamText = downstreams === 100 ? '100+' : downstreams;
-
+    console.log(
+        `[ProfileNavBrowsePath] breadcrumbLinksEnabled: ${breadcrumbLinksEnabled},baseBrowsePath: ${baseBrowsePath}, collectionName: ${entityRegistry.getCollectionName(
+            type,
+        )}`,
+    );
     return (
         <BrowseRow>
             <Breadcrumb style={{ fontSize: '16px' }} separator=">">
+                <BreadcrumbItem disabled={!breadcrumbLinksEnabled}>
+                    {breadcrumbLinksEnabled ? <Link to={PageRoutes.HOME}>Home</Link> : 'Home'}
+                </BreadcrumbItem>
                 <BreadcrumbItem disabled={!breadcrumbLinksEnabled}>
                     {breadcrumbLinksEnabled ? (
                         <Link to={breadcrumbLinksEnabled ? baseBrowsePath : undefined}>
