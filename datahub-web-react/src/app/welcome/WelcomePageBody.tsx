@@ -1685,7 +1685,7 @@ export const WelcomePageBody = () => {
                 </BannerLogo>
                 <BannerContent>
                     <div>
-                        <BannerContentTitle>What is Data Hub?</BannerContentTitle>
+                        <BannerContentTitle>What is DataHub?</BannerContentTitle>
                         <p>
                             &quot;Data ecosystems are diverse — too diverse. DataHub&apos;s extensible metadata platform
                             enables data discovery, data observability and federated governance that helps you tame this
@@ -1702,7 +1702,7 @@ export const WelcomePageBody = () => {
                             owner, data lifecyle etc. With datahub.webex.com, you can quickly find the data you want and
                             know more about it.
                         </p>
-                        <ButtonGhost onClick={goToLink(IlinkType.DATAHUB)}>VIEW DATA HUB</ButtonGhost>
+                        <ButtonGhost onClick={goToLink(IlinkType.DATAHUB)}>VIEW DATAHUB</ButtonGhost>
                     </div>
                 </BannerContent>
             </BannerWrapper>
