@@ -31,6 +31,7 @@
         "@uiw/react-md-editor": "^3.3.4",
         "@visx/drag": "^1.7.0",
         "@visx/responsive": "^1.7.0",
+        "@visx/tooltip": "^2.2.2",
         "@vx/axis": "^0.0.199",
         "@vx/gradient": "^0.0.199",
         "@vx/grid": "^0.0.199",

@@ -18,12 +18,12 @@ const HighlightGroup = styled.div`
     margin-bottom: -20px;
 `;
 
-const IS_DEV = false;
+const IS_DEV = true;
 
 export const AnalyticsPage = () => {
     const { data: chartData, loading: chartLoading, error: chartError } = useGetAnalyticsChartsQuery();
     const { data: highlightData, loading: highlightLoading, error: highlightError } = useGetHighlightsQuery();
-
+    console.log('[AnalyticsPage] .... chartData,', chartData, chartLoading, highlightData, highlightLoading);
     return (
         <SearchablePage>
             <HighlightGroup>
@@ -34,14 +34,14 @@ export const AnalyticsPage = () => {
                     <Alert type="error" message={highlightError?.message || 'Highlights failed to load'} />
                 )}
                 {(IS_DEV ? sampleHighlights : highlightData?.getHighlights)?.map((highlight) => (
-                    <Highlight highlight={highlight} shortenValue />
+                    <Highlight highlight={highlight} shortenValue key={highlight.value} />
                 ))}
             </HighlightGroup>
             <>
                 {chartLoading && <Message type="loading" content="Loading Charts..." style={{ marginTop: '10%' }} />}
                 {chartError && <Alert type="error" message={chartError?.message || 'Charts failed to load'} />}
                 {(IS_DEV ? sampleCharts : chartData?.getAnalyticsCharts)?.map((chartGroup) => (
-                    <ChartGroup chartGroup={chartGroup} />
+                    <ChartGroup chartGroup={chartGroup} key={chartGroup.title} />
                 ))}
             </>
         </SearchablePage>

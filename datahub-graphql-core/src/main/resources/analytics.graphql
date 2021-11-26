@@ -21,7 +21,7 @@ extend type Query {
 """
 For consumption by UI only
 """
-union AnalyticsChart = TimeSeriesChart | BarChart | TableChart
+union AnalyticsChart = TimeSeriesChart | BarChart | TableChart | PieChart
 
 """
 For consumption by UI only
@@ -89,6 +89,14 @@ type BarSegment {
 """
 For consumption by UI only
 """
+type PieSegment {
+    label: String!
+    value: Int!
+}
+
+"""
+For consumption by UI only
+"""
 type NamedBar {
     name: String!
     segments: [BarSegment!]!
@@ -97,9 +105,25 @@ type NamedBar {
 """
 For consumption by UI only
 """
+type NamedPie {
+    name: String!
+    segment: PieSegment!
+}
+
+"""
+For consumption by UI only
+"""
 type BarChart {
     title: String!
     bars: [NamedBar!]!
+}
+
+"""
+For consumption by UI only
+"""
+type PieChart {
+    title: String!
+    pies: [NamedPie!]!
 }
 
 """

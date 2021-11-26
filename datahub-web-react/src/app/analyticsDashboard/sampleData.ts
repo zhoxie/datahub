@@ -5,7 +5,9 @@ import {
     DateInterval,
     NamedBar,
     NamedLine,
+    NamedPie,
     NumericDataPoint,
+    PieSegment,
     TableChart,
 } from '../../types.generated';
 
@@ -78,6 +80,31 @@ export function generateSampleBarChart(title: string, lines: number): AnalyticsC
     };
 }
 
+function generatePies(index: number) {
+    const output: PieSegment = {
+        value: Math.random() * 20,
+        label: `Pie count ${index}`,
+    };
+    return output;
+}
+
+export function generateSamplePieChart(title: string, lines: number): AnalyticsChart {
+    const allBars: NamedPie[] = [];
+    for (let i = 0; i < lines; i++) {
+        const pieTitle = Math.random().toString(36).substring(9);
+        allBars.push({
+            name: `${pieTitle} pie percent`,
+            segment: generatePies(i),
+        });
+    }
+
+    return {
+        title,
+        pies: allBars,
+        __typename: 'PieChart',
+    };
+}
+
 export function generateSampleTableChart(title: string): TableChart {
     return {
         title,
@@ -98,6 +125,7 @@ export function generateSampleChartGroup(title: string, charts: number): Analyti
         constructedCharts.push(generateSampleTimeSeries(`${chartTitle} over time`, Math.floor(Math.random() * 3 + 4)));
     }
     constructedCharts.push(generateSampleBarChart('Bar Sample', 7));
+    constructedCharts.push(generateSamplePieChart('Pie Sample', 8));
     constructedCharts.push(generateSampleTableChart('Top Search Results'));
 
     return {
