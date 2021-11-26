@@ -18,7 +18,7 @@ const HighlightGroup = styled.div`
     margin-bottom: -20px;
 `;
 
-const IS_DEV = true;
+const IS_DEV = false;
 
 export const AnalyticsPage = () => {
     const { data: chartData, loading: chartLoading, error: chartError } = useGetAnalyticsChartsQuery();
