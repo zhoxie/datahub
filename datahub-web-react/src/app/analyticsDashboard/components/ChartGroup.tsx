@@ -30,6 +30,7 @@ type Props = {
 };
 
 export const ChartGroup = ({ chartGroup }: Props) => {
+    console.log('[chart group]...', chartGroup);
     return (
         <Container>
             <TitleContainer>
