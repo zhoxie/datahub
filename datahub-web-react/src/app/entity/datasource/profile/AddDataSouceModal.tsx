@@ -4,7 +4,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { FormField, IDataSourceConnection, IFormConnectionData, IFormData } from '../service/DataSouceType';
 import { showMessageByNotification, showRequestResult } from '../service/NotificationUtil';
-import { initDataCenter, initCluster, typeDrivers } from '../service/FormInitValue';
+import { initDataCenter, initCluster, typeDrivers, DbSourceTypeData } from '../service/FormInitValue';
 import { useAllDatasourceCategoriesQuery } from '../../../../graphql/datasourceCategory.generated';
 import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';
 
@@ -22,25 +22,30 @@ const layout = {
     wrapperCol: { span: 20 },
 };
 export default function AddDataSourceModal({ visible, onClose, title, originData }: AddDataSourceModalProps) {
-    let count = 1;
+    let count = 1; // when originData exists ,show the edit
     const initData: IFormData = originData ?? {
-        sourceName: '',
         sourceType: typeDrivers[0].value,
+        driver: typeDrivers[0]?.children[0].value,
         category: '',
         dataCenter: '',
         connections: [
             {
                 id: 1,
-                cluster: 'PRIMARY',
+                cluster: '',
                 connName: '',
                 connPwd: '',
-                driver: typeDrivers[0].children[0].value,
                 url: '',
+                sourceName: '',
+                bootstrapServer: '',
+                schemaPattern: '',
+                tablePattern: '',
+                topicPattern: '',
             },
         ],
     };
 
     const [formData, updateDataSourceFormData] = useState(initData);
+    console.log('formData....', formData);
     const [form] = Form.useForm();
     const categoryName = capitalizeFirstLetter(formData.category);
 
@@ -76,10 +81,10 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         if (!formData) {
             return false;
         }
-        const { connections, sourceName, sourceType, category, dataCenter } = formData;
-        const isBasicOK = !!sourceName && !!sourceType && !!category && !!dataCenter;
+        const { connections, sourceType, category, dataCenter } = formData;
+        const isBasicOK = !!sourceType && !!category && !!dataCenter;
         const isConnectionOk = connections?.every((item) => {
-            if (item.cluster && item.driver && item.connPwd && item.connPwd && item.url) {
+            if (item.cluster && item.connPwd && item.connPwd && item.url) {
                 return true;
             }
             return false;
@@ -95,17 +100,16 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             showValidateMsg('Exist some required value missing from form items !');
             return;
         }
-        const urn = `urn:li:datasource:(urn:li:datasourceCategory:${formData.category},${formData.sourceName},PROD)`;
+        const urn = `urn:li:datasource:(urn:li:datasourceCategory:${formData.category},PROD)`;
         const sourceKey = {
             'com.linkedin.metadata.key.DatasourceKey': {
-                name: formData.sourceName,
                 origin: 'PROD',
                 category: `urn:li:datasourceCategory:${formData.category}`,
             },
         };
         const connections: IDataSourceConnection[] = formData.connections?.map((conn) => {
             return {
-                driver: conn.driver,
+                sourcename: conn.sourceName,
                 url: conn.url,
                 customProperties: {},
                 cluster: {
@@ -142,16 +146,36 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         onClose();
     };
 
+    const isInKafka = () => {
+        return formData.sourceType === DbSourceTypeData.Kafka;
+    };
+
     const onAddMoreBtnClick = () => {
         const id = ++count;
-        const info: IFormConnectionData = {
-            cluster: '',
-            connName: '',
-            connPwd: '',
-            driver: '',
-            url: '',
-            id,
-        };
+        const { sourceType } = formData;
+        console.log('onAddMoreBtnClick category .....', sourceType);
+        let info: IFormConnectionData;
+        if (isInKafka()) {
+            info = {
+                id,
+                cluster: '',
+                sourceName: '',
+                topicPattern: '',
+                bootstrapServer: '',
+            };
+        } else {
+            info = {
+                cluster: '',
+                connName: '',
+                connPwd: '',
+                id,
+                sourceName: '',
+                url: '',
+                schemaPattern: '',
+                tablePattern: '',
+            };
+        }
+
         const connections = [...formData.connections];
         connections.push(info);
 
@@ -183,6 +207,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     };
 
     const updateDataSourceConnections = (value: any, field: FormField, ix: number) => {
+        console.log('source update ...', value, field, ix);
         const updatedData = {
             ...formData,
         };
@@ -203,39 +228,28 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     };
 
     const handleTypeChange = (value) => {
-        updateDataSourceBasicInfo(value[0], FormField.sourceType);
-        for (let i = 0; i <= count; i++) {
-            updateDataSourceConnections(value[1], FormField.driver, i);
-        }
+        const updatedData = {
+            ...formData,
+        };
+        const [sourceType, driver] = value;
+        updatedData[FormField.sourceType] = sourceType;
+        updatedData[FormField.driver] = driver;
+        updateDataSourceFormData(updatedData);
     };
 
     const dataSourceBasic = () => {
         return (
             <Card title="Data Source">
                 <Form.Item
-                    name="sourceName"
-                    label="Name"
-                    rules={[{ required: true, message: 'Please input dataSource name!' }]}
-                >
-                    <Input
-                        placeholder="Please input dataSource name"
-                        autoComplete="off"
-                        defaultValue={formData.sourceName}
-                        onChange={(e) => updateDataSourceBasicInfo(e.target.value, FormField.sourceName)}
-                    />
-                </Form.Item>
-                <Form.Item
                     name="sourceType"
                     label="Type"
                     rules={[{ required: true, message: 'Please input dataSource type!' }]}
                 >
-                    {formData.sourceType && formData.connections[0].driver && (
-                        <Cascader
-                            options={typeDrivers}
-                            defaultValue={[formData.sourceType, formData.connections[0].driver]}
-                            onChange={handleTypeChange}
-                        />
-                    )}
+                    <Cascader
+                        defaultValue={[formData.sourceType, formData.driver]}
+                        options={typeDrivers}
+                        onChange={handleTypeChange}
+                    />
                 </Form.Item>
                 <Form.Item
                     name="category"
@@ -261,7 +275,11 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                             defaultValue={categoryName}
                         >
                             {data.allDatasourceCategories.categories?.map((item) => {
-                                return <Option value={item?.name || 'null'}>{item?.displayName || 'null'}</Option>;
+                                return (
+                                    <Option key={item?.name} value={item?.name || 'null'}>
+                                        {item?.displayName || 'null'}
+                                    </Option>
+                                );
                             })}
                         </Select>
                     )}
@@ -278,7 +296,11 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                         defaultValue={formData.dataCenter}
                     >
                         {initDataCenter?.map((item) => {
-                            return <Option value={item.value}>{item.label}</Option>;
+                            return (
+                                <Option key={item?.value} value={item.value}>
+                                    {item.label}
+                                </Option>
+                            );
                         })}
                     </Select>
                 </Form.Item>
@@ -286,7 +308,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         );
     };
 
-    const connections = (params: IFormConnectionData[]) => {
+    const getKafkaConnection = (params: IFormConnectionData[]) => {
         return params.map((info: IFormConnectionData, index: number) => {
             return (
                 <Card
@@ -299,6 +321,20 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 >
                     <Space direction="vertical" style={{ width: '100%', marginTop: 0 }}>
                         <Form.Item
+                            name={`sourceName_${info.id}`}
+                            label="Name"
+                            rules={[{ required: true, message: 'Please input dataSource name!' }]}
+                        >
+                            <Input
+                                placeholder="Please input dataSource name"
+                                autoComplete="off"
+                                defaultValue={info.sourceName}
+                                onChange={(e) =>
+                                    updateDataSourceConnections(e.target.value, FormField.sourceName, index)
+                                }
+                            />
+                        </Form.Item>
+                        <Form.Item
                             name={`cluster_${info.id}`}
                             label="Cluster"
                             rules={[{ required: true, message: 'Please choose connection cluster!' }]}
@@ -310,13 +346,98 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                                 allowClear
                             >
                                 {initCluster?.map((item) => {
-                                    return <Option value={item.value}>{item.label}</Option>;
+                                    return (
+                                        <Option key={item.value} value={item.value}>
+                                            {item.label}
+                                        </Option>
+                                    );
+                                })}
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name={`topicPattern_${info.id}`}
+                            label="Topic Pattern"
+                            rules={[{ required: true, message: 'Please input connection topic Pattern!' }]}
+                        >
+                            <Input
+                                type="text"
+                                placeholder="Please input connection topic Pattern"
+                                autoComplete="off"
+                                defaultValue={info.topicPattern}
+                                onChange={(e) =>
+                                    updateDataSourceConnections(e.target.value, FormField.topicPattern, index)
+                                }
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name={`bootstrapServer_${info.id}`}
+                            label="Bootstrap Server"
+                            rules={[{ required: true, message: 'Please input connection Bootstrap Server!' }]}
+                        >
+                            <Input
+                                type="text"
+                                placeholder="Please input connection bootstrapServer"
+                                autoComplete="off"
+                                defaultValue={info.bootstrapServer}
+                                onChange={(e) =>
+                                    updateDataSourceConnections(e.target.value, FormField.bootstrapServer, index)
+                                }
+                            />
+                        </Form.Item>
+                    </Space>
+                </Card>
+            );
+        });
+    };
+    const getJDBCConnections = (params: IFormConnectionData[]) => {
+        return params.map((info: IFormConnectionData, index: number) => {
+            return (
+                <Card
+                    style={{ marginTop: 16 }}
+                    type="inner"
+                    size="small"
+                    title={`Connection Info ${index + 1}`}
+                    extra={index >= 1 && <DeleteOutlined onClick={() => removeConnectionItem(index)} />}
+                    key={info.id}
+                >
+                    <Space direction="vertical" style={{ width: '100%', marginTop: 0 }}>
+                        <Form.Item
+                            name={`sourceName_${info.id}`}
+                            label="Name"
+                            rules={[{ required: true, message: 'Please input dataSource name!' }]}
+                        >
+                            <Input
+                                placeholder="Please input dataSource name"
+                                autoComplete="off"
+                                defaultValue={info.sourceName}
+                                onChange={(e) =>
+                                    updateDataSourceConnections(e.target.value, FormField.sourceName, index)
+                                }
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name={`cluster_${info.id}`}
+                            label="Cluster"
+                            rules={[{ required: true, message: 'Please choose connection cluster!' }]}
+                        >
+                            <Select
+                                placeholder="Select an option for cluster"
+                                defaultValue={info.cluster}
+                                onChange={(e) => updateDataSourceConnections(e, FormField.cluster, index)}
+                                allowClear
+                            >
+                                {initCluster?.map((item) => {
+                                    return (
+                                        <Option key={item.value} value={item.value}>
+                                            {item.label}
+                                        </Option>
+                                    );
                                 })}
                             </Select>
                         </Form.Item>
                         <Form.Item
                             name={`connName_${info.id}`}
-                            label="userName"
+                            label="User Name"
                             rules={[{ required: true, message: 'Please input connection userName!' }]}
                         >
                             {/* username as value ,will input issue */}
@@ -342,7 +463,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                         </Form.Item>
                         <Form.Item
                             name={`url_${info.id}`}
-                            label="URL"
+                            label="JDBC URL"
                             rules={[{ required: true, message: 'Please Choose DataSource URL!' }]}
                         >
                             <Input
@@ -351,6 +472,35 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                                 autoComplete="off"
                                 defaultValue={info.url}
                                 onChange={(e) => updateDataSourceConnections(e.target.value, FormField.url, index)}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name={`tablePattern_${info.id}`}
+                            label="Table Pattern"
+                            rules={[{ required: true, message: 'Please input connection table Pattern!' }]}
+                        >
+                            <Input
+                                placeholder="Please input connection table Pattern"
+                                autoComplete="off"
+                                defaultValue={info.tablePattern}
+                                onChange={(e) =>
+                                    updateDataSourceConnections(e.target.value, FormField.tablePattern, index)
+                                }
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name={`schemaPattern_${info.id}`}
+                            label="Schema Pattern"
+                            rules={[{ required: true, message: 'Please input connection schema Pattern!' }]}
+                        >
+                            <Input
+                                type="text"
+                                placeholder="Please input connection url"
+                                autoComplete="off"
+                                defaultValue={info.schemaPattern}
+                                onChange={(e) =>
+                                    updateDataSourceConnections(e.target.value, FormField.schemaPattern, index)
+                                }
                             />
                         </Form.Item>
                     </Space>
@@ -394,7 +544,8 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                             </>
                         }
                     >
-                        {connections(formData.connections)}
+                        {isInKafka() && getKafkaConnection(formData.connections)}
+                        {!isInKafka() && getJDBCConnections(formData.connections)}
                     </Card>
                 </Form>
             </Space>
