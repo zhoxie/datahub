@@ -77,6 +77,10 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             });
     };
 
+    const isInKafka = () => {
+        return formData.sourceType === DbSourceTypeData.Kafka;
+    };
+
     const checkFormData = () => {
         if (!formData) {
             return false;
@@ -84,7 +88,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         const { connections, sourceType, category, dataCenter } = formData;
         const isBasicOK = !!sourceType && !!category && !!dataCenter;
         const isConnectionOk = connections?.every((item) => {
-            if (item.cluster && item.connPwd && item.connPwd && item.url) {
+            if (item.cluster && item.sourceName) {
                 return true;
             }
             return false;
@@ -108,6 +112,18 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             },
         };
         const connections: IDataSourceConnection[] = formData.connections?.map((conn) => {
+            const isKafka = isInKafka();
+            if (isKafka) {
+                return {
+                    sourcename: conn.sourceName,
+                    customProperties: {},
+                    cluster: {
+                        'com.linkedin.datasource.DatasourceCluster': conn.cluster,
+                    },
+                    topicPattern: conn.topicPattern,
+                    bootstrapServer: conn.bootstrapServer,
+                };
+            }
             return {
                 sourcename: conn.sourceName,
                 url: conn.url,
@@ -117,6 +133,8 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 },
                 username: conn.connName,
                 password: conn.connPwd,
+                tablePattern: conn.tablePattern,
+                schemaPattern: conn.schemaPattern,
             };
         });
         const connectionKey = {
@@ -144,10 +162,6 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     const onCancelBtnClick = () => {
         updateDataSourceFormData(initData);
         onClose();
-    };
-
-    const isInKafka = () => {
-        return formData.sourceType === DbSourceTypeData.Kafka;
     };
 
     const onAddMoreBtnClick = () => {

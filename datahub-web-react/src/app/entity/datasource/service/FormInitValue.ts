@@ -20,8 +20,6 @@ const initCluster = [
     },
 ];
 
-const typeData = ['oracle', 'mysql', 'postgres'];
-
 const driverData = {
     oracle: ['oracle.jdbc.driver.OracleDriver'],
     mysql: ['com.mysql.jdbc.Driver'],
@@ -59,6 +57,30 @@ const typeDrivers = [
             },
         ],
     },
+    {
+        value: 'tiDB',
+        label: 'TiDB',
+        children: [],
+    },
+    {
+        value: 'pinot',
+        label: 'Pinot',
+        children: [],
+    },
+    {
+        value: 'kafka',
+        label: 'Kafka',
+        children: [],
+    },
 ];
 
-export { initDataCenter, initCluster, typeData, driverData, typeDrivers };
+enum DbSourceTypeData {
+    Kafka = 'kafka',
+    Pinot = 'pinot',
+    TiDB = 'tiDB',
+    Postgres = 'postgres',
+    Mysql = 'mysql',
+    Oracle = 'oracle',
+}
+
+export { initDataCenter, initCluster, driverData, typeDrivers, DbSourceTypeData };
