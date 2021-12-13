@@ -6,9 +6,11 @@ import { Button } from 'antd';
 
 import { useAppConfig } from '../../useAppConfig';
 import { useGetAuthenticatedUser } from '../../useGetAuthenticatedUser';
+import { ANTD_GRAY } from '../../entity/shared/constants';
 
 const AdminLink = styled.span`
     margin-right: 4px;
+    color: ${ANTD_GRAY[1]};
 `;
 
 export function AdminHeaderLinks() {
@@ -29,7 +31,7 @@ export function AdminHeaderLinks() {
             {showAnalytics && (
                 <AdminLink>
                     <Link to="/analytics">
-                        <Button type="text">
+                        <Button type="text" style={{ color: '#eee' }}>
                             <BarChartOutlined /> Analytics
                         </Button>
                     </Link>
@@ -38,7 +40,7 @@ export function AdminHeaderLinks() {
             {showPolicyBuilder && (
                 <AdminLink>
                     <Link to="/policies">
-                        <Button type="text">
+                        <Button type="text" style={{ color: '#eee' }}>
                             <BankOutlined /> Policies
                         </Button>
                     </Link>
@@ -47,7 +49,7 @@ export function AdminHeaderLinks() {
             {showIdentityManagement && (
                 <AdminLink>
                     <Link to="/identities">
-                        <Button type="text">
+                        <Button type="text" style={{ color: '#eee' }}>
                             <UsergroupAddOutlined /> Users & Groups
                         </Button>
                     </Link>
