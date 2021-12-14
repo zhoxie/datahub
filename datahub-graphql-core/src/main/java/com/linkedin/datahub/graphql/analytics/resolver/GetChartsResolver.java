@@ -87,13 +87,17 @@ public final class GetChartsResolver implements DataFetcher<List<AnalyticsChartG
         .build());
 
     // Chart 3: Table Chart
-    final String topSearchTitle = "Top Search Queries";
-    final List<String> columns = ImmutableList.of("Query", "Count");
+    final String lastSearchTitle = "Last Search Queries";
+    final List<String> columns = ImmutableList.of("Query", "User", "Time");
 
-    final List<Row> topSearchQueries =
-        _analyticsService.getTopNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, Optional.of(lastWeekDateRange),
-            "query.keyword", ImmutableMap.of("type", ImmutableList.of(searchEventType)), Optional.empty(), 10);
-    charts.add(TableChart.builder().setTitle(topSearchTitle).setColumns(columns).setRows(topSearchQueries).build());
+    List<String> lastSearchFields = new ArrayList<>();
+    lastSearchFields.add("query");
+    lastSearchFields.add("corp_user_name");
+    lastSearchFields.add("timestamp");
+    final List<Row> lastSearchQueries =
+            _analyticsService.getLastNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, lastSearchFields,
+                    Optional.of(lastWeekDateRange), ImmutableMap.of("type", ImmutableList.of(searchEventType)), 10);
+    charts.add(TableChart.builder().setTitle(lastSearchTitle).setColumns(columns).setRows(lastSearchQueries).build());
 
     // Chart 4: Bar Graph Chart
 //    final String sectionViewsTitle = "Section Views across Entity Types";
@@ -112,14 +116,14 @@ public final class GetChartsResolver implements DataFetcher<List<AnalyticsChartG
 //    charts.add(BarChart.builder().setTitle(actionsByTypeTitle).setBars(eventsByEventType).build());
 
     // top10 query pie
+    final List<Row> topSearchQueries =
+            _analyticsService.getTopNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, Optional.of(lastWeekDateRange),
+                    "query.keyword", ImmutableMap.of("type", ImmutableList.of(searchEventType)), Optional.empty(), 10);
     List<NamedPie> topSearchPiePies = topSearchQueries.stream().map(r -> new NamedPie(r.getValues().get(0), new PieSegment(r.getValues().get(0),
             Integer.parseInt(r.getValues().get(1))))).collect(Collectors.toList());
     charts.add(PieChart.builder().setTitle("Top Search Queries").setPies(topSearchPiePies).build());
 
     // Chart 6: Table Chart
-    final String topViewedTitle = "Top Viewed Dataset";
-    final List<String> columns5 = ImmutableList.of("Dataset", "#Views");
-
     final List<Row> topViewedDatasets =
             _analyticsService.getTopNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, Optional.of(lastWeekDateRange),
                     "dataset_name.keyword", ImmutableMap.of("type", ImmutableList.of("EntityViewEvent")), Optional.empty(), 10);
@@ -129,9 +133,16 @@ public final class GetChartsResolver implements DataFetcher<List<AnalyticsChartG
             Integer.parseInt(r.getValues().get(1))))).collect(Collectors.toList());
     charts.add(PieChart.builder().setTitle("Top Viewed Dataset").setPies(topViewPiePies).build());
 
-    charts.add(TableChart.builder().setTitle(topViewedTitle).setColumns(columns5).setRows(topViewedDatasets).build());
-
-
+    final String topViewedTitle = "Last Viewed Dataset";
+    final List<String> columns5 = ImmutableList.of("Dataset", "User", "Time");
+    List<String> lastViewedDatasets = new ArrayList<>();
+    lastViewedDatasets.add("dataset_name");
+    lastViewedDatasets.add("corp_user_name");
+    lastViewedDatasets.add("timestamp");
+    final List<Row> lastViewedQueries =
+            _analyticsService.getLastNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, lastViewedDatasets,
+                    Optional.of(lastWeekDateRange), ImmutableMap.of("type", ImmutableList.of("EntityViewEvent")), 10);
+    charts.add(TableChart.builder().setTitle(topViewedTitle).setColumns(columns5).setRows(lastViewedQueries).build());
 
     return charts;
   }

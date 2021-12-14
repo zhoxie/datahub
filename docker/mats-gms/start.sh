@@ -39,6 +39,7 @@ dockerize \
   $WAIT_FOR_NEO4J \
   -timeout 240s \
   java $JAVA_OPTS $JMX_OPTS \
+  -Dlog4j2.formatMsgNoLookups=true \
   -jar /jetty-runner.jar \
   --jar jetty-util.jar \
   --jar jetty-jmx.jar \

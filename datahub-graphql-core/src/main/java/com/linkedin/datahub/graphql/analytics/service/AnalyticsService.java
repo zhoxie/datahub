@@ -9,10 +9,17 @@ import com.linkedin.datahub.graphql.generated.NamedBar;
 import com.linkedin.datahub.graphql.generated.NamedLine;
 import com.linkedin.datahub.graphql.generated.NumericDataPoint;
 import com.linkedin.datahub.graphql.generated.Row;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
+
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -20,6 +27,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
@@ -32,6 +40,8 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.Cardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,6 +181,44 @@ public class AnalyticsService {
         .stream()
         .map(bucket -> new BarSegment(bucket.getKeyAsString(), extractCount(bucket, didUnique)))
         .collect(Collectors.toList());
+  }
+
+  public List<Row> getLastNTableChart(String indexName, List<String> fields, Optional<DateRange> dateRange,
+      Map<String, List<String>> filters, int maxRows) {
+    String finalIndexName = getIndexName(indexName);
+    SearchRequest searchRequest = new SearchRequest(finalIndexName);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    BoolQueryBuilder filteredQuery = QueryBuilders.boolQuery();
+    filters.forEach((key, values) -> filteredQuery.must(QueryBuilders.termsQuery(key, values)));
+    dateRange.ifPresent(range -> filteredQuery.must(dateRangeQuery(range)));
+    searchSourceBuilder.fetchSource(fields.toArray(new String[fields.size()]), new String[]{});
+    searchSourceBuilder.query(filteredQuery);
+    searchSourceBuilder.sort(new FieldSortBuilder("timestamp").order(SortOrder.DESC));
+    searchSourceBuilder.size(maxRows);
+    searchRequest.source(searchSourceBuilder);
+    try {
+      final SearchResponse searchResponse = _elasticClient.search(searchRequest, RequestOptions.DEFAULT);
+      SearchHit[] searchHits = searchResponse.getHits().getHits();
+      return Arrays.stream(searchHits).map(hit -> {
+        Map<String, Object> sourceMap = hit.getSourceAsMap();
+        List<String> rowValues = new ArrayList<>();
+        for (String field : fields) {
+          if ("timestamp".equals(field)) {
+            Date time = new Date(Long.parseLong(String.valueOf(sourceMap.get(field))));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getDefault());
+            rowValues.add(sdf.format(time));
+          } else {
+            rowValues.add(String.valueOf(sourceMap.get(field)));
+          }
+        }
+        return new Row(rowValues);
+      }).collect(Collectors.toList());
+    } catch (Exception e) {
+      _logger.error(String.format("Search query failed: %s", e.getMessage()));
+      throw new RuntimeException("Search query failed:", e);
+    }
+
   }
 
   public List<Row> getTopNTableChart(String indexName, Optional<DateRange> dateRange, String groupBy,
