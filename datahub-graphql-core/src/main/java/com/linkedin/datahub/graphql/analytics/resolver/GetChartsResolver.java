@@ -17,7 +17,9 @@ import com.linkedin.datahub.graphql.generated.TimeSeriesChart;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -139,9 +141,12 @@ public final class GetChartsResolver implements DataFetcher<List<AnalyticsChartG
     lastViewedDatasets.add("dataset_name");
     lastViewedDatasets.add("corp_user_name");
     lastViewedDatasets.add("timestamp");
+    Map<String, List<String>> filterMap = new HashMap<>();
+    filterMap.put("type", ImmutableList.of("EntityViewEvent"));
+    filterMap.put("entityType", ImmutableList.of("DATASET"));
     final List<Row> lastViewedQueries =
             _analyticsService.getLastNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, lastViewedDatasets,
-                    Optional.of(lastWeekDateRange), ImmutableMap.of("type", ImmutableList.of("EntityViewEvent")), 10);
+                    Optional.of(lastWeekDateRange), filterMap, 10);
     charts.add(TableChart.builder().setTitle(topViewedTitle).setColumns(columns5).setRows(lastViewedQueries).build());
 
     return charts;
