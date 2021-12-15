@@ -143,7 +143,7 @@ public final class GetChartsResolver implements DataFetcher<List<AnalyticsChartG
     lastViewedDatasets.add("timestamp");
     Map<String, List<String>> filterMap = new HashMap<>();
     filterMap.put("type", ImmutableList.of("EntityViewEvent"));
-    filterMap.put("entityType", ImmutableList.of("DATASET"));
+    filterMap.put("entityType.keyword", ImmutableList.of("DATASET"));
     final List<Row> lastViewedQueries =
             _analyticsService.getLastNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, lastViewedDatasets,
                     Optional.of(lastWeekDateRange), filterMap, 10);
