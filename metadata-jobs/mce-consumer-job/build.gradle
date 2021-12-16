@@ -10,6 +10,14 @@ dependencies {
     }
     compile externalDependency.springBootStarterJetty
     compile externalDependency.springKafka
+    constraints {
+        implementation("org.apache.logging.log4j:log4j-core:2.15.0") {
+            because("previous versions are vulnerable to CVE-2021-44228")
+        }
+        implementation("org.apache.logging.log4j:log4j-api:2.15.0") {
+            because("previous versions are vulnerable to CVE-2021-44228")
+        }
+    }
 }
 
 bootJar {

@@ -5,19 +5,24 @@ import com.google.common.collect.ImmutableMap;
 import com.linkedin.datahub.graphql.analytics.service.AnalyticsService;
 import com.linkedin.datahub.graphql.generated.AnalyticsChart;
 import com.linkedin.datahub.graphql.generated.AnalyticsChartGroup;
-import com.linkedin.datahub.graphql.generated.BarChart;
 import com.linkedin.datahub.graphql.generated.DateInterval;
 import com.linkedin.datahub.graphql.generated.DateRange;
-import com.linkedin.datahub.graphql.generated.NamedBar;
 import com.linkedin.datahub.graphql.generated.NamedLine;
+import com.linkedin.datahub.graphql.generated.NamedPie;
+import com.linkedin.datahub.graphql.generated.PieChart;
+import com.linkedin.datahub.graphql.generated.PieSegment;
 import com.linkedin.datahub.graphql.generated.Row;
 import com.linkedin.datahub.graphql.generated.TableChart;
 import com.linkedin.datahub.graphql.generated.TimeSeriesChart;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.joda.time.DateTime;
 
 
@@ -84,39 +89,66 @@ public final class GetChartsResolver implements DataFetcher<List<AnalyticsChartG
         .build());
 
     // Chart 3: Table Chart
-    final String topSearchTitle = "Top Search Queries";
-    final List<String> columns = ImmutableList.of("Query", "Count");
+    final String lastSearchTitle = "Last Search Queries";
+    final List<String> columns = ImmutableList.of("Query", "User", "Time");
 
-    final List<Row> topSearchQueries =
-        _analyticsService.getTopNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, Optional.of(lastWeekDateRange),
-            "query.keyword", ImmutableMap.of("type", ImmutableList.of(searchEventType)), Optional.empty(), 10);
-    charts.add(TableChart.builder().setTitle(topSearchTitle).setColumns(columns).setRows(topSearchQueries).build());
+    List<String> lastSearchFields = new ArrayList<>();
+    lastSearchFields.add("query");
+    lastSearchFields.add("corp_user_name");
+    lastSearchFields.add("timestamp");
+    final List<Row> lastSearchQueries =
+            _analyticsService.getLastNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, lastSearchFields,
+                    Optional.of(lastWeekDateRange), ImmutableMap.of("type", ImmutableList.of(searchEventType)), 10);
+    charts.add(TableChart.builder().setTitle(lastSearchTitle).setColumns(columns).setRows(lastSearchQueries).build());
 
     // Chart 4: Bar Graph Chart
-    final String sectionViewsTitle = "Section Views across Entity Types";
-    final List<NamedBar> sectionViewsPerEntityType =
-        _analyticsService.getBarChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, Optional.of(lastWeekDateRange),
-            ImmutableList.of("entityType.keyword", "section.keyword"),
-            ImmutableMap.of("type", ImmutableList.of("EntitySectionViewEvent")), Optional.empty());
-    charts.add(BarChart.builder().setTitle(sectionViewsTitle).setBars(sectionViewsPerEntityType).build());
+//    final String sectionViewsTitle = "Section Views across Entity Types";
+//    final List<NamedBar> sectionViewsPerEntityType =
+//        _analyticsService.getBarChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, Optional.of(lastWeekDateRange),
+//            ImmutableList.of("entityType.keyword", "section.keyword"),
+//            ImmutableMap.of("type", ImmutableList.of("EntitySectionViewEvent")), Optional.empty());
+//    charts.add(BarChart.builder().setTitle(sectionViewsTitle).setBars(sectionViewsPerEntityType).build());
+//
+//    // Chart 5: Bar Graph Chart
+//    final String actionsByTypeTitle = "Actions by Entity Type";
+//    final List<NamedBar> eventsByEventType =
+//        _analyticsService.getBarChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, Optional.of(lastWeekDateRange),
+//            ImmutableList.of("entityType.keyword", "actionType.keyword"),
+//            ImmutableMap.of("type", ImmutableList.of("EntityActionEvent")), Optional.empty());
+//    charts.add(BarChart.builder().setTitle(actionsByTypeTitle).setBars(eventsByEventType).build());
 
-    // Chart 5: Bar Graph Chart
-    final String actionsByTypeTitle = "Actions by Entity Type";
-    final List<NamedBar> eventsByEventType =
-        _analyticsService.getBarChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, Optional.of(lastWeekDateRange),
-            ImmutableList.of("entityType.keyword", "actionType.keyword"),
-            ImmutableMap.of("type", ImmutableList.of("EntityActionEvent")), Optional.empty());
-    charts.add(BarChart.builder().setTitle(actionsByTypeTitle).setBars(eventsByEventType).build());
+    // top10 query pie
+    final List<Row> topSearchQueries =
+            _analyticsService.getTopNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, Optional.of(lastWeekDateRange),
+                    "query.keyword", ImmutableMap.of("type", ImmutableList.of(searchEventType)), Optional.empty(), 10);
+    List<NamedPie> topSearchPiePies = topSearchQueries.stream().map(r -> new NamedPie(r.getValues().get(0), new PieSegment(r.getValues().get(0),
+            Integer.parseInt(r.getValues().get(1))))).collect(Collectors.toList());
+    charts.add(PieChart.builder().setTitle("Top Search Queries").setPies(topSearchPiePies).build());
 
     // Chart 6: Table Chart
-    final String topViewedTitle = "Top Viewed Dataset";
-    final List<String> columns5 = ImmutableList.of("Dataset", "#Views");
-
     final List<Row> topViewedDatasets =
-        _analyticsService.getTopNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, Optional.of(lastWeekDateRange),
-            "dataset_name.keyword", ImmutableMap.of("type", ImmutableList.of("EntityViewEvent")), Optional.empty(), 10);
-    charts.add(TableChart.builder().setTitle(topViewedTitle).setColumns(columns5).setRows(topViewedDatasets).build());
-    
+            _analyticsService.getTopNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, Optional.of(lastWeekDateRange),
+                    "dataset_name.keyword", ImmutableMap.of("type", ImmutableList.of("EntityViewEvent")), Optional.empty(), 10);
+
+    // top10 query pie
+    List<NamedPie> topViewPiePies = topViewedDatasets.stream().map(r -> new NamedPie(r.getValues().get(0), new PieSegment(r.getValues().get(0),
+            Integer.parseInt(r.getValues().get(1))))).collect(Collectors.toList());
+    charts.add(PieChart.builder().setTitle("Top Viewed Dataset").setPies(topViewPiePies).build());
+
+    final String topViewedTitle = "Last Viewed Dataset";
+    final List<String> columns5 = ImmutableList.of("Dataset", "User", "Time");
+    List<String> lastViewedDatasets = new ArrayList<>();
+    lastViewedDatasets.add("dataset_name");
+    lastViewedDatasets.add("corp_user_name");
+    lastViewedDatasets.add("timestamp");
+    Map<String, List<String>> filterMap = new HashMap<>();
+    filterMap.put("type", ImmutableList.of("EntityViewEvent"));
+    filterMap.put("entityType.keyword", ImmutableList.of("DATASET"));
+    final List<Row> lastViewedQueries =
+            _analyticsService.getLastNTableChart(AnalyticsService.DATAHUB_USAGE_EVENT_INDEX, lastViewedDatasets,
+                    Optional.of(lastWeekDateRange), filterMap, 10);
+    charts.add(TableChart.builder().setTitle(topViewedTitle).setColumns(columns5).setRows(lastViewedQueries).build());
+
     return charts;
   }
 }
