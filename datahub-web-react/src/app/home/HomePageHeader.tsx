@@ -255,7 +255,7 @@ export const HomePageHeader = () => {
                         )}
                     </WelcomeText>
                     <NavGroup>
-                        <AdminHeaderLinks />
+                        <AdminHeaderLinks isHome />
                         <ManageAccount
                             urn={user?.urn || ''}
                             pictureLink={pictureLink}

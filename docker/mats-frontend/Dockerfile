@@ -40,5 +40,6 @@ ENV JAVA_OPTS=" \
    -Djava.security.auth.login.config=datahub-frontend/conf/jaas.conf \
    -Dlogback.configurationFile=datahub-frontend/conf/logback.xml \
    -Dlogback.debug=false \
+   -Dlog4j2.formatMsgNoLookups=true \
    -Dpidfile.path=/dev/null"
 CMD ["datahub-frontend/bin/playBinary"]
