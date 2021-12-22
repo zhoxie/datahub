@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import { FormField, IDataSourceConnection, IFormConnectionData, IFormData } from '../service/DataSouceType';
 import { showMessageByNotification, showRequestResult } from '../service/NotificationUtil';
 import { initDataCenter, initCluster, typeDrivers, DbSourceTypeData } from '../service/FormInitValue';
-import { useAllDatasourceCategoriesQuery } from '../../../../graphql/datasourceCategory.generated';
 import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';
 
 type AddDataSourceModalProps = {
@@ -48,12 +47,6 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     console.log('formData....', formData);
     const [form] = Form.useForm();
     const categoryName = capitalizeFirstLetter(formData.category);
-
-    const { data, loading, error } = useAllDatasourceCategoriesQuery({ variables: {} });
-
-    if (error || (!loading && !error && !data)) {
-        return <Alert type="error" message={error?.message || 'Entity failed to load'} />;
-    }
 
     const showValidateMsg = (msg) => {
         showMessageByNotification(msg);
@@ -267,36 +260,16 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 </Form.Item>
                 <Form.Item
                     name="category"
-                    label="Category"
-                    rules={[{ required: true, message: 'Please choose dataSource category!' }]}
+                    label="category"
+                    rules={[{ required: true, message: 'Please input dataSource category!' }]}
                 >
-                    {loading && (
-                        <Select
-                            placeholder="Select an option for category"
-                            onChange={(e) => updateDataSourceBasicInfo(e, FormField.category)}
-                            allowClear
-                            defaultValue={formData.category}
-                            disabled
-                        >
-                            <Option value="loading">loading</Option>
-                        </Select>
-                    )}
-                    {data && data.allDatasourceCategories && (
-                        <Select
-                            placeholder="Select an option for category"
-                            onChange={(e) => updateDataSourceBasicInfo(e, FormField.category)}
-                            allowClear
-                            defaultValue={categoryName}
-                        >
-                            {data.allDatasourceCategories.categories?.map((item) => {
-                                return (
-                                    <Option key={item?.name} value={item?.name || 'null'}>
-                                        {item?.displayName || 'null'}
-                                    </Option>
-                                );
-                            })}
-                        </Select>
-                    )}
+                    <Input
+                        type="text"
+                        placeholder="Please input dataSource category"
+                        autoComplete="off"
+                        defaultValue={formData.category}
+                        onChange={(e) => updateDataSourceBasicInfo(e, FormField.category)}
+                    />
                 </Form.Item>
                 <Form.Item
                     name="dataCenter"
