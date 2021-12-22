@@ -7,6 +7,5 @@ query allDatasourceCategories {
             name
             displayName
         }
-
     }
 }

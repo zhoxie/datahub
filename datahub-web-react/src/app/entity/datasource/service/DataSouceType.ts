@@ -1,15 +1,32 @@
 export interface IFormConnectionData {
-    cluster: string;
-    connName: string;
-    connPwd: string;
-    driver: string;
-    url: string;
     id: number;
+    cluster: string;
+    sourceName: string;
+    bootstrapServer?: string;
+    connName?: string;
+    connPwd?: string;
+    schemaPattern?: string;
+    tablePattern?: string;
+    topicPattern?: string;
+    url?: string;
+}
+
+// data type pass to back-end
+export interface IDataSourceConnection {
+    cluster: { [key: string]: string };
+    sourcename: string;
+    bootstrapserver?: string;
+    username?: string;
+    password?: string;
+    schemapattern?: string;
+    tablepattern?: string;
+    topicpattern?: string;
+    url?: string;
 }
 
 export interface IFormData {
-    sourceName: string;
     sourceType: string;
+    driver: string;
     category: string;
     dataCenter: string;
     connections: IFormConnectionData[];
@@ -25,6 +42,10 @@ export enum FormField {
     connPwd = 'connPwd',
     driver = 'driver',
     url = 'url',
+    schemaPattern = 'schemaPattern',
+    tablePattern = 'tablePattern',
+    topicPattern = 'topicPattern',
+    bootstrapServer = 'bootstrapServer',
 }
 
 export interface IDataSourceAddData {
@@ -39,18 +60,6 @@ export interface IDataSourceKey {
     name: string;
     origin: string;
     platform: string;
-}
-export interface IDataSourceConnectionKey {
-    category: string;
-    dataCenter: string;
-    connections: IDataSourceConnection[];
-}
-export interface IDataSourceConnection {
-    cluster: { [key: string]: string };
-    password: string;
-    driver: string;
-    url: string;
-    username: string;
 }
 
 export enum NotificationLevel {
