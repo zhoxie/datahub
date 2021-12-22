@@ -14,7 +14,6 @@ import {
 } from '../../../graphql/datasource.generated';
 import { PropertiesTab } from '../shared/tabs/Properties/PropertiesTab';
 import { DocumentationTab } from '../shared/tabs/Documentation/DocumentationTab';
-import { Sources } from '../shared/tabs/Datasource/Source/Sources';
 import { Datasets } from '../shared/tabs/Datasource/Datasets/Datasets';
 import { SidebarAboutSection } from '../shared/containers/profile/sidebar/SidebarAboutSection';
 import { SidebarOwnerSection } from '../shared/containers/profile/sidebar/Ownership/SidebarOwnerSection';
@@ -76,10 +75,6 @@ export class DatasourceEntity implements Entity<Datasource> {
             getOverrideProperties={this.getOverridePropertiesFromEntity}
             tabs={[
                 {
-                    name: 'Connection',
-                    component: Sources,
-                },
-                {
                     name: 'Documentation',
                     component: DocumentationTab,
                 },
@@ -133,8 +128,8 @@ export class DatasourceEntity implements Entity<Datasource> {
                 name={data.name}
                 origin={data.origin}
                 description={data.editableProperties?.description || data.description}
-                platformName={data.connections?.platform?.displayName || data.connections?.platform?.name || ''}
-                platformLogo={data.connections?.platform?.info?.logoUrl}
+                platformName={data.platform?.displayName || data.platform?.name || ''}
+                platformLogo={data.platform?.info?.logoUrl}
                 owners={data.ownership?.owners}
                 globalTags={data.globalTags}
                 glossaryTerms={data.glossaryTerms}
@@ -150,8 +145,8 @@ export class DatasourceEntity implements Entity<Datasource> {
                 name={data.name}
                 origin={data.origin}
                 description={data.editableProperties?.description || data.description}
-                platformName={data.connections?.platform?.name || ''}
-                platformLogo={data.connections?.platform?.info?.logoUrl}
+                platformName={data.platform?.name || ''}
+                platformLogo={data.platform?.info?.logoUrl}
                 owners={data.ownership?.owners}
                 globalTags={data.globalTags}
                 glossaryTerms={data.glossaryTerms}
@@ -189,8 +184,8 @@ export class DatasourceEntity implements Entity<Datasource> {
                 outgoingRelationships: entity?.['outgoing'],
                 direction: RelationshipDirection.Outgoing,
             }),
-            icon: entity?.connections?.platform?.info?.logoUrl || undefined,
-            platform: entity?.connections?.platform?.name,
+            icon: entity?.platform?.info?.logoUrl || undefined,
+            platform: entity?.platform?.name,
         };
     };
 
@@ -199,7 +194,7 @@ export class DatasourceEntity implements Entity<Datasource> {
     };
 
     platformLogoUrl = (data: Datasource) => {
-        return data.connections?.platform?.info?.logoUrl || undefined;
+        return data.platform?.info?.logoUrl || undefined;
     };
 
     getGenericEntityProperties = (data: Datasource) => {

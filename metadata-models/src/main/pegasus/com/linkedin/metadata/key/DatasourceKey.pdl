@@ -17,7 +17,7 @@ record DatasourceKey {
     "fieldType": "URN",
     "addToFilters": true
   }
-  category: Urn
+  platform: Urn
 
   /**
   * Datasource native name e.g. db.table, /dir/subdir/name, or name

@@ -79,9 +79,12 @@ fragment relationshipFields on Entity {
         name
         origin
         description
-        category {
-            name
-        }
+        platform {
+             name
+             info {
+                 logoUrl
+             }
+         }
         tags
         ownership {
             ...ownershipFields
@@ -89,13 +92,8 @@ fragment relationshipFields on Entity {
         globalTags {
             ...globalTagsFields
         }
-        connections {
-            platform {
-                name
-                info {
-                    logoUrl
-                }
-            }
+        connection {
+            category
         }
     }
     ... on MLModelGroup {

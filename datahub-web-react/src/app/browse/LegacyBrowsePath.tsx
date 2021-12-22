@@ -1,13 +1,13 @@
 import { blue, grey } from '@ant-design/colors';
-import { Breadcrumb, Button, Row } from 'antd';
-import React, { useState } from 'react';
+import { Breadcrumb, Row } from 'antd';
+import React from 'react';
 import { IconBaseProps } from 'react-icons/lib';
 import { VscPreview, VscRepoForked } from 'react-icons/vsc';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { PageRoutes } from '../../conf/Global';
 import { EntityType } from '../../types.generated';
-import AddDataSourceModal from '../entity/datasource/profile/AddDataSouceModal';
+// import AddDataSourceModal from '../entity/datasource/profile/AddDataSouceModal';
 import { navigateToLineageUrl } from '../lineage/utils/navigateToLineageUrl';
 import useIsLineageMode from '../lineage/utils/useIsLineageMode';
 import { useEntityRegistry } from '../useEntityRegistry';
@@ -63,7 +63,6 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
     const history = useHistory();
     const location = useLocation();
     const isLineageMode = useIsLineageMode();
-    const [showAddModal, setShowAddModal] = useState(false);
 
     const createPartialPath = (parts: Array<string>) => {
         return parts.join('/');
@@ -95,9 +94,6 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
             </Link>
         </Breadcrumb.Item>
     ));
-    const showAdd = () => {
-        return type === EntityType.Datasource && path.length < 1;
-    };
     return (
         <BrowseRow>
             <Breadcrumb style={{ fontSize: '16px' }}>
@@ -111,20 +107,6 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
                 </Breadcrumb.Item>
                 {pathCrumbs}
             </Breadcrumb>
-            {showAdd() && (
-                <Button type="link" onClick={() => setShowAddModal(true)}>
-                    <b> + </b> Add DataSource
-                </Button>
-            )}
-            {showAddModal && (
-                <AddDataSourceModal
-                    visible
-                    title="Add DataSource"
-                    onClose={() => {
-                        setShowAddModal(false);
-                    }}
-                />
-            )}
             {lineageSupported && (
                 <LineageIconGroup>
                     <HoverableVscPreview

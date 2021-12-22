@@ -5,7 +5,6 @@ import com.linkedin.common.urn.DataPlatformUrn;
 import com.linkedin.common.urn.DatasourceUrn;
 import com.linkedin.datahub.models.view.DatasourceView;
 import com.linkedin.datahub.models.view.DatasourceLineageView;
-import com.linkedin.datasource.Datasource;
 
 import javax.annotation.Nonnull;
 import java.net.URISyntaxException;

@@ -62,8 +62,11 @@ fragment searchResults on SearchResults {
                 origin
                 description
                 uri
-                category {
+                platform {
                     name
+                    info {
+                        logoUrl
+                    }
                 }
                 platformNativeType
                 tags

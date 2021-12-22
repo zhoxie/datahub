@@ -165,24 +165,19 @@ fragment nonRecursiveDatasetFields on Dataset {
     }
 }
 
-fragment nonRecursiveDatasourceConnInfoFields on DatasourceConnInfo {
-    cluster
-    driver
-    username
-    password
-    url
-}
-
 fragment nonRecursiveDatasourceFields on Datasource {
     urn
     name
     type
+    platform {
+        name
+        info {
+            logoUrl
+        }
+    }
     origin
     description
     uri
-    category {
-        name
-    }
     platformNativeType
     tags
     properties {
@@ -198,16 +193,74 @@ fragment nonRecursiveDatasourceFields on Datasource {
     ownership {
         ...ownershipFields
     }
-    connections {
-        platform {
-            name
-            info {
-                logoUrl
+    connection {
+        category
+        connection {
+            ... on IcebergSource {
+                hiveMetastoreUris
             }
-        }
-        dataCenter
-        connections {
-            ...nonRecursiveDatasourceConnInfoFields
+            ... on KafkaMetadataSource {
+                bootstrap
+                schemaRegistryUrl
+                topicPatternsAllow
+                topicPatternsDeny
+                topicPatternsIgnoreCase
+            }
+            ... on MysqlSource {
+                username
+                password
+                hostPort
+                database
+                databaseAlias
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+                viewPatternAllow
+                viewPatternDeny
+                viewPatternIgnoreCase
+                includeTables
+                includeViews
+            }
+            ... on PostgresSource {
+                username
+                password
+                hostPort
+                database
+                databaseAlias
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+                viewPatternAllow
+                viewPatternDeny
+                viewPatternIgnoreCase
+                includeTables
+                includeViews
+            }
+            ... on OracleSource {
+                username
+                password
+                hostPort
+                database
+                serviceName
+                databaseAlias
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+                viewPatternAllow
+                viewPatternDeny
+                viewPatternIgnoreCase
+                includeTables
+                includeViews
+            }
         }
     }
     institutionalMemory {

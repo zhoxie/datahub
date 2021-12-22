@@ -36,8 +36,11 @@ query getBrowseResults($input: BrowseInput!) {
                 name
                 origin
                 description
-                category {
+                platform {
                     name
+                    info {
+                        logoUrl
+                    }
                 }
                 tags
                 ownership {
@@ -46,13 +49,8 @@ query getBrowseResults($input: BrowseInput!) {
                 globalTags {
                     ...globalTagsFields
                 }
-                connections {
-                    platform {
-                        name
-                        info {
-                            logoUrl
-                        }
-                    }
+                connection {
+                    category
                 }
             }
             ... on Dashboard {
