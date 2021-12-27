@@ -34,8 +34,6 @@ type Query {
     """
     datasource(urn: String!): Datasource
 
-    allDatasourceCategories: AllDatasourceCategory
-
     """
     Fetch a Dashboard by primary key (urn)
     """
@@ -123,6 +121,8 @@ type Mutation {
     updateDataset(urn: String!, input: DatasetUpdateInput!): Dataset
 
     updateDatasource(urn: String!, input: DatasourceUpdateInput!): Datasource
+
+    createDatasource(input: DatasourceCreateInput!): String
 
     """
     Update the metadata about a particular Chart
@@ -273,16 +273,6 @@ enum EntityType {
     The Datasource Entity
     """
     DATASOURCE
-
-    """
-    The DatasourceCategory Entity
-    """
-    DATASOURCE_CATEGORY
-
-    """
-    The DatasourceCategory Entity
-    """
-    ALL_DATASOURCE_CATEGORIES
 
     """
     The CorpUser Entity
@@ -708,9 +698,9 @@ type Datasource implements EntityWithRelationships & Entity {
     """
     type: EntityType!
     """
-    Standardized category urn where the datasource is defined
+    datasource platform
     """
-    category: DatasourceCategory!
+    platform: DataPlatform!
     """
     Datasource native name
     """
@@ -766,7 +756,7 @@ type Datasource implements EntityWithRelationships & Entity {
     """
     Connection information of the datasource
     """
-    connections: DatasourceConnections
+    connection: DatasourceConnection
     """
     The structured tags associated with the datasource
     """
@@ -797,99 +787,165 @@ type Datasource implements EntityWithRelationships & Entity {
     relationships(input: RelationshipsInput!): EntityRelationshipsResult
 }
 
-type AllDatasourceCategory implements Entity {
+type DatasourceConnection {
     """
-    Urn of the datasource category
+    datasource category
     """
-    urn: String!
+    category: String!
     """
-    GMS Entity Type
+    the connection of the datasource
     """
-    type: EntityType!
-    categories: [DatasourceCategory]
-    """
-    Edges extending from this entity.
-    """
-    relationships(input: RelationshipsInput!): EntityRelationshipsResult
-}
-type DatasourceCategory implements Entity {
-    """
-    Urn of the data platform
-    """
-    urn: String!
-    """
-    GMS Entity Type
-    """
-    type: EntityType!
-    """
-    Name of the data platform
-    """
-    name: String!
-    """
-    Display name of the data platform
-    """
-    displayName: String
-    """
-    Metadata associated with a datasourcecategory
-    """
-    info: DatasourceCategoryInfo
-    """
-    Edges extending from this entity.
-    """
-    relationships(input: RelationshipsInput!): EntityRelationshipsResult
-}
-type DatasourceConnections {
-    """
-    datasource platform
-    """
-    platform: DataPlatform!
-    """
-    datasource data center
-    """
-    dataCenter: String
-    """
-    the connections of the datasource
-    """
-    connections: [DatasourceConnInfo]
-}
-type DatasourceConnInfo {
-    """
-    cluster
-    """
-    cluster: DatasourceCluster
-    """
-    connection driver
-    """
-    driver: String
-    """
-    connection username
-    """
-    username: String
-    """
-    connection password
-    """
-    password: String
-    """
-    connection url
-    """
-    url: String
-}
-enum DatasourceCluster {
-    """
-    primary cluster of the datasource
-    """
-    PRIMARY
-    """
-    GSB cluster of the datasource
-    """
-    GSB
+    connection: DatasourceSources
 }
 
-type DatasourceCategoryInfo {
-    """
-    Display name associated with the category
-    """
-    displayName: String
+union DatasourceSources = IcebergSource | KafkaMetadataSource | MysqlSource | OracleSource | PostgresSource
+
+type OracleSource {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    serviceName: String
+    databaseAlias: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+type PostgresSource {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    databaseAlias: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+type MysqlSource {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    databaseAlias: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+type KafkaMetadataSource {
+    bootstrap: String!
+    schemaRegistryUrl: String!
+    topicPatternsAllow: String
+    topicPatternsDeny: String
+    topicPatternsIgnoreCase: Boolean
+}
+
+type IcebergSource {
+    hiveMetastoreUris: String!
+}
+
+input DatasourceSourceInput {
+    iceberg:IcebergSourceInput
+    kafka:KafkaMetadataSourceInput
+    mysql:MysqlSourceInput
+    oracle:OracleSourceInput
+    postgres:PostgresSourceInput
+}
+
+input OracleSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    serviceName: String
+    databaseAlias: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+input PostgresSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    databaseAlias: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+input MysqlSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    databaseAlias: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+input KafkaMetadataSourceInput {
+    bootstrap: String!
+    schemaRegistryUrl: String!
+    topicPatternsAllow: String
+    topicPatternsDeny: String
+    topicPatternsIgnoreCase: Boolean
+}
+
+input IcebergSourceInput {
+    hiveMetastoreUris: String!
 }
 
 type DatasourceEditableProperties {
@@ -2582,6 +2638,13 @@ input DatasetUpdateInput {
     Update to editable properties
     """
     editableProperties: DatasetEditablePropertiesUpdate
+}
+
+input DatasourceCreateInput {
+    name: String!
+    category: String
+    connection: DatasourceSourceInput!
+    ownership: OwnershipUpdate
 }
 
 input DatasourceUpdateInput {

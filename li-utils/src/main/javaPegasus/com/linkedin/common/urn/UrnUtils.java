@@ -14,32 +14,6 @@ public class UrnUtils {
     }
 
     /**
-     * Convert platform + dataset + origin into DatasetUrn
-     * @param platformName String, e.g. hdfs, oracle
-     * @param datasetName String, e.g. /jobs/xxx, ABOOK.ADDRESS
-     * @param origin PROD, CORP, EI, DEV
-     * @return DatasetUrn
-     */
-    @Nonnull
-    public static DatasetUrn toDatasetUrn(@Nonnull String platformName, @Nonnull String datasetName,
-                                          @Nonnull String origin) {
-        return new DatasetUrn(new DataPlatformUrn(platformName), datasetName, toFabricType(origin));
-    }
-
-    /**
-     * Convert platform + datasource + origin into DatasourceUrn
-     * @param categoryName String, e.g. messageing, calling
-     * @param datasourceName String, e.g. /jobs/xxx, ABOOK.ADDRESS
-     * @param origin PROD, CORP, EI, DEV
-     * @return DatasourceUrn
-     */
-    @Nonnull
-    public static DatasourceUrn toDatasourceUrn(@Nonnull String categoryName, @Nonnull String datasourceName,
-                                          @Nonnull String origin) {
-        return new DatasourceUrn(new DatasourceCategoryUrn(categoryName), datasourceName, toFabricType(origin));
-    }
-
-    /**
      * Convert fabric String to FabricType
      * @param fabric PROD, CORP, EI, DEV, LIT, PRIME
      * @return FabricType

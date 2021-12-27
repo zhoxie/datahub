@@ -76,6 +76,7 @@ typeref Aspect = union[
   DataJobInputOutput,
   DatasetDeprecation,
   DatasetProperties,
+  DatasourceKey,
   DatasourceDeprecation,
   DatasourceProperties,
   UpstreamLineage,

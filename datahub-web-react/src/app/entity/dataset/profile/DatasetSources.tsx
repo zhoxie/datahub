@@ -26,8 +26,8 @@ export default function DatasetSources({ datasources }: Props) {
                         name={item.name}
                         origin={item.origin}
                         description={item.description}
-                        platformName={item.connections?.platform?.name || 'null'}
-                        platformLogo={item.connections?.platform?.info?.logoUrl || ''}
+                        platformName={item.platform?.name || 'null'}
+                        platformLogo={item.platform?.info?.logoUrl || ''}
                         owners={item.ownership?.owners}
                         globalTags={item.globalTags}
                         glossaryTerms={item.glossaryTerms}

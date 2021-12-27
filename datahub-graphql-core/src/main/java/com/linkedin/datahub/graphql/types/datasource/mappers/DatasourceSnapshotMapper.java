@@ -4,8 +4,8 @@ import com.linkedin.common.GlobalTags;
 import com.linkedin.common.InstitutionalMemory;
 import com.linkedin.common.Ownership;
 import com.linkedin.common.Status;
+import com.linkedin.datahub.graphql.generated.DataPlatform;
 import com.linkedin.datahub.graphql.generated.Datasource;
-import com.linkedin.datahub.graphql.generated.DatasourceCategory;
 import com.linkedin.datahub.graphql.generated.DatasourceEditableProperties;
 import com.linkedin.datahub.graphql.generated.EntityType;
 import com.linkedin.datahub.graphql.generated.FabricType;
@@ -15,7 +15,7 @@ import com.linkedin.datahub.graphql.types.common.mappers.StatusMapper;
 import com.linkedin.datahub.graphql.types.common.mappers.StringMapMapper;
 import com.linkedin.datahub.graphql.types.mappers.ModelMapper;
 import com.linkedin.datahub.graphql.types.tag.mappers.GlobalTagsMapper;
-import com.linkedin.datasource.DatasourceConnections;
+import com.linkedin.datasource.DatasourceConnection;
 import com.linkedin.datasource.DatasourceDeprecation;
 import com.linkedin.datasource.DatasourceProperties;
 import com.linkedin.datasource.EditableDatasourceProperties;
@@ -47,9 +47,9 @@ public class DatasourceSnapshotMapper implements ModelMapper<DatasourceSnapshot,
         result.setName(datasource.getUrn().getDatasourceNameEntity());
         result.setOrigin(Enum.valueOf(FabricType.class, datasource.getUrn().getOriginEntity().toString()));
 
-        DatasourceCategory partialCategory = new DatasourceCategory();
-        partialCategory.setUrn(datasource.getUrn().getCategoryEntity().toString());
-        result.setCategory(partialCategory);
+        DataPlatform partialPlatform = new DataPlatform();
+        partialPlatform.setUrn(datasource.getUrn().getPlatformEntity().toString());
+        result.setPlatform(partialPlatform);
 
         ModelUtils.getAspectsFromSnapshot(datasource).forEach(aspect -> {
             result.setTags(new ArrayList<>());
@@ -85,8 +85,8 @@ public class DatasourceSnapshotMapper implements ModelMapper<DatasourceSnapshot,
                 final DatasourceEditableProperties editableProperties = new DatasourceEditableProperties();
                 editableProperties.setDescription(editableDatasourceProperties.getDescription());
                 result.setEditableProperties(editableProperties);
-            } else if (aspect instanceof DatasourceConnections) {
-                result.setConnections(DatasourceConnectiosMapper.map((DatasourceConnections) aspect));
+            } else if (aspect instanceof DatasourceConnection) {
+                result.setConnection(DatasourceConnectionMapper.map((DatasourceConnection) aspect));
             }
         });
 

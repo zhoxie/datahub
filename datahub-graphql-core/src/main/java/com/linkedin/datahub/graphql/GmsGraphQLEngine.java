@@ -40,6 +40,7 @@ import com.linkedin.datahub.graphql.generated.MLFeatureProperties;
 import com.linkedin.datahub.graphql.generated.MLPrimaryKey;
 import com.linkedin.datahub.graphql.generated.MLPrimaryKeyProperties;
 import com.linkedin.datahub.graphql.resolvers.MeResolver;
+import com.linkedin.datahub.graphql.resolvers.datasource.CreateDatasourceResolver;
 import com.linkedin.datahub.graphql.resolvers.group.AddGroupMembersResolver;
 import com.linkedin.datahub.graphql.resolvers.group.CreateGroupResolver;
 import com.linkedin.datahub.graphql.resolvers.group.EntityCountsResolver;
@@ -71,6 +72,7 @@ import com.linkedin.datahub.graphql.resolvers.policy.UpsertPolicyResolver;
 import com.linkedin.datahub.graphql.resolvers.recommendation.ListRecommendationsResolver;
 import com.linkedin.datahub.graphql.resolvers.search.SearchAcrossEntitiesResolver;
 import com.linkedin.datahub.graphql.resolvers.type.AspectInterfaceTypeResolver;
+import com.linkedin.datahub.graphql.resolvers.type.DatasourceUnionTypeResolver;
 import com.linkedin.datahub.graphql.resolvers.type.HyperParameterValueTypeResolver;
 import com.linkedin.datahub.graphql.resolvers.type.ResultsTypeResolver;
 import com.linkedin.datahub.graphql.resolvers.type.TimeSeriesAspectInterfaceTypeResolver;
@@ -99,8 +101,6 @@ import com.linkedin.datahub.graphql.resolvers.type.EntityInterfaceTypeResolver;
 import com.linkedin.datahub.graphql.resolvers.type.PlatformSchemaUnionTypeResolver;
 import com.linkedin.datahub.graphql.types.datasource.DatasourceType;
 import com.linkedin.datahub.graphql.types.dataset.mappers.DatasetProfileMapper;
-import com.linkedin.datahub.graphql.types.datasourcecategory.AllDatasourceCategories;
-import com.linkedin.datahub.graphql.types.datasourcecategory.DatasourceCategoryType;
 import com.linkedin.datahub.graphql.types.lineage.SourceRelationshipsType;
 import com.linkedin.datahub.graphql.types.mlmodel.MLFeatureTableType;
 import com.linkedin.datahub.graphql.types.mlmodel.MLFeatureType;
@@ -158,7 +158,6 @@ public class GmsGraphQLEngine {
 
     private final DatasetType datasetType;
     private final DatasourceType datasourceType;
-    private final AllDatasourceCategories allDatasourceCategories;
     private final CorpUserType corpUserType;
     private final CorpGroupType corpGroupType;
     private final ChartType chartType;
@@ -177,7 +176,6 @@ public class GmsGraphQLEngine {
     private final GlossaryTermType glossaryTermType;
     private final AspectType aspectType;
     private final UsageType usageType;
-    private final DatasourceCategoryType datasourceCategoryType;
 //    private final DownstreamLineageType downstreamLineageType;
 //    private final UpstreamLineageType upstreamLineageType;
 
@@ -231,7 +229,6 @@ public class GmsGraphQLEngine {
 
         this.datasetType = new DatasetType(entityClient);
         this.datasourceType = new DatasourceType(entityClient);
-        this.allDatasourceCategories = new AllDatasourceCategories(GmsClientFactory.getDatasourceCategories());
         this.corpUserType = new CorpUserType(entityClient);
         this.corpGroupType = new CorpGroupType(entityClient);
         this.chartType = new ChartType(entityClient);
@@ -254,13 +251,11 @@ public class GmsGraphQLEngine {
         this.glossaryTermType = new GlossaryTermType(entityClient);
         this.aspectType = new AspectType(entityClient);
         this.usageType = new UsageType(GmsClientFactory.getUsageClient());
-        this.datasourceCategoryType = new DatasourceCategoryType(GmsClientFactory.getEntitiesClient());
 
         // Init Lists
         this.entityTypes = ImmutableList.of(datasetType, datasourceType, corpUserType, corpGroupType,
             dataPlatformType, chartType, dashboardType, tagType, mlModelType, mlModelGroupType, mlFeatureType,
-            mlFeatureTableType, mlPrimaryKeyType, dataFlowType, dataJobType, glossaryTermType,
-            allDatasourceCategories, datasourceCategoryType
+            mlFeatureTableType, mlPrimaryKeyType, dataFlowType, dataJobType, glossaryTermType
         );
         this.relationshipTypes = ImmutableList.of(
             dataFlowDataJobsRelationshipType, sourceRelationshipsType
@@ -474,9 +469,6 @@ public class GmsGraphQLEngine {
                 new ListRecommendationsResolver(recommendationsService))
             .dataFetcher("getEntityCounts",
                 new EntityCountsResolver(GmsClientFactory.getEntitiesClient()))
-            .dataFetcher("allDatasourceCategories", new AuthenticatedResolver<>(
-                new LoadableTypeResolver<>(allDatasourceCategories,
-                        (env) -> "all")))
         );
     }
 
@@ -484,6 +476,7 @@ public class GmsGraphQLEngine {
         builder.type("Mutation", typeWiring -> typeWiring
             .dataFetcher("updateDataset", new AuthenticatedResolver<>(new MutableTypeResolver<>(datasetType)))
             .dataFetcher("updateDatasource", new AuthenticatedResolver<>(new MutableTypeResolver<>(datasourceType)))
+            .dataFetcher("createDatasource", new AuthenticatedResolver<>(new CreateDatasourceResolver(entityClient)))
             .dataFetcher("updateTag", new AuthenticatedResolver<>(new MutableTypeResolver<>(tagType)))
             .dataFetcher("updateChart", new AuthenticatedResolver<>(new MutableTypeResolver<>(chartType)))
             .dataFetcher("updateDashboard", new AuthenticatedResolver<>(new MutableTypeResolver<>(dashboardType)))
@@ -619,20 +612,7 @@ public class GmsGraphQLEngine {
      * Configures resolvers responsible for resolving the {@link com.linkedin.datahub.graphql.generated.Datasource} type.
      */
     private void configureDatasourceResolvers(final RuntimeWiring.Builder builder) {
-        builder
-                .type("AllDatasourceCategories", typeWiring -> typeWiring
-                        .dataFetcher("categories", new AuthenticatedResolver<>(
-                                new LoadableTypeResolver<>(
-                                        datasourceCategoryType,
-                                        (env) -> ((Datasource) env.getSource()).getCategory().getUrn()))
-                        )
-                )
-                .type("Datasource", typeWiring -> typeWiring
-                        .dataFetcher("category", new AuthenticatedResolver<>(
-                                new LoadableTypeResolver<>(
-                                        datasourceCategoryType,
-                                        (env) -> ((Datasource) env.getSource()).getCategory().getUrn()))
-                        )
+        builder.type("Datasource", typeWiring -> typeWiring
                         .dataFetcher("datasets", new AuthenticatedResolver<>(
                                         new LoadableTypeResolver<>(sourceRelationshipsType,
                                                 (env) -> ((Entity) env.getSource()).getUrn())
@@ -826,7 +806,8 @@ public class GmsGraphQLEngine {
             .type("Aspect", typeWiring -> typeWiring.typeResolver(new AspectInterfaceTypeResolver()))
             .type("TimeSeriesAspect", typeWiring -> typeWiring.typeResolver(new TimeSeriesAspectInterfaceTypeResolver()))
             .type("ResultsType", typeWiring -> typeWiring
-                    .typeResolver(new ResultsTypeResolver()));
+                    .typeResolver(new ResultsTypeResolver()))
+            .type("DatasourceSources", typeWiring -> typeWiring.typeResolver(new DatasourceUnionTypeResolver()));
     }
 
     /**

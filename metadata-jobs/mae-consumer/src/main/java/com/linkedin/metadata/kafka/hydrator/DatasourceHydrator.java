@@ -17,11 +17,12 @@ public class DatasourceHydrator extends BaseHydrator<DatasourceSnapshot> {
   protected void hydrateFromSnapshot(ObjectNode document, DatasourceSnapshot snapshot) {
     for (DatasourceAspect aspect : snapshot.getAspects()) {
       if (aspect.isDatasourceKey()) {
-        document.put(CATEGORY, aspect.getDatasourceKey().getCategory().toString());
+        document.put(PLATFORM, aspect.getDatasourceKey().getPlatform().toString());
         document.put(NAME, aspect.getDatasourceKey().getName());
       }
-      if (aspect.isDatasourceConnections()) {
-        document.put(PLATFORM, aspect.getDatasourceConnections().getPlatform().toString());
+      if (aspect.isDatasourceConnection()) {
+        document.put(CATEGORY, aspect.getDatasourceConnection().getCategory());
+
 
 
       }

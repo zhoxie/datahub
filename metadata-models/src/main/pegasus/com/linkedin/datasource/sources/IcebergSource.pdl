@@ -1,0 +1,13 @@
+namespace com.linkedin.datasource.sources
+
+@Aspect = {
+  "name": "IcebergSource"
+}
+record IcebergSource {
+
+  /**
+  * Instantiate Hive Tables
+  */
+  hiveMetastoreUris: string
+
+}

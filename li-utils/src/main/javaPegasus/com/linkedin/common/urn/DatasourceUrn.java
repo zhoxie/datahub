@@ -12,19 +12,19 @@ public final class DatasourceUrn extends Urn {
 
   public static final String ENTITY_TYPE = "datasource";
 
-  private final DatasourceCategoryUrn _category;
+  private final DataPlatformUrn _platform;
   private final String _datasourceName;
   private final FabricType _origin;
 
-  public DatasourceUrn(DatasourceCategoryUrn category, String name, FabricType origin) {
-    super(ENTITY_TYPE, TupleKey.create(category, name, origin));
-    this._category = category;
+  public DatasourceUrn(DataPlatformUrn platform, String name, FabricType origin) {
+    super(ENTITY_TYPE, TupleKey.create(platform, name, origin));
+    this._platform = platform;
     this._datasourceName = name;
     this._origin = origin;
   }
 
-  public DatasourceCategoryUrn getCategoryEntity() {
-    return _category;
+  public DataPlatformUrn getPlatformEntity() {
+    return _platform;
   }
 
   public String getDatasourceNameEntity() {
@@ -50,8 +50,8 @@ public final class DatasourceUrn extends Urn {
         throw new URISyntaxException(urn.toString(), "Invalid number of keys.");
       } else {
         try {
-          return new DatasourceUrn((DatasourceCategoryUrn) key.getAs(0, DatasourceCategoryUrn.class),
-              (String) key.getAs(1, String.class), (FabricType) key.getAs(2, FabricType.class));
+          return new DatasourceUrn(key.getAs(0, DataPlatformUrn.class),
+              key.getAs(1, String.class), key.getAs(2, FabricType.class));
         } catch (Exception var3) {
           throw new URISyntaxException(urn.toString(), "Invalid URN Parameter: '" + var3.getMessage());
         }
@@ -64,7 +64,6 @@ public final class DatasourceUrn extends Urn {
   }
 
   static {
-    Custom.initializeCustomClass(DatasourceCategoryUrn.class);
     Custom.initializeCustomClass(DatasourceUrn.class);
     Custom.initializeCustomClass(FabricType.class);
     Custom.registerCoercer(new DirectCoercer<DatasourceUrn>() {

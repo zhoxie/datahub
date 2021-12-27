@@ -1,0 +1,24 @@
+namespace com.linkedin.datasource
+
+import com.linkedin.common.Urn
+import com.linkedin.datasource.sources.IcebergSource
+import com.linkedin.datasource.sources.KafkaMetadataSource
+import com.linkedin.datasource.sources.MysqlSource
+import com.linkedin.datasource.sources.OracleSource
+import com.linkedin.datasource.sources.PostgresSource
+
+@Aspect = {
+  "name": "datasourceConnection"
+}
+record DatasourceConnection {
+  /**
+  * Datasource platform urn associated with the datasource
+  */
+  @Searchable = {
+    "fieldType": "TEXT_PARTIAL",
+    "enableAutocomplete": true
+  }
+  category: string
+
+  connection: union[IcebergSource, KafkaMetadataSource, MysqlSource, OracleSource, PostgresSource]
+}

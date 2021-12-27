@@ -10,7 +10,6 @@ import com.linkedin.metadata.key.DataFlowKey;
 import com.linkedin.metadata.key.DataJobKey;
 import com.linkedin.metadata.key.DataPlatformKey;
 import com.linkedin.metadata.key.DatasetKey;
-import com.linkedin.metadata.key.DatasourceCategoryKey;
 import com.linkedin.metadata.key.DatasourceKey;
 import com.linkedin.metadata.key.GlossaryTermKey;
 import com.linkedin.metadata.models.AspectSpec;
@@ -44,15 +43,15 @@ public class BrowsePathUtils {
             dsKey.getPlatform(),
             getKeySchema(dsKey.getPlatform().getEntityType(),
                 entityRegistry));
-        return ("/" + dsKey.getOrigin() + "/" + dpKey.getPlatformName() + "/"
+        return ("/" + dpKey.getPlatformName() + "/"
             + dsKey.getName()).replace('.', '/').toLowerCase();
       case "datasource":
         DatasourceKey sourceKey = (DatasourceKey) EntityKeyUtils.convertUrnToEntityKey(urn, getKeySchema(urn.getEntityType(), entityRegistry));
-        DatasourceCategoryKey dcKey = (DatasourceCategoryKey) EntityKeyUtils.convertUrnToEntityKey(
-                sourceKey.getCategory(),
-                getKeySchema(sourceKey.getCategory().getEntityType(),
+        DataPlatformKey sdpKey = (DataPlatformKey) EntityKeyUtils.convertUrnToEntityKey(
+                sourceKey.getPlatform(),
+                getKeySchema(sourceKey.getPlatform().getEntityType(),
                         entityRegistry));
-        return ("/" + sourceKey.getOrigin() + "/" + dcKey.getCategoryName() + "/"
+        return ("/" + sdpKey.getPlatformName() + "/"
                 + sourceKey.getName()).replace('.', '/').toLowerCase();
       case "chart":
         ChartKey chartKey = (ChartKey) EntityKeyUtils.convertUrnToEntityKey(urn, getKeySchema(urn.getEntityType(), entityRegistry));

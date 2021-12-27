@@ -22,19 +22,19 @@ export default function DatasourceHeader({
         description: originalDesc,
         ownership,
         deprecation,
-        category,
+//         category,
         editableProperties,
         // usageStats,
-        connections,
+//         connections,
     },
     updateDatasource,
 }: Props) {
     const entityRegistry = useEntityRegistry();
     const isCompact = React.useContext(CompactContext);
-    const platformName = capitalizeFirstLetter(connections?.platform?.name || 'null');
+//     const platformName = capitalizeFirstLetter(connections?.platform?.name || 'null');
     // const platformLogoUrl = platform.info?.logoUrl;
-    const categoryName = category.name;
-    const dataCenter = connections?.dataCenter;
+//     const categoryName = category.name;
+//     const dataCenter = connections?.dataCenter;
 
     const datasourceInfoColumns: ColumnsType<StringMapEntry> = [
         {
@@ -59,9 +59,9 @@ export default function DatasourceHeader({
         {
             key: '1',
             name,
-            type: platformName,
-            categoryName,
-            dataCenter,
+            type: '',
+            categoryName:'',
+            dataCenter:'',
         },
     ];
 

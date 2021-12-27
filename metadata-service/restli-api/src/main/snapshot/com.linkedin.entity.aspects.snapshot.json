@@ -650,9 +650,9 @@
         "doc" : "Standardized datasource identifier.",
         "entityType" : "datasource",
         "fields" : [ {
-          "doc" : "Standardized category urn where datasource is defined.",
-          "name" : "category",
-          "type" : "com.linkedin.common.urn.DatasourceCategoryUrn"
+          "doc" : "Standardized platform urn where dataset is defined.",
+          "name" : "platform",
+          "type" : "com.linkedin.common.urn.DataPlatformUrn"
         }, {
           "doc" : "Datasource native name e.g. db.table, /dir/subdir/name, or name",
           "maxLength" : 210,
@@ -1965,7 +1965,42 @@
       "Aspect" : {
         "name" : "dataJobKey"
       }
-    }, "com.linkedin.datajob.DataJobInfo", "com.linkedin.datajob.DataJobInputOutput", "com.linkedin.dataset.DatasetDeprecation", "com.linkedin.dataset.DatasetProperties", "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.datasource.DatasourceProperties", "com.linkedin.dataset.UpstreamLineage", {
+    }, "com.linkedin.datajob.DataJobInfo", "com.linkedin.datajob.DataJobInputOutput", "com.linkedin.dataset.DatasetDeprecation", "com.linkedin.dataset.DatasetProperties", {
+      "type" : "record",
+      "name" : "DatasourceKey",
+      "namespace" : "com.linkedin.metadata.key",
+      "doc" : "Key for a Datasource",
+      "fields" : [ {
+        "name" : "platform",
+        "type" : "com.linkedin.common.Urn",
+        "doc" : "Datasource category urn associated with the datasource",
+        "Searchable" : {
+          "addToFilters" : true,
+          "fieldType" : "URN"
+        }
+      }, {
+        "name" : "name",
+        "type" : "string",
+        "doc" : "Datasource native name e.g. db.table, /dir/subdir/name, or name",
+        "Searchable" : {
+          "boostScore" : 10.0,
+          "enableAutocomplete" : true,
+          "fieldType" : "TEXT_PARTIAL"
+        }
+      }, {
+        "name" : "origin",
+        "type" : "com.linkedin.common.FabricType",
+        "doc" : "Fabric type where datasource belongs to or where it was generated.",
+        "Searchable" : {
+          "addToFilters" : true,
+          "fieldType" : "TEXT_PARTIAL",
+          "queryByDefault" : false
+        }
+      } ],
+      "Aspect" : {
+        "name" : "datasourceKey"
+      }
+    }, "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.datasource.DatasourceProperties", "com.linkedin.dataset.UpstreamLineage", {
       "type" : "record",
       "name" : "SchemaMetadata",
       "namespace" : "com.linkedin.schema",
@@ -3178,7 +3213,7 @@
       "name" : "version",
       "type" : "long"
     } ]
-  }, "com.linkedin.metadata.key.ChartKey", "com.linkedin.metadata.key.CorpGroupKey", "com.linkedin.metadata.key.CorpUserKey", "com.linkedin.metadata.key.DashboardKey", "com.linkedin.metadata.key.DataFlowKey", "com.linkedin.metadata.key.DataJobKey", "com.linkedin.metadata.key.GlossaryNodeKey", "com.linkedin.metadata.key.GlossaryTermKey", "com.linkedin.metadata.key.MLFeatureKey", "com.linkedin.metadata.key.MLModelKey", "com.linkedin.metadata.key.TagKey", "com.linkedin.ml.metadata.BaseData", "com.linkedin.ml.metadata.CaveatDetails", "com.linkedin.ml.metadata.CaveatsAndRecommendations", "com.linkedin.ml.metadata.EthicalConsiderations", "com.linkedin.ml.metadata.EvaluationData", "com.linkedin.ml.metadata.HyperParameterValueType", "com.linkedin.ml.metadata.IntendedUse", "com.linkedin.ml.metadata.IntendedUserType", "com.linkedin.ml.metadata.MLFeatureProperties", "com.linkedin.ml.metadata.MLHyperParam", "com.linkedin.ml.metadata.MLMetric", "com.linkedin.ml.metadata.MLModelFactorPrompts", "com.linkedin.ml.metadata.MLModelFactors", "com.linkedin.ml.metadata.MLModelProperties", "com.linkedin.ml.metadata.Metrics", "com.linkedin.ml.metadata.QuantitativeAnalyses", "com.linkedin.ml.metadata.ResultsType", "com.linkedin.ml.metadata.SourceCode", "com.linkedin.ml.metadata.SourceCodeUrl", "com.linkedin.ml.metadata.SourceCodeUrlType", "com.linkedin.ml.metadata.TrainingData", "com.linkedin.mxe.GenericAspect", {
+  }, "com.linkedin.metadata.key.ChartKey", "com.linkedin.metadata.key.CorpGroupKey", "com.linkedin.metadata.key.CorpUserKey", "com.linkedin.metadata.key.DashboardKey", "com.linkedin.metadata.key.DataFlowKey", "com.linkedin.metadata.key.DataJobKey", "com.linkedin.metadata.key.DatasourceKey", "com.linkedin.metadata.key.GlossaryNodeKey", "com.linkedin.metadata.key.GlossaryTermKey", "com.linkedin.metadata.key.MLFeatureKey", "com.linkedin.metadata.key.MLModelKey", "com.linkedin.metadata.key.TagKey", "com.linkedin.ml.metadata.BaseData", "com.linkedin.ml.metadata.CaveatDetails", "com.linkedin.ml.metadata.CaveatsAndRecommendations", "com.linkedin.ml.metadata.EthicalConsiderations", "com.linkedin.ml.metadata.EvaluationData", "com.linkedin.ml.metadata.HyperParameterValueType", "com.linkedin.ml.metadata.IntendedUse", "com.linkedin.ml.metadata.IntendedUserType", "com.linkedin.ml.metadata.MLFeatureProperties", "com.linkedin.ml.metadata.MLHyperParam", "com.linkedin.ml.metadata.MLMetric", "com.linkedin.ml.metadata.MLModelFactorPrompts", "com.linkedin.ml.metadata.MLModelFactors", "com.linkedin.ml.metadata.MLModelProperties", "com.linkedin.ml.metadata.Metrics", "com.linkedin.ml.metadata.QuantitativeAnalyses", "com.linkedin.ml.metadata.ResultsType", "com.linkedin.ml.metadata.SourceCode", "com.linkedin.ml.metadata.SourceCodeUrl", "com.linkedin.ml.metadata.SourceCodeUrlType", "com.linkedin.ml.metadata.TrainingData", "com.linkedin.mxe.GenericAspect", {
     "type" : "record",
     "name" : "MetadataChangeProposal",
     "namespace" : "com.linkedin.mxe",
