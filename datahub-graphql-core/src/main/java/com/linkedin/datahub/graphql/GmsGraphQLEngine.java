@@ -41,6 +41,7 @@ import com.linkedin.datahub.graphql.generated.MLPrimaryKey;
 import com.linkedin.datahub.graphql.generated.MLPrimaryKeyProperties;
 import com.linkedin.datahub.graphql.resolvers.MeResolver;
 import com.linkedin.datahub.graphql.resolvers.datasource.CreateDatasourceResolver;
+import com.linkedin.datahub.graphql.resolvers.datasource.DeleteDatasourceResolver;
 import com.linkedin.datahub.graphql.resolvers.group.AddGroupMembersResolver;
 import com.linkedin.datahub.graphql.resolvers.group.CreateGroupResolver;
 import com.linkedin.datahub.graphql.resolvers.group.EntityCountsResolver;
@@ -477,6 +478,7 @@ public class GmsGraphQLEngine {
             .dataFetcher("updateDataset", new AuthenticatedResolver<>(new MutableTypeResolver<>(datasetType)))
             .dataFetcher("updateDatasource", new AuthenticatedResolver<>(new MutableTypeResolver<>(datasourceType)))
             .dataFetcher("createDatasource", new AuthenticatedResolver<>(new CreateDatasourceResolver(entityClient)))
+            .dataFetcher("deleteDatasource", new AuthenticatedResolver<>(new DeleteDatasourceResolver(entityClient)))
             .dataFetcher("updateTag", new AuthenticatedResolver<>(new MutableTypeResolver<>(tagType)))
             .dataFetcher("updateChart", new AuthenticatedResolver<>(new MutableTypeResolver<>(chartType)))
             .dataFetcher("updateDashboard", new AuthenticatedResolver<>(new MutableTypeResolver<>(dashboardType)))
@@ -617,6 +619,10 @@ public class GmsGraphQLEngine {
                                         new LoadableTypeResolver<>(sourceRelationshipsType,
                                                 (env) -> ((Entity) env.getSource()).getUrn())
                                 )
+                        )
+                        .dataFetcher("platform", new AuthenticatedResolver<>(
+                                new LoadableTypeResolver<>(dataPlatformType,
+                                        (env) -> ((Datasource) env.getSource()).getPlatform().getUrn()))
                         )
                         .dataFetcher("relationships", new AuthenticatedResolver<>(
                                 new EntityRelationshipsResultResolver(graphClient)

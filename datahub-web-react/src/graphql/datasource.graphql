@@ -8,6 +8,10 @@ mutation createDatasource($input: DatasourceCreateInput!) {
     createDatasource(input: $input)
 }
 
+mutation deleteDatasource($urn: String!) {
+    deleteDatasource(urn: $urn)
+}
+
 query getDatasource($urn: String!) {
     datasource(urn: $urn) {
         ...nonRecursiveDatasourceFields
