@@ -124,6 +124,8 @@ type Mutation {
 
     createDatasource(input: DatasourceCreateInput!): String
 
+    deleteDatasource(urn: String!): String
+
     """
     Update the metadata about a particular Chart
     """
