@@ -1,4 +1,4 @@
-export {}
+export {};
 // import { Button, Card, Col, Input, Row, Space, Typography } from 'antd';
 // import React from 'react';
 // import { useHistory, useLocation } from 'react-router-dom';

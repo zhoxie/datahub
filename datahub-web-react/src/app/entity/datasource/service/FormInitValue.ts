@@ -58,6 +58,20 @@ const typeDrivers = [
         ],
     },
     {
+        value: 'kafka',
+        label: 'Kafka',
+        children: [
+            {
+                label: 'Plaintext Kafka',
+                value: 'plaintextKafka',
+            },
+            {
+                label: 'Secured Kafka',
+                value: 'securedKafka',
+            },
+        ],
+    },
+    {
         value: 'tiDB',
         label: 'TiDB',
         children: [],
@@ -68,19 +82,20 @@ const typeDrivers = [
         children: [],
     },
     {
-        value: 'kafka',
-        label: 'Kafka',
+        value: 'iceberg',
+        label: 'Iceberg',
         children: [],
     },
 ];
 
 enum DbSourceTypeData {
+    Iceberg = 'iceberg',
     Kafka = 'kafka',
-    Pinot = 'pinot',
-    TiDB = 'tiDB',
-    Postgres = 'postgres',
     Mysql = 'mysql',
     Oracle = 'oracle',
+    Pinot = 'pinot',
+    Postgres = 'postgres',
+    TiDB = 'tidB',
 }
 
 export { initDataCenter, initCluster, driverData, typeDrivers, DbSourceTypeData };

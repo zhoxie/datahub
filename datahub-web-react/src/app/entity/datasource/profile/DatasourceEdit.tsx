@@ -1,4 +1,4 @@
-export {}
+export {};
 // import { EditOutlined } from '@ant-design/icons';
 // import { Button } from 'antd';
 // import React, { useState } from 'react';
