@@ -71,16 +71,6 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
 
     const baseBrowsePath = `${PageRoutes.BROWSE}/${entityRegistry.getPathName(type)}`;
 
-    console.log(
-        `[LegacyBrowsePath] baseBrowsePath.... ${baseBrowsePath},
-    Props:`,
-        type,
-        path,
-        lineageSupported,
-        isProfilePage,
-        isBrowsable,
-    );
-
     // child path
     const pathCrumbs = path.map((part, index) => (
         <Breadcrumb.Item key={`${part || index}`}>

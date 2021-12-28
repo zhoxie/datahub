@@ -1,7 +1,7 @@
 import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
-import axios from 'axios';
 import React from 'react';
+import { useDeleteDatasourceMutation } from '../../../../graphql/datasource.generated';
 import { showRequestResult } from '../service/NotificationUtil';
 
 export type Props = {
@@ -9,39 +9,31 @@ export type Props = {
 };
 
 export default function DatasourceDelete({ urn }: Props) {
-    const sendDataSourceSaveReq = (data) => {
-        axios
-            .post('/entities?action=ingest', data, {
-                headers: { 'Content-Type': 'application/json' },
-            })
+    const [deleteDatasourceMutation] = useDeleteDatasourceMutation();
+    const sendDataSourceSaveReq = () => {
+        deleteDatasourceMutation({
+            variables: {
+                urn,
+            },
+        })
             .then((res) => {
-                console.log(res);
-                showRequestResult(res.status);
+                console.log('datasource delete res...', res);
+                const error = res.errors;
+                if (error) {
+                    console.log('datasource delete error...', error);
+                    showRequestResult(500);
+                    return;
+                }
+                showRequestResult(200);
             })
             .catch((error) => {
-                console.error(error);
+                console.log('datasource delete error...', error);
                 showRequestResult(500);
             });
     };
 
     const deleteDataSource = () => {
-        const reqData = {
-            entity: {
-                value: {
-                    'com.linkedin.metadata.snapshot.DatasourceSnapshot': {
-                        aspects: [
-                            {
-                                'com.linkedin.common.Status': {
-                                    removed: true,
-                                },
-                            },
-                        ],
-                        urn: `${urn}`,
-                    },
-                },
-            },
-        };
-        sendDataSourceSaveReq(reqData);
+        sendDataSourceSaveReq();
     };
 
     const onDeleteBtnClick = (e) => {
