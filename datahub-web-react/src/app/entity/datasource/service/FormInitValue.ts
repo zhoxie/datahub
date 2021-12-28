@@ -72,11 +72,6 @@ const typeDrivers = [
         ],
     },
     {
-        value: 'tiDB',
-        label: 'TiDB',
-        children: [],
-    },
-    {
         value: 'pinot',
         label: 'Pinot',
         children: [],
