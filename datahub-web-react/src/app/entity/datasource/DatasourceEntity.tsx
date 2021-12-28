@@ -20,6 +20,8 @@ import { SidebarOwnerSection } from '../shared/containers/profile/sidebar/Owners
 import { SidebarTagsSection } from '../shared/containers/profile/sidebar/SidebarTagsSection';
 import { SidebarRecommendationsSection } from '../shared/containers/profile/sidebar/Recommendations/SidebarRecommendationsSection';
 import { getDataForEntityType } from '../shared/containers/profile/utils';
+import DatasourceDelete from './preview/DatasourceDelete';
+import DatasourceEdit from './profile/DatasourceEdit';
 
 /**
  * Definition of the DataHub Dataset entity.
@@ -65,6 +67,14 @@ export class DatasourceEntity implements Entity<Datasource> {
     getEntityName = () => 'Datasource';
 
     getCollectionName = () => 'Datasources';
+
+    getDelete = (urn: string) => {
+        return <DatasourceDelete urn={urn} />;
+    };
+
+    getEdit = (data: Datasource) => {
+        return <DatasourceEdit datasource={data} />;
+    };
 
     renderProfile = (urn: string) => (
         <EntityProfile
@@ -133,6 +143,8 @@ export class DatasourceEntity implements Entity<Datasource> {
                 owners={data.ownership?.owners}
                 globalTags={data.globalTags}
                 glossaryTerms={data.glossaryTerms}
+                delEle={this.getDelete(data.urn)}
+                editEle={this.getEdit(data)}
             />
         );
     };

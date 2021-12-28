@@ -25,6 +25,8 @@ interface Props {
     glossaryTerms?: GlossaryTerms;
     dataTestID?: string;
     titleSizePx?: number;
+    delEle?: React.ReactNode;
+    editEle?: React.ReactNode;
     onClick?: () => void;
 }
 
@@ -128,6 +130,8 @@ export default function DefaultPreviewCard({
     glossaryTerms,
     titleSizePx,
     dataTestID,
+    delEle,
+    editEle,
     onClick,
 }: Props) {
     const entityRegistry = useEntityRegistry();
@@ -183,6 +187,12 @@ export default function DefaultPreviewCard({
                     </InsightContainer>
                 )}
             </div>
+            {(delEle || editEle) && (
+                <div>
+                    {delEle}
+                    {editEle}
+                </div>
+            )}
         </PreviewContainer>
     );
 }

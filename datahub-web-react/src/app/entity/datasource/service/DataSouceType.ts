@@ -1,65 +1,53 @@
 export interface IFormConnectionData {
-    id: number;
-    cluster: string;
-    sourceName: string;
-    bootstrapServer?: string;
-    connName?: string;
-    connPwd?: string;
-    schemaPattern?: string;
-    tablePattern?: string;
-    topicPattern?: string;
-    url?: string;
-}
+    id?: number;
 
-// data type pass to back-end
-export interface IDataSourceConnection {
-    cluster: { [key: string]: string };
-    sourcename: string;
-    bootstrapserver?: string;
+    bootstrap?: string;
+    schemaRegistryUrl?: string;
+    topicPatternsAllow?: string;
+    topicPatternsDeny?: string;
+    topicPatternsIgnoreCase?: string;
+
     username?: string;
     password?: string;
-    schemapattern?: string;
-    tablepattern?: string;
-    topicpattern?: string;
-    url?: string;
+    hostPort?: string;
+    database?: string;
+    databaseAlias?: string;
+    tablePatternAllow?: string;
+    tablePatternDeny?: string;
+    tablePatternIgnoreCase?: string;
+    schemaPatternAllow?: string;
+    schemaPatternDeny?: string;
+    schemaPatternIgnoreCase?: string;
+    viewPatternAllow?: string;
+    viewPatternDeny?: string;
+    viewPatternIgnoreCase?: string;
+    includeTables?: string;
+    includeViews?: string;
+    hiveMetastoreUris?: string;
 }
 
 export interface IFormData {
     sourceType: string;
     driver: string;
     category: string;
-    dataCenter: string;
-    connections: IFormConnectionData[];
+    name: string;
+    connections: any[];
 }
 
 export enum FormField {
-    sourceName = 'sourceName',
+    name = 'name',
     sourceType = 'sourceType',
     category = 'category',
-    dataCenter = 'dataCenter',
-    cluster = 'cluster',
-    connName = 'connName',
-    connPwd = 'connPwd',
-    driver = 'driver',
-    url = 'url',
-    schemaPattern = 'schemaPattern',
-    tablePattern = 'tablePattern',
-    topicPattern = 'topicPattern',
+    username = 'username',
+    password = 'password',
+    hostPort = 'hostPort',
+    database = 'database',
+    schemaPatternAllow = 'schemaPatternAllow',
+    tablePatternAllow = 'tablePatternAllow',
+    topicPatternsAllow = 'topicPatternsAllow',
     bootstrapServer = 'bootstrapServer',
-}
-
-export interface IDataSourceAddData {
-    'com.linkedin.metadata.snapshot.DatasourceSnapshot': IDataSourceAddEntity;
-}
-
-export interface IDataSourceAddEntity {
-    aspects: [];
-    urn: string;
-}
-export interface IDataSourceKey {
-    name: string;
-    origin: string;
-    platform: string;
+    topicSplitField = 'topicSplitField',
+    hiveMetastoreUris = 'hiveMetastoreUris',
 }
 
 export enum NotificationLevel {
@@ -67,4 +55,46 @@ export enum NotificationLevel {
     INFO = 'info',
     WARNING = 'warning',
     ERROR = 'error',
+}
+
+export interface IIcebergSourceInput {
+    hiveMetastoreUris: string;
+}
+export interface IKafkaMetadataSourceInput {
+    bootstrap: string;
+    schemaRegistryUrl: string;
+    topicPatternsAllow?: string;
+    topicPatternsDeny?: string;
+    topicPatternsIgnoreCase?: boolean;
+}
+export interface IBasicDataSourceInput {
+    username: string;
+    password: string;
+    hostPort: string;
+    database: string;
+    databaseAlias?: string;
+    tablePatternAllow?: string;
+    tablePatternDeny?: string;
+    tablePatternIgnoreCase?: boolean;
+    schemaPatternAllow?: string;
+    schemaPatternDeny?: string;
+    schemaPatternIgnoreCase?: boolean;
+    viewPatternAllow?: string;
+    viewPatternDeny?: string;
+    viewPatternIgnoreCase?: boolean;
+    includeTables?: boolean;
+    includeViews?: boolean;
+}
+export interface IMysqlSourceInput extends IBasicDataSourceInput {}
+export interface IOracleSourceInput extends IBasicDataSourceInput {
+    serviceName?: string;
+}
+export interface IPostgresSourceInput extends IBasicDataSourceInput {}
+
+export interface IDatasourceSourceInput {
+    iceberg?: IIcebergSourceInput;
+    kafka?: IKafkaMetadataSourceInput;
+    mysql?: IMysqlSourceInput;
+    oracle?: IOracleSourceInput;
+    postgres?: IPostgresSourceInput;
 }

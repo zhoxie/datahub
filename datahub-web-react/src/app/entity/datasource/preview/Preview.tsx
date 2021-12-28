@@ -15,6 +15,8 @@ export const Preview = ({
     globalTags,
     snippet,
     glossaryTerms,
+    delEle,
+    editEle,
 }: {
     urn: string;
     name: string;
@@ -26,6 +28,8 @@ export const Preview = ({
     globalTags?: GlobalTags | null;
     snippet?: React.ReactNode | null;
     glossaryTerms?: GlossaryTerms | null;
+    delEle?: React.ReactNode | null;
+    editEle?: React.ReactNode | null;
 }): JSX.Element => {
     const entityRegistry = useEntityRegistry();
     const capitalPlatformName = capitalizeFirstLetter(platformName);
@@ -41,6 +45,8 @@ export const Preview = ({
             tags={globalTags || undefined}
             owners={owners}
             snippet={snippet}
+            editEle={editEle}
+            delEle={delEle}
             glossaryTerms={glossaryTerms || undefined}
         />
     );

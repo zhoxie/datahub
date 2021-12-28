@@ -4,7 +4,6 @@ import { ColumnsType } from 'antd/es/table';
 import React from 'react';
 import { Datasource, StringMapEntry } from '../../../../types.generated';
 import { AvatarsGroup } from '../../../shared/avatar';
-import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';
 import CompactContext from '../../../shared/CompactContext';
 import { useEntityRegistry } from '../../../useEntityRegistry';
 import UpdatableDescription from '../../shared/components/legacy/UpdatableDescription';
@@ -22,19 +21,19 @@ export default function DatasourceHeader({
         description: originalDesc,
         ownership,
         deprecation,
-//         category,
+        //         category,
         editableProperties,
         // usageStats,
-//         connections,
+        //         connections,
     },
     updateDatasource,
 }: Props) {
     const entityRegistry = useEntityRegistry();
     const isCompact = React.useContext(CompactContext);
-//     const platformName = capitalizeFirstLetter(connections?.platform?.name || 'null');
+    //     const platformName = capitalizeFirstLetter(connections?.platform?.name || 'null');
     // const platformLogoUrl = platform.info?.logoUrl;
-//     const categoryName = category.name;
-//     const dataCenter = connections?.dataCenter;
+    //     const categoryName = category.name;
+    //     const dataCenter = connections?.dataCenter;
 
     const datasourceInfoColumns: ColumnsType<StringMapEntry> = [
         {
@@ -60,8 +59,8 @@ export default function DatasourceHeader({
             key: '1',
             name,
             type: '',
-            categoryName:'',
-            dataCenter:'',
+            categoryName: '',
+            dataCenter: '',
         },
     ];
 
