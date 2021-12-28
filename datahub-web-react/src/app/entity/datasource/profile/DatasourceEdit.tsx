@@ -13,6 +13,7 @@ export type Props = {
 
 export default function DatasourceEdit({ datasource: { urn } }: Props) {
     const [showEditModal, setShowEditModal] = useState(false);
+    const [loading, updateLoading] = useState(false);
     const res = useGetDatasourceQuery({
         variables: {
             urn,
@@ -37,9 +38,18 @@ export default function DatasourceEdit({ datasource: { urn } }: Props) {
         ],
     };
 
+    const updateModalStatus = () => {
+        updateLoading(true);
+        const timer = setTimeout(() => {
+            clearTimeout(timer);
+            updateLoading(false);
+            setShowEditModal(true);
+        }, 1000);
+    };
+
     return (
         <>
-            <Button type="link" onClick={() => setShowEditModal(true)}>
+            <Button type="link" onClick={updateModalStatus} loading={loading}>
                 Edit
                 <EditOutlined />
             </Button>

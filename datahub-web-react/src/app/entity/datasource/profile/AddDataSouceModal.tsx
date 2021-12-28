@@ -21,6 +21,7 @@ const layout = {
 export default function AddDataSourceModal({ visible, onClose, title, originData }: AddDataSourceModalProps) {
     let count = 1; // when originData exists ,show the edit
     const [createDatasourceMutation] = useCreateDatasourceMutation();
+    const [loading, updateLoading] = useState(false);
 
     const initData: IFormData = originData ?? {
         sourceType: typeDrivers[0].value,
@@ -133,6 +134,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             showValidateMsg('Exist some required value missing from form items !');
             return;
         }
+        updateLoading(true);
         const reqParam: IDatasourceSourceInput = getDataSourceInputData();
         const input: DatasourceCreateInput = {
             name: formData.name,
@@ -162,6 +164,9 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             .catch((err) => {
                 console.error(err);
                 showRequestResult(500);
+            })
+            .finally(() => {
+                updateLoading(false);
             });
     };
 
@@ -468,7 +473,9 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                     >
                         Cancel
                     </Button>
-                    <Button onClick={onSaveBtnClick}>Save</Button>
+                    <Button loading={loading} onClick={onSaveBtnClick}>
+                        Save
+                    </Button>
                 </>
             }
         >
