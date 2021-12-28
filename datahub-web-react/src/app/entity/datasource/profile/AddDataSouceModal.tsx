@@ -34,9 +34,9 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 hostPort: '',
                 bootstrapServer: '',
                 topicSplitField: '',
-                schemaPattern: '',
-                tablePattern: '',
-                topicPattern: '',
+                schemaPatternAllow: '',
+                tablePatternAllow: '',
+                topicPatternAllow: '',
                 hiveMetastoreUris: '',
             },
         ],
@@ -70,7 +70,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             });
         } else if (isInKafka()) {
             isReady = !formData.connections?.some((item) => {
-                return item.topicPattern === '' || item.bootstrapServer === '';
+                return item.topicPatternsAllow === '' || item.bootstrapServer === '';
             });
         } else {
             isReady = !formData.connections?.some((item) => {
@@ -96,9 +96,9 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 case DbSourceTypeData.Kafka: {
                     dataSource = {
                         kafka: {
-                            topicPatternsAllow: conn.topicPattern,
+                            topicPatternsAllow: conn.topicPatternsAllow,
                             bootstrap: conn.bootstrapServer || '',
-                            schemaRegistryUrl: conn.schemaPattern || '',
+                            schemaRegistryUrl: conn.schemaPatternAllow || '',
                         },
                     };
                     break;
@@ -113,6 +113,8 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                         password: conn.password || '',
                         hostPort: conn.hostPort || '',
                         database: conn.database || '',
+                        tablePatternAllow: conn.tablePatternAllow,
+                        schemaPatternAllow: conn.schemaPatternAllow,
                     };
                     break;
                 }
@@ -247,7 +249,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                         placeholder="Please input dataSource category"
                         autoComplete="off"
                         defaultValue={formData.category}
-                        onChange={(e) => updateDataSourceBasicInfo(e, FormField.category)}
+                        onChange={(e) => updateDataSourceBasicInfo(e.target.value, FormField.category)}
                     />
                 </Form.Item>
             </Card>
@@ -300,17 +302,17 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 >
                     <Space direction="vertical" style={{ width: '100%', marginTop: 0 }}>
                         <Form.Item
-                            name={`topicPattern_${info.id}`}
-                            label="Topic Pattern"
-                            rules={[{ required: true, message: 'Please input connection topic Pattern!' }]}
+                            name={`topicPatternAllow_${info.id}`}
+                            label="Topic PatternAllow"
+                            rules={[{ required: true, message: 'Please input connection topic PatternAllow!' }]}
                         >
                             <Input
                                 type="text"
-                                placeholder="Please input connection topic Pattern"
+                                placeholder="Please input connection topic PatternAllow"
                                 autoComplete="off"
-                                defaultValue={info.topicPattern}
+                                defaultValue={info.topicPatternsAllow}
                                 onChange={(e) =>
-                                    updateDataSourceConnections(e.target.value, FormField.topicPattern, index)
+                                    updateDataSourceConnections(e.target.value, FormField.topicPatternsAllow, index)
                                 }
                             />
                         </Form.Item>
@@ -412,31 +414,31 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                             />
                         </Form.Item>
                         <Form.Item
-                            name={`tablePattern_${info.id}`}
-                            label="Table Pattern"
-                            rules={[{ required: false, message: 'Please input connection table Pattern!' }]}
+                            name={`tablePatternAllow_${info.id}`}
+                            label="Table PatternAllow"
+                            rules={[{ required: false, message: 'Please input connection table PatternAllow!' }]}
                         >
                             <Input
-                                placeholder="Please input connection table Pattern"
+                                placeholder="Please input connection table PatternAllow"
                                 autoComplete="off"
-                                defaultValue={info.tablePattern}
+                                defaultValue={info.tablePatternAllow}
                                 onChange={(e) =>
-                                    updateDataSourceConnections(e.target.value, FormField.tablePattern, index)
+                                    updateDataSourceConnections(e.target.value, FormField.tablePatternAllow, index)
                                 }
                             />
                         </Form.Item>
                         <Form.Item
-                            name={`schemaPattern_${info.id}`}
-                            label="Schema Pattern"
-                            rules={[{ required: false, message: 'Please input connection schema Pattern!' }]}
+                            name={`schemaPatternAllow_${info.id}`}
+                            label="Schema PatternAllow"
+                            rules={[{ required: false, message: 'Please input connection schema PatternAllow!' }]}
                         >
                             <Input
                                 type="text"
                                 placeholder="Please input connection url"
                                 autoComplete="off"
-                                defaultValue={info.schemaPattern}
+                                defaultValue={info.schemaPatternAllow}
                                 onChange={(e) =>
-                                    updateDataSourceConnections(e.target.value, FormField.schemaPattern, index)
+                                    updateDataSourceConnections(e.target.value, FormField.schemaPatternAllow, index)
                                 }
                             />
                         </Form.Item>

@@ -4,9 +4,9 @@ export interface IFormConnectionData {
     topicSplitField?: string;
     username?: string;
     password?: string;
-    schemaPattern?: string;
-    tablePattern?: string;
-    topicPattern?: string;
+    schemaPatternAllow?: string;
+    tablePatternAllow?: string;
+    topicPatternsAllow?: string;
     database?: string;
     hostPort?: string;
     hiveMetastoreUris?: string;
@@ -18,9 +18,9 @@ export interface IDataSourceConnection {
     topicSplitField?: string;
     username?: string;
     password?: string;
-    schemapattern?: string;
-    tablepattern?: string;
-    topicpattern?: string;
+    schemaPatternAllow?: string;
+    tablePatternAllow?: string;
+    topicPatternsAllow?: string;
 }
 
 export interface IFormData {
@@ -39,9 +39,9 @@ export enum FormField {
     password = 'password',
     hostPort = 'hostPort',
     database = 'database',
-    schemaPattern = 'schemaPattern',
-    tablePattern = 'tablePattern',
-    topicPattern = 'topicPattern',
+    schemaPatternAllow = 'schemaPatternAllow',
+    tablePatternAllow = 'tablePatternAllow',
+    topicPatternsAllow = 'topicPatternsAllow',
     bootstrapServer = 'bootstrapServer',
     topicSplitField = 'topicSplitField',
     hiveMetastoreUris = 'hiveMetastoreUris',
