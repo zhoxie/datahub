@@ -20,12 +20,6 @@ const initCluster = [
     },
 ];
 
-const driverData = {
-    oracle: ['oracle.jdbc.driver.OracleDriver'],
-    mysql: ['com.mysql.jdbc.Driver'],
-    postgres: ['org.postgresql.Driver'],
-};
-
 const typeDrivers = [
     {
         value: 'oracle',
@@ -93,4 +87,4 @@ enum DbSourceTypeData {
     TiDB = 'tidB',
 }
 
-export { initDataCenter, initCluster, driverData, typeDrivers, DbSourceTypeData };
+export { initDataCenter, initCluster, typeDrivers, DbSourceTypeData };

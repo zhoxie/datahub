@@ -32,8 +32,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 username: '',
                 password: '',
                 hostPort: '',
-                bootstrapServer: '',
-                topicSplitField: '',
+                bootstrap: '',
                 schemaPatternAllow: '',
                 tablePatternAllow: '',
                 topicPatternAllow: '',
@@ -63,22 +62,24 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         }
         const { sourceType, name, category } = formData;
         const isBasicOK = !!sourceType && !!name && !!category;
-        let isReady = isBasicOK;
+        let isOk = isBasicOK;
+        if (!isBasicOK) {
+            return false;
+        }
         if (isIceBerge()) {
-            isReady = !formData.connections?.some((item) => {
+            isOk = !formData.connections?.some((item) => {
                 return item.hiveMetastoreUris === '';
             });
         } else if (isInKafka()) {
-            isReady = !formData.connections?.some((item) => {
+            isOk = !formData.connections?.some((item) => {
                 return item.topicPatternsAllow === '' || item.bootstrapServer === '';
             });
         } else {
-            isReady = !formData.connections?.some((item) => {
+            isOk = !formData.connections?.some((item) => {
                 return item.username === '' || item.password === '' || item.hostPort === '' || item.database === '';
             });
         }
-        console.log(`isBasicOK:${isBasicOK},isReady: ${isReady}`, formData);
-        return isReady;
+        return isOk;
     };
 
     const getDataSourceInputData = () => {
@@ -127,15 +128,15 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     };
 
     const onSaveBtnClick = () => {
-        const isReady = checkFormData();
-        if (!isReady) {
+        const isOk = checkFormData();
+        if (!isOk) {
             showValidateMsg('Exist some required value missing from form items !');
             return;
         }
         const reqParam: IDatasourceSourceInput = getDataSourceInputData();
         const input: DatasourceCreateInput = {
             name: formData.name,
-            category: `${formData.category}`,
+            category: formData.category,
             connection: reqParam,
         };
         createDatasourceMutation({
@@ -152,6 +153,11 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 }
                 onClose();
                 showRequestResult(200);
+                try {
+                    localStorage.setItem('datahub.latestDataSource', JSON.stringify(input));
+                } catch (e) {
+                    console.log('save latest data source error', e);
+                }
             })
             .catch((err) => {
                 console.error(err);
@@ -184,7 +190,6 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     };
 
     const updateDataSourceConnections = (value: any, field: FormField, ix: number) => {
-        console.log('source update ...', value, field, ix);
         const updatedData = {
             ...formData,
         };
@@ -197,10 +202,12 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         updateDataSourceFormData(updatedData);
     };
     const updateDataSourceBasicInfo = (value: any, field: FormField) => {
+        const updateInfo = {};
+        updateInfo[field] = value;
         const updatedData = {
             ...formData,
+            ...updateInfo,
         };
-        updatedData[field] = value;
         updateDataSourceFormData(updatedData);
     };
 
@@ -216,11 +223,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     const dataSourceBasic = () => {
         return (
             <Card title="Data Source">
-                <Form.Item
-                    name="sourceType"
-                    label="Type"
-                    rules={[{ required: true, message: 'Please input dataSource type!' }]}
-                >
+                <Form.Item label="Type" rules={[{ required: true, message: 'Please input dataSource type!' }]}>
                     <Cascader
                         defaultValue={[formData.sourceType, formData.driver]}
                         options={typeDrivers}
@@ -325,13 +328,13 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                                 type="text"
                                 placeholder="Please input connection bootstrapServer"
                                 autoComplete="off"
-                                defaultValue={info.bootstrapServer}
+                                defaultValue={info.bootstrap}
                                 onChange={(e) =>
                                     updateDataSourceConnections(e.target.value, FormField.bootstrapServer, index)
                                 }
                             />
                         </Form.Item>
-                        <Form.Item
+                        {/* <Form.Item
                             name={`topicSplitField_${info.id}`}
                             label="Topic Split Field"
                             rules={[{ required: false, message: 'Please input topic split field!' }]}
@@ -345,7 +348,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                                     updateDataSourceConnections(e.target.value, FormField.bootstrapServer, index)
                                 }
                             />
-                        </Form.Item>
+                        </Form.Item> */}
                     </Space>
                 </Card>
             );

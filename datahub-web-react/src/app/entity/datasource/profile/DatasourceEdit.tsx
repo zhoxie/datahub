@@ -1,24 +1,40 @@
 import { EditOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import React, { useState } from 'react';
+import { useGetDatasourceQuery } from '../../../../graphql/datasource.generated';
 import { Datasource } from '../../../../types.generated';
+import { IFormData } from '../service/DataSouceType';
+import { typeDrivers } from '../service/FormInitValue';
 import AddDataSourceModal from './AddDataSouceModal';
 
 export type Props = {
     datasource: Datasource;
 };
 
-export default function DatasourceEdit({ datasource: { name, urn, type } }: Props) {
+export default function DatasourceEdit({ datasource: { urn } }: Props) {
     const [showEditModal, setShowEditModal] = useState(false);
-    const platformName = 'null';
-    const categoryName = '';
-    const datasource = {
-        sourceName: name,
-        urn,
-        type,
-        sourceType: platformName,
-        connections: {},
-        category: categoryName,
+    const res = useGetDatasourceQuery({
+        variables: {
+            urn,
+        },
+    });
+
+    const dataSource = res?.data?.datasource;
+    const typeName = dataSource?.connection?.connection?.__typename;
+    const selectedType = typeDrivers.find((item) => {
+        return typeName?.toLocaleLowerCase().includes(item.value);
+    });
+    const conn = dataSource?.connection?.connection;
+    const originData: IFormData = {
+        sourceType: selectedType?.value || '',
+        name: dataSource?.name || '',
+        category: dataSource?.connection?.category || '',
+        driver: selectedType?.children[0]?.value || '',
+        connections: [
+            {
+                ...conn,
+            },
+        ],
     };
 
     return (
@@ -29,7 +45,7 @@ export default function DatasourceEdit({ datasource: { name, urn, type } }: Prop
             </Button>
             {showEditModal && (
                 <AddDataSourceModal
-                    originData={datasource}
+                    originData={originData}
                     visible
                     title="Edit DataSource"
                     onClose={() => {

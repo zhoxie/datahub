@@ -73,7 +73,6 @@ export class DatasourceEntity implements Entity<Datasource> {
     };
 
     getEdit = (data: Datasource) => {
-        console.log('data source edit....', data);
         return <DatasourceEdit datasource={data} />;
     };
 
@@ -133,7 +132,6 @@ export class DatasourceEntity implements Entity<Datasource> {
     };
 
     renderPreview = (_: PreviewType, data: Datasource) => {
-        console.log('data source edit...preivew.', data);
         return (
             <Preview
                 urn={data.urn}

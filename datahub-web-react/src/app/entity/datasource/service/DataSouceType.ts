@@ -1,26 +1,29 @@
 export interface IFormConnectionData {
-    id: number;
-    bootstrapServer?: string;
-    topicSplitField?: string;
-    username?: string;
-    password?: string;
-    schemaPatternAllow?: string;
-    tablePatternAllow?: string;
-    topicPatternsAllow?: string;
-    database?: string;
-    hostPort?: string;
-    hiveMetastoreUris?: string;
-}
+    id?: number;
 
-// data type pass to back-end
-export interface IDataSourceConnection {
-    bootstrapserver?: string;
-    topicSplitField?: string;
+    bootstrap?: string;
+    schemaRegistryUrl?: string;
+    topicPatternsAllow?: string;
+    topicPatternsDeny?: string;
+    topicPatternsIgnoreCase?: string;
+
     username?: string;
     password?: string;
-    schemaPatternAllow?: string;
+    hostPort?: string;
+    database?: string;
+    databaseAlias?: string;
     tablePatternAllow?: string;
-    topicPatternsAllow?: string;
+    tablePatternDeny?: string;
+    tablePatternIgnoreCase?: string;
+    schemaPatternAllow?: string;
+    schemaPatternDeny?: string;
+    schemaPatternIgnoreCase?: string;
+    viewPatternAllow?: string;
+    viewPatternDeny?: string;
+    viewPatternIgnoreCase?: string;
+    includeTables?: string;
+    includeViews?: string;
+    hiveMetastoreUris?: string;
 }
 
 export interface IFormData {
@@ -28,7 +31,7 @@ export interface IFormData {
     driver: string;
     category: string;
     name: string;
-    connections: IFormConnectionData[];
+    connections: any[];
 }
 
 export enum FormField {
