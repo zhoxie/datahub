@@ -92,8 +92,13 @@ fragment relationshipFields on Entity {
         globalTags {
             ...globalTagsFields
         }
-        connection {
-            category
+        category
+        region
+        primaryConn {
+            dataCenter
+        }
+        gsbConn {
+            dataCenter
         }
     }
     ... on MLModelGroup {

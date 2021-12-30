@@ -1808,10 +1808,10 @@
     }
   }, {
     "type" : "record",
-    "name" : "DatasourceConnection",
+    "name" : "DatasourceConnectionGSB",
     "namespace" : "com.linkedin.datasource",
     "fields" : [ {
-      "name" : "category",
+      "name" : "dataCenter",
       "type" : "string",
       "doc" : "Datasource platform urn associated with the datasource",
       "Searchable" : {
@@ -2140,7 +2140,26 @@
       } ]
     } ],
     "Aspect" : {
-      "name" : "datasourceConnection"
+      "name" : "datasourceConnectionGSB"
+    }
+  }, {
+    "type" : "record",
+    "name" : "DatasourceConnectionPrimary",
+    "namespace" : "com.linkedin.datasource",
+    "fields" : [ {
+      "name" : "dataCenter",
+      "type" : "string",
+      "doc" : "Datasource platform urn associated with the datasource",
+      "Searchable" : {
+        "enableAutocomplete" : true,
+        "fieldType" : "TEXT_PARTIAL"
+      }
+    }, {
+      "name" : "connection",
+      "type" : [ "com.linkedin.datasource.sources.IcebergSource", "com.linkedin.datasource.sources.KafkaMetadataSource", "com.linkedin.datasource.sources.MysqlSource", "com.linkedin.datasource.sources.OracleSource", "com.linkedin.datasource.sources.PostgresSource" ]
+    } ],
+    "Aspect" : {
+      "name" : "datasourceConnectionPrimary"
     }
   }, {
     "type" : "record",
@@ -2174,6 +2193,31 @@
     } ],
     "Aspect" : {
       "name" : "datasourceDeprecation"
+    }
+  }, {
+    "type" : "record",
+    "name" : "DatasourceInfo",
+    "namespace" : "com.linkedin.datasource",
+    "fields" : [ {
+      "name" : "region",
+      "type" : "string",
+      "Searchable" : {
+        "enableAutocomplete" : true,
+        "fieldType" : "TEXT_PARTIAL"
+      }
+    }, {
+      "name" : "category",
+      "type" : "string",
+      "Searchable" : {
+        "enableAutocomplete" : true,
+        "fieldType" : "TEXT_PARTIAL"
+      }
+    }, {
+      "name" : "group",
+      "type" : "com.linkedin.common.CorpGroupUrn"
+    } ],
+    "Aspect" : {
+      "name" : "datasourceInfo"
     }
   }, {
     "type" : "record",
@@ -3403,7 +3447,7 @@
                   "Aspect" : {
                     "name" : "datasourceKey"
                   }
-                }, "com.linkedin.datasource.DatasourceProperties", "com.linkedin.datasource.EditableDatasourceProperties", "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.common.InstitutionalMemory", "com.linkedin.common.Ownership", "com.linkedin.common.Status", "com.linkedin.datasource.DatasourceConnection", "com.linkedin.common.GlobalTags", "com.linkedin.common.GlossaryTerms", "com.linkedin.common.BrowsePaths" ]
+                }, "com.linkedin.datasource.DatasourceProperties", "com.linkedin.datasource.EditableDatasourceProperties", "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.common.InstitutionalMemory", "com.linkedin.common.Ownership", "com.linkedin.common.Status", "com.linkedin.datasource.DatasourceInfo", "com.linkedin.datasource.DatasourceConnectionPrimary", "com.linkedin.datasource.DatasourceConnectionGSB", "com.linkedin.common.GlobalTags", "com.linkedin.common.GlossaryTerms", "com.linkedin.common.BrowsePaths" ]
               }
             },
             "doc" : "The list of metadata aspects associated with the datasource. Depending on the use case, this can either be all, or a selection, of supported aspects."

@@ -4,6 +4,7 @@ import com.linkedin.common.GlobalTags;
 import com.linkedin.common.InstitutionalMemory;
 import com.linkedin.common.Ownership;
 import com.linkedin.common.Status;
+import com.linkedin.datahub.graphql.generated.CorpGroup;
 import com.linkedin.datahub.graphql.generated.DataPlatform;
 import com.linkedin.datahub.graphql.generated.Datasource;
 import com.linkedin.datahub.graphql.generated.DatasourceEditableProperties;
@@ -15,8 +16,10 @@ import com.linkedin.datahub.graphql.types.common.mappers.StatusMapper;
 import com.linkedin.datahub.graphql.types.common.mappers.StringMapMapper;
 import com.linkedin.datahub.graphql.types.mappers.ModelMapper;
 import com.linkedin.datahub.graphql.types.tag.mappers.GlobalTagsMapper;
-import com.linkedin.datasource.DatasourceConnection;
+import com.linkedin.datasource.DatasourceConnectionGSB;
+import com.linkedin.datasource.DatasourceConnectionPrimary;
 import com.linkedin.datasource.DatasourceDeprecation;
+import com.linkedin.datasource.DatasourceInfo;
 import com.linkedin.datasource.DatasourceProperties;
 import com.linkedin.datasource.EditableDatasourceProperties;
 import com.linkedin.metadata.dao.utils.ModelUtils;
@@ -46,7 +49,6 @@ public class DatasourceSnapshotMapper implements ModelMapper<DatasourceSnapshot,
         result.setType(EntityType.DATASOURCE);
         result.setName(datasource.getUrn().getDatasourceNameEntity());
         result.setOrigin(Enum.valueOf(FabricType.class, datasource.getUrn().getOriginEntity().toString()));
-
         DataPlatform partialPlatform = new DataPlatform();
         partialPlatform.setUrn(datasource.getUrn().getPlatformEntity().toString());
         result.setPlatform(partialPlatform);
@@ -70,6 +72,15 @@ public class DatasourceSnapshotMapper implements ModelMapper<DatasourceSnapshot,
                 if (datasourceProperties.getExternalUrl() != null) {
                   result.setExternalUrl(datasourceProperties.getExternalUrl().toString());
                 }
+            } else if (aspect instanceof DatasourceInfo) {
+                DatasourceInfo datasourceInfo = (DatasourceInfo) aspect;
+                result.setCategory(datasourceInfo.getCategory());
+                CorpGroup group = new CorpGroup();
+                group.setUrn(datasourceInfo.getGroup().toString());
+                group.setName(datasourceInfo.getGroup().getGroupNameEntity());
+                group.setType(EntityType.valueOf(datasourceInfo.getGroup().getEntityType()));
+                result.setGroup(group);
+                result.setRegion(datasourceInfo.getRegion());
             } else if (aspect instanceof DatasourceDeprecation) {
                 result.setDeprecation(DatasourceDeprecationMapper.map((DatasourceDeprecation) aspect));
             } else if (aspect instanceof InstitutionalMemory) {
@@ -85,8 +96,10 @@ public class DatasourceSnapshotMapper implements ModelMapper<DatasourceSnapshot,
                 final DatasourceEditableProperties editableProperties = new DatasourceEditableProperties();
                 editableProperties.setDescription(editableDatasourceProperties.getDescription());
                 result.setEditableProperties(editableProperties);
-            } else if (aspect instanceof DatasourceConnection) {
-                result.setConnection(DatasourceConnectionMapper.map((DatasourceConnection) aspect));
+            } else if (aspect instanceof DatasourceConnectionPrimary) {
+                result.setPrimaryConn(DatasourceConnectionPrimaryMapper.map((DatasourceConnectionPrimary) aspect));
+            } else if (aspect instanceof DatasourceConnectionGSB) {
+                result.setGsbConn(DatasourceConnectionGSBMapper.map((DatasourceConnectionGSB) aspect));
             }
         });
 

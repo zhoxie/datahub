@@ -139,7 +139,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         const input: DatasourceCreateInput = {
             name: formData.name,
             category: formData.category,
-            connection: reqParam,
+            primaryConn: reqParam,
         };
         createDatasourceMutation({
             variables: {

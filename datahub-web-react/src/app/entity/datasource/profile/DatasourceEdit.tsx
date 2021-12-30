@@ -21,15 +21,15 @@ export default function DatasourceEdit({ datasource: { urn } }: Props) {
     });
 
     const dataSource = res?.data?.datasource;
-    const typeName = dataSource?.connection?.connection?.__typename;
+    const typeName = dataSource?.primaryConn?.connection?.__typename;
     const selectedType = typeDrivers.find((item) => {
         return typeName?.toLocaleLowerCase().includes(item.value);
     });
-    const conn = dataSource?.connection?.connection;
+    const conn = dataSource?.primaryConn?.connection;
     const originData: IFormData = {
         sourceType: selectedType?.value || '',
         name: dataSource?.name || '',
-        category: dataSource?.connection?.category || '',
+        category: dataSource?.category || '',
         driver: selectedType?.children[0]?.value || '',
         connections: [
             {
