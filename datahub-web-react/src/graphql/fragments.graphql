@@ -193,8 +193,80 @@ fragment nonRecursiveDatasourceFields on Datasource {
     ownership {
         ...ownershipFields
     }
-    connection {
-        category
+    category
+    region
+    primaryConn {
+        dataCenter
+        connection {
+            ... on IcebergSource {
+                hiveMetastoreUris
+            }
+            ... on KafkaMetadataSource {
+                bootstrap
+                schemaRegistryUrl
+                topicPatternsAllow
+                topicPatternsDeny
+                topicPatternsIgnoreCase
+            }
+            ... on MysqlSource {
+                username
+                password
+                hostPort
+                database
+                databaseAlias
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+                viewPatternAllow
+                viewPatternDeny
+                viewPatternIgnoreCase
+                includeTables
+                includeViews
+            }
+            ... on PostgresSource {
+                username
+                password
+                hostPort
+                database
+                databaseAlias
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+                viewPatternAllow
+                viewPatternDeny
+                viewPatternIgnoreCase
+                includeTables
+                includeViews
+            }
+            ... on OracleSource {
+                username
+                password
+                hostPort
+                database
+                serviceName
+                databaseAlias
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+                viewPatternAllow
+                viewPatternDeny
+                viewPatternIgnoreCase
+                includeTables
+                includeViews
+            }
+        }
+    }
+    gsbConn {
+        dataCenter
         connection {
             ... on IcebergSource {
                 hiveMetastoreUris

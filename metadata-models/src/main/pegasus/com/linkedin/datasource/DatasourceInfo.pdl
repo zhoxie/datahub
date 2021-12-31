@@ -1,0 +1,23 @@
+namespace com.linkedin.datasource
+
+import com.linkedin.common.CorpGroupUrn
+
+@Aspect = {
+  "name": "datasourceInfo"
+}
+record DatasourceInfo {
+
+  @Searchable = {
+    "fieldType": "TEXT_PARTIAL",
+    "enableAutocomplete": true
+  }
+  region: string
+
+  @Searchable = {
+    "fieldType": "TEXT_PARTIAL",
+    "enableAutocomplete": true
+  }
+  category: string
+
+  group: CorpGroupUrn
+}

@@ -755,10 +755,16 @@ type Datasource implements EntityWithRelationships & Entity {
     Status metadata of the datasource
     """
     status: Status
-    """
-    Connection information of the datasource
-    """
-    connection: DatasourceConnection
+
+    category: String
+
+    region: String
+
+    group: CorpGroup
+
+    primaryConn: DatasourceConnection
+
+    gsbConn: DatasourceConnection
     """
     The structured tags associated with the datasource
     """
@@ -790,13 +796,9 @@ type Datasource implements EntityWithRelationships & Entity {
 }
 
 type DatasourceConnection {
-    """
-    datasource category
-    """
-    category: String!
-    """
-    the connection of the datasource
-    """
+
+    dataCenter: String!
+
     connection: DatasourceSources
 }
 
@@ -873,6 +875,7 @@ type IcebergSource {
 }
 
 input DatasourceSourceInput {
+    dataCenter: String
     iceberg:IcebergSourceInput
     kafka:KafkaMetadataSourceInput
     mysql:MysqlSourceInput
@@ -2645,7 +2648,10 @@ input DatasetUpdateInput {
 input DatasourceCreateInput {
     name: String!
     category: String
-    connection: DatasourceSourceInput!
+    group: String
+    region: String
+    primaryConn: DatasourceSourceInput!
+    gsbConn: DatasourceSourceInput
     ownership: OwnershipUpdate
 }
 

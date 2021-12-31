@@ -10,7 +10,7 @@ export type Props = {
     id: number;
 };
 
-export default function SourceVertify({ datasource: { connection }, id }: Props) {
+export default function SourceVertify({ datasource: { primaryConn }, id }: Props) {
     // const [showLoading, setLoading] = useState(false);
     // const platformName = capitalizeFirstLetter(connection?.category || 'null');
     // const conn = connection;

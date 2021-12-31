@@ -49,8 +49,13 @@ query getBrowseResults($input: BrowseInput!) {
                 globalTags {
                     ...globalTagsFields
                 }
-                connection {
-                    category
+                category
+                region
+                primaryConn {
+                    dataCenter
+                }
+                gsbConn {
+                    dataCenter
                 }
             }
             ... on Dashboard {

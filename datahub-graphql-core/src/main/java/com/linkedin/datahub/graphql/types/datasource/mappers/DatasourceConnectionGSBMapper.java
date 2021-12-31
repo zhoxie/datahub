@@ -10,18 +10,18 @@ import com.linkedin.datahub.graphql.types.mappers.ModelMapper;
 
 import javax.annotation.Nonnull;
 
-public class DatasourceConnectionMapper implements ModelMapper<com.linkedin.datasource.DatasourceConnection, DatasourceConnection> {
+public class DatasourceConnectionGSBMapper implements ModelMapper<com.linkedin.datasource.DatasourceConnectionGSB, DatasourceConnection> {
 
-    public static final DatasourceConnectionMapper INSTANCE = new DatasourceConnectionMapper();
+    public static final DatasourceConnectionGSBMapper INSTANCE = new DatasourceConnectionGSBMapper();
 
-    public static DatasourceConnection map(@Nonnull final com.linkedin.datasource.DatasourceConnection connections) {
+    public static DatasourceConnection map(@Nonnull final com.linkedin.datasource.DatasourceConnectionGSB connections) {
         return INSTANCE.apply(connections);
     }
 
     @Override
-    public DatasourceConnection apply(@Nonnull final com.linkedin.datasource.DatasourceConnection input) {
+    public DatasourceConnection apply(@Nonnull final com.linkedin.datasource.DatasourceConnectionGSB input) {
         final DatasourceConnection result = new DatasourceConnection();
-        result.setCategory(input.getCategory());
+        result.setDataCenter(input.getDataCenter());
         if (input.getConnection().isIcebergSource()) {
             IcebergSource icebergSource = new IcebergSource();
             icebergSource.setHiveMetastoreUris(input.getConnection().getIcebergSource().getHiveMetastoreUris());
