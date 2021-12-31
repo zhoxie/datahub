@@ -26,16 +26,26 @@ export default function DatasourceEdit({ datasource: { urn } }: Props) {
         return typeName?.toLocaleLowerCase().includes(item.value);
     });
     const conn = dataSource?.primaryConn?.connection;
+    const gsbConn = dataSource?.gsbConn?.connection;
+    const conns = [
+        {
+            ...conn,
+        },
+    ];
+    if (gsbConn) {
+        conns.push({
+            ...gsbConn,
+        });
+    }
     const originData: IFormData = {
         sourceType: selectedType?.value || '',
         name: dataSource?.name || '',
         category: dataSource?.category || '',
         driver: selectedType?.children[0]?.value || '',
-        connections: [
-            {
-                ...conn,
-            },
-        ],
+        group: '',
+        region: dataSource?.region || '',
+        dataCenter: dataSource?.primaryConn?.dataCenter || '',
+        connections: conns,
     };
 
     const updateModalStatus = () => {

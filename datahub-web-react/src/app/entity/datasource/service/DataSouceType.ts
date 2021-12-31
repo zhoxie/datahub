@@ -11,6 +11,7 @@ export interface IFormConnectionData {
     password?: string;
     hostPort?: string;
     database?: string;
+    dataCenter?: string;
     databaseAlias?: string;
     tablePatternAllow?: string;
     tablePatternDeny?: string;
@@ -31,23 +32,30 @@ export interface IFormData {
     driver: string;
     category: string;
     name: string;
+    group: string;
+    region: string;
+    dataCenter: string;
     connections: any[];
 }
 
 export enum FormField {
-    name = 'name',
-    sourceType = 'sourceType',
+    bootstrap = 'bootstrap',
     category = 'category',
-    username = 'username',
-    password = 'password',
-    hostPort = 'hostPort',
     database = 'database',
+    dataCenter = 'dataCenter',
+    driver = 'driver',
+    group = 'group',
+    hiveMetastoreUris = 'hiveMetastoreUris',
+    hostPort = 'hostPort',
+    name = 'name',
+    password = 'password',
+    region = 'region',
     schemaPatternAllow = 'schemaPatternAllow',
+    sourceType = 'sourceType',
     tablePatternAllow = 'tablePatternAllow',
     topicPatternsAllow = 'topicPatternsAllow',
-    bootstrapServer = 'bootstrapServer',
     topicSplitField = 'topicSplitField',
-    hiveMetastoreUris = 'hiveMetastoreUris',
+    username = 'username',
 }
 
 export enum NotificationLevel {
@@ -92,6 +100,7 @@ export interface IOracleSourceInput extends IBasicDataSourceInput {
 export interface IPostgresSourceInput extends IBasicDataSourceInput {}
 
 export interface IDatasourceSourceInput {
+    dataCenter: string;
     iceberg?: IIcebergSourceInput;
     kafka?: IKafkaMetadataSourceInput;
     mysql?: IMysqlSourceInput;
