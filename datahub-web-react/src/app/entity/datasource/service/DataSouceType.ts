@@ -34,7 +34,6 @@ export interface IFormData {
     name: string;
     group: string;
     region: string;
-    dataCenter: string;
     connections: any[];
 }
 

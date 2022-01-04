@@ -3,9 +3,16 @@ import { Button, Card, Form, Input, Modal, Space, Cascader, Select } from 'antd'
 import React, { useState } from 'react';
 import { FormField, IDatasourceSourceInput, IFormConnectionData, IFormData } from '../service/DataSouceType';
 import { showMessageByNotification, showRequestResult } from '../service/NotificationUtil';
-import { typeDrivers, DbSourceTypeData, groupList, dataCenterList, regionList } from '../service/FormInitValue';
+import {
+    typeDrivers,
+    DbSourceTypeData,
+    groupList as defaultGroupList,
+    dataCenterList,
+    regionList,
+} from '../service/FormInitValue';
 import { useCreateDatasourceMutation } from '../../../../graphql/datasource.generated';
 import { DatasourceCreateInput } from '../../../../types.generated';
+import { useListGroupsQuery } from '../../../../graphql/group.generated';
 
 const { Option } = Select;
 
@@ -23,6 +30,15 @@ const layout = {
 export default function AddDataSourceModal({ visible, onClose, title, originData }: AddDataSourceModalProps) {
     let count = 1; // when originData exists ,show the edit
     const [createDatasourceMutation] = useCreateDatasourceMutation();
+    const groupRes = useListGroupsQuery({
+        variables: {
+            input: {
+                start: 1,
+                count: 200,
+            },
+        },
+    });
+    const groupList = groupRes?.data?.listGroups?.groups ?? defaultGroupList;
     const [loading, updateLoading] = useState(false);
 
     const initData: IFormData = originData ?? {
@@ -30,7 +46,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         drive: typeDrivers[0]?.children[0]?.value,
         category: '',
         name: '',
-        group: groupList[0]?.value,
+        group: groupList[0]?.urn,
         region: regionList[0]?.value,
         connections: [
             {
@@ -312,8 +328,8 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
 
     const groupOptions = groupList?.map((item) => {
         return (
-            <Option key={item.value} value={item.value}>
-                {item.label}
+            <Option key={item.urn} value={item.urn}>
+                {item.name}
             </Option>
         );
     });
@@ -337,13 +353,22 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     const dataSourceBasic = () => {
         return (
             <Card title="Data Source">
+                <Form.Item label="Type" rules={[{ required: true, message: 'Please input dataSource type!' }]}>
+                    <Cascader
+                        defaultValue={[formData.sourceType, formData.driver]}
+                        options={typeDrivers}
+                        onChange={(value) => {
+                            selectChangeHandler(value, FormField.sourceType);
+                        }}
+                    />
+                </Form.Item>
                 <Form.Item
                     name="group"
                     label="Group"
                     rules={[{ required: true, message: 'Please choose dataSource Group!' }]}
                 >
                     <Select
-                        defaultValue={groupList[0]?.value}
+                        defaultValue={groupList[0]?.urn}
                         onChange={(value) => {
                             selectChangeHandler(value, FormField.group);
                         }}
@@ -365,16 +390,6 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                         {regionOptions}
                     </Select>
                 </Form.Item>
-                <Form.Item label="Type" rules={[{ required: true, message: 'Please input dataSource type!' }]}>
-                    <Cascader
-                        defaultValue={[formData.sourceType, formData.driver]}
-                        options={typeDrivers}
-                        onChange={(value) => {
-                            selectChangeHandler(value, FormField.sourceType);
-                        }}
-                    />
-                </Form.Item>
-
                 <Form.Item
                     name="name"
                     label="Name"

@@ -79,20 +79,20 @@ const typeDrivers = [
 
 const groupList = [
     {
-        label: 'MATS',
-        value: 'mats',
+        name: 'mats',
+        urn: 'urn:li:corpGroup:mats',
     },
     {
-        label: 'platform-admin',
-        value: 'platform-admin',
+        name: 'metadata-admin',
+        urn: 'urn:li:corpGroup:metadata-admin',
     },
     {
-        label: 'unified-ingestion',
-        value: 'unified-ingestion',
+        name: 'platform-admin',
+        urn: 'urn:li:corpGroup:platform-admin',
     },
     {
-        label: 'custom-dashboard',
-        value: 'custom-dashboard',
+        name: 'unified-ingestion',
+        urn: 'urn:li:corpGroup:unified-ingestion',
     },
 ];
 

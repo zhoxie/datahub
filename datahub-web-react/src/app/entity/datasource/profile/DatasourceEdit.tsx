@@ -19,7 +19,7 @@ export default function DatasourceEdit({ datasource: { urn } }: Props) {
             urn,
         },
     });
-
+    console.log('datasource edit res...', res);
     const dataSource = res?.data?.datasource;
     const typeName = dataSource?.primaryConn?.connection?.__typename;
     const selectedType = typeDrivers.find((item) => {
@@ -44,7 +44,6 @@ export default function DatasourceEdit({ datasource: { urn } }: Props) {
         driver: selectedType?.children[0]?.value || '',
         group: '',
         region: dataSource?.region || '',
-        dataCenter: dataSource?.primaryConn?.dataCenter || '',
         connections: conns,
     };
 
