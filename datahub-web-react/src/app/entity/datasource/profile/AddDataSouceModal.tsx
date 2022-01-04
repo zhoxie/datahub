@@ -83,7 +83,6 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         if (!formData) {
             return false;
         }
-        console.log('check form data....', formData);
         const { sourceType, name, category, group, region } = formData;
         const isBasicOK = !!sourceType && !!name && !!category && !!group && !!region;
         let isOk = isBasicOK;
@@ -164,7 +163,6 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         }
         updateLoading(true);
         const dataSources: IDatasourceSourceInput[] = getDataSourceInputData();
-        console.log('dataSources..on save...', dataSources);
         let input: DatasourceCreateInput = {
             name: formData.name,
             category: formData.category,
@@ -214,37 +212,18 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     };
 
     const onAddMoreBtnClick = () => {
-        const id = ++count;
-        const { sourceType } = formData;
-        console.log('onAddMoreBtnClick category .....', sourceType);
-        let info: IFormConnectionData;
-        if (isInKafka()) {
-            info = {
-                id,
-                username: '',
-                password: '',
-                hostPort: '',
-                bootstrap: '',
-                schemaPatternAllow: '',
-                tablePatternAllow: '',
-                topicPatternsAllow: '',
-                hiveMetastoreUris: '',
-                dataCenter: '',
-            };
-        } else {
-            info = {
-                id,
-                username: '',
-                password: '',
-                hostPort: '',
-                bootstrap: '',
-                schemaPatternAllow: '',
-                tablePatternAllow: '',
-                topicPatternsAllow: '',
-                hiveMetastoreUris: '',
-                dataCenter: '',
-            };
-        }
+        const info: IFormConnectionData = {
+            id: ++count,
+            username: '',
+            password: '',
+            hostPort: '',
+            bootstrap: '',
+            schemaPatternAllow: '',
+            tablePatternAllow: '',
+            topicPatternsAllow: '',
+            hiveMetastoreUris: '',
+            dataCenter: dataCenterList[0]?.value,
+        };
 
         const connections = [...formData.connections];
         connections.push(info);
@@ -253,7 +232,6 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             ...formData,
             connections,
         };
-
         updateDataSourceFormData(updatedFormData);
     };
 
@@ -300,12 +278,10 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     };
 
     const dataCenterChangeHandler = (value: any, field: FormField, ix: number) => {
-        console.log('dataCenterChangeHandler....', value, field, ix);
         updateDataSourceConnections(value, field, ix);
     };
 
     const selectChangeHandler = (value: any, field) => {
-        console.log('type change...', value, field);
         const updateInfo = {};
         if (field === FormField.sourceType) {
             const [sourceType, driver] = value;
@@ -318,7 +294,6 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             ...formData,
             ...updateInfo,
         };
-        console.log('updatedData...', updatedData);
         updateDataSourceFormData(updatedData);
     };
 
@@ -368,7 +343,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                     rules={[{ required: true, message: 'Please choose dataSource Group!' }]}
                 >
                     <Select
-                        defaultValue={groupList[0]?.urn}
+                        defaultValue={formData.group}
                         onChange={(value) => {
                             selectChangeHandler(value, FormField.group);
                         }}
@@ -382,7 +357,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                     rules={[{ required: true, message: 'Please choose dataSource Region!' }]}
                 >
                     <Select
-                        defaultValue={regionList[0]?.value}
+                        defaultValue={formData.region}
                         onChange={(value) => {
                             selectChangeHandler(value, FormField.region);
                         }}
@@ -452,7 +427,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                             rules={[{ required: false, message: 'Please input connection data center!' }]}
                         >
                             <Select
-                                defaultValue={dataCenterList[0]?.value}
+                                defaultValue={info.dataCenter}
                                 onChange={(value) => {
                                     dataCenterChangeHandler(value, FormField.dataCenter, index);
                                 }}
@@ -514,7 +489,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                             rules={[{ required: false, message: 'Please input connection data center!' }]}
                         >
                             <Select
-                                defaultValue={dataCenterList[0]?.value}
+                                defaultValue={info.dataCenter}
                                 onChange={(value) => {
                                     dataCenterChangeHandler(value, FormField.dataCenter, index);
                                 }}
@@ -625,7 +600,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                             rules={[{ required: false, message: 'Please input connection data center!' }]}
                         >
                             <Select
-                                defaultValue={dataCenterList[0]?.value}
+                                defaultValue={info.dataCenter}
                                 onChange={(value) => {
                                     dataCenterChangeHandler(value, FormField.dataCenter, index);
                                 }}

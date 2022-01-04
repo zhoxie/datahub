@@ -25,16 +25,20 @@ export default function DatasourceEdit({ datasource: { urn } }: Props) {
     const selectedType = typeDrivers.find((item) => {
         return typeName?.toLocaleLowerCase().includes(item.value);
     });
-    const conn = dataSource?.primaryConn?.connection;
-    const gsbConn = dataSource?.gsbConn?.connection;
+    const conn = dataSource?.primaryConn;
+    const gsbConn = dataSource?.gsbConn;
     const conns = [
         {
-            ...conn,
+            id: 1,
+            ...conn?.connection,
+            dataCenter: conn?.dataCenter,
         },
     ];
     if (gsbConn) {
         conns.push({
-            ...gsbConn,
+            id: 2,
+            ...gsbConn.connection,
+            dataCenter: gsbConn?.dataCenter,
         });
     }
     const originData: IFormData = {
@@ -42,7 +46,7 @@ export default function DatasourceEdit({ datasource: { urn } }: Props) {
         name: dataSource?.name || '',
         category: dataSource?.category || '',
         driver: selectedType?.children[0]?.value || '',
-        group: '',
+        group: dataSource?.group?.urn || '',
         region: dataSource?.region || '',
         connections: conns,
     };
