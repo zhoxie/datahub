@@ -154,7 +154,7 @@ public class CreateDatasourceResolver implements DataFetcher<CompletableFuture<S
             gsbConnProposal.setEntityUrn(sourceUrn);
             gsbConnProposal.setAspectName("datasourceConnectionGSB");
             gsbConnProposal.setEntityType("datasource");
-            gsbConnProposal.setAspect(GenericAspectUtils.serializeAspect(primaryConn));
+            gsbConnProposal.setAspect(GenericAspectUtils.serializeAspect(gsbConn));
             gsbConnProposal.setChangeType(ChangeType.UPSERT);
         }
 
@@ -165,7 +165,7 @@ public class CreateDatasourceResolver implements DataFetcher<CompletableFuture<S
 
                 datasourcesClient.ingestProposal(primaryConnProposal, context.getActor());
                 if (hasGSB) {
-                    datasourcesClient.ingestProposal(primaryConnProposal, context.getActor());
+                    datasourcesClient.ingestProposal(gsbConnProposal, context.getActor());
                 }
                 return datasourcesClient.ingestProposal(sourceInfoProposal, context.getActor());
 
