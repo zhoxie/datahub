@@ -176,6 +176,16 @@ fragment nonRecursiveDatasourceFields on Datasource {
         }
     }
     origin
+    group {
+        urn
+        type
+        name
+        info {
+            displayName
+            description
+            email
+        }
+    }
     description
     uri
     platformNativeType
