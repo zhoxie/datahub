@@ -1,11 +1,20 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Modal, Space, Cascader } from 'antd';
+import { Button, Card, Form, Input, Modal, Space, Cascader, Select } from 'antd';
 import React, { useState } from 'react';
 import { FormField, IDatasourceSourceInput, IFormConnectionData, IFormData } from '../service/DataSouceType';
 import { showMessageByNotification, showRequestResult } from '../service/NotificationUtil';
-import { typeDrivers, DbSourceTypeData } from '../service/FormInitValue';
+import {
+    typeDrivers,
+    DbSourceTypeData,
+    groupList as defaultGroupList,
+    dataCenterList,
+    regionList,
+} from '../service/FormInitValue';
 import { useCreateDatasourceMutation } from '../../../../graphql/datasource.generated';
 import { DatasourceCreateInput } from '../../../../types.generated';
+import { useListGroupsQuery } from '../../../../graphql/group.generated';
+
+const { Option } = Select;
 
 type AddDataSourceModalProps = {
     visible: boolean;
@@ -21,12 +30,24 @@ const layout = {
 export default function AddDataSourceModal({ visible, onClose, title, originData }: AddDataSourceModalProps) {
     let count = 1; // when originData exists ,show the edit
     const [createDatasourceMutation] = useCreateDatasourceMutation();
+    const groupRes = useListGroupsQuery({
+        variables: {
+            input: {
+                start: 1,
+                count: 200,
+            },
+        },
+    });
+    const groupList = groupRes?.data?.listGroups?.groups ?? defaultGroupList;
     const [loading, updateLoading] = useState(false);
 
     const initData: IFormData = originData ?? {
         sourceType: typeDrivers[0].value,
+        drive: typeDrivers[0]?.children[0]?.value,
         category: '',
         name: '',
+        group: groupList[0]?.urn,
+        region: regionList[0]?.value,
         connections: [
             {
                 id: 1,
@@ -36,8 +57,9 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 bootstrap: '',
                 schemaPatternAllow: '',
                 tablePatternAllow: '',
-                topicPatternAllow: '',
+                topicPatternsAllow: '',
                 hiveMetastoreUris: '',
+                dataCenter: dataCenterList[0]?.value,
             },
         ],
     };
@@ -61,8 +83,8 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         if (!formData) {
             return false;
         }
-        const { sourceType, name, category } = formData;
-        const isBasicOK = !!sourceType && !!name && !!category;
+        const { sourceType, name, category, group, region } = formData;
+        const isBasicOK = !!sourceType && !!name && !!category && !!group && !!region;
         let isOk = isBasicOK;
         if (!isBasicOK) {
             return false;
@@ -84,11 +106,14 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     };
 
     const getDataSourceInputData = () => {
-        let dataSource: IDatasourceSourceInput = {};
-        formData.connections?.forEach((conn) => {
+        const dataSources: IDatasourceSourceInput[] = formData.connections?.map((conn) => {
+            let dataSource: IDatasourceSourceInput = {
+                dataCenter: conn.dataCenter,
+            };
             switch (formData.sourceType) {
                 case DbSourceTypeData.Iceberg: {
                     dataSource = {
+                        ...dataSource,
                         iceberg: {
                             hiveMetastoreUris: conn.hiveMetastoreUris || '',
                         },
@@ -97,6 +122,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 }
                 case DbSourceTypeData.Kafka: {
                     dataSource = {
+                        ...dataSource,
                         kafka: {
                             topicPatternsAllow: conn.topicPatternsAllow,
                             bootstrap: conn.bootstrapServer || '',
@@ -124,8 +150,9 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                     break;
                 }
             }
+            return dataSource;
         });
-        return dataSource;
+        return dataSources;
     };
 
     const onSaveBtnClick = () => {
@@ -135,12 +162,21 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             return;
         }
         updateLoading(true);
-        const reqParam: IDatasourceSourceInput = getDataSourceInputData();
-        const input: DatasourceCreateInput = {
+        const dataSources: IDatasourceSourceInput[] = getDataSourceInputData();
+        let input: DatasourceCreateInput = {
             name: formData.name,
             category: formData.category,
-            primaryConn: reqParam,
+            primaryConn: dataSources[0],
+            group: formData.group,
+            region: formData.region,
         };
+        if (dataSources?.length > 1) {
+            input = {
+                ...input,
+                gsbConn: dataSources[1],
+            };
+        }
+
         createDatasourceMutation({
             variables: {
                 input,
@@ -162,7 +198,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 }
             })
             .catch((err) => {
-                console.error(err);
+                console.log('createDatasourceMutation error....', err, input);
                 showRequestResult(500);
             })
             .finally(() => {
@@ -173,6 +209,30 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     const onCancelBtnClick = () => {
         updateDataSourceFormData(initData);
         onClose();
+    };
+
+    const onAddMoreBtnClick = () => {
+        const info: IFormConnectionData = {
+            id: ++count,
+            username: '',
+            password: '',
+            hostPort: '',
+            bootstrap: '',
+            schemaPatternAllow: '',
+            tablePatternAllow: '',
+            topicPatternsAllow: '',
+            hiveMetastoreUris: '',
+            dataCenter: dataCenterList[0]?.value,
+        };
+
+        const connections = [...formData.connections];
+        connections.push(info);
+
+        const updatedFormData = {
+            ...formData,
+            connections,
+        };
+        updateDataSourceFormData(updatedFormData);
     };
 
     const removeConnectionItem = (index: number) => {
@@ -206,6 +266,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         item[field] = value;
         updateDataSourceFormData(updatedData);
     };
+
     const updateDataSourceBasicInfo = (value: any, field: FormField) => {
         const updateInfo = {};
         updateInfo[field] = value;
@@ -216,14 +277,53 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         updateDataSourceFormData(updatedData);
     };
 
-    const handleTypeChange = (value) => {
+    const dataCenterChangeHandler = (value: any, field: FormField, ix: number) => {
+        updateDataSourceConnections(value, field, ix);
+    };
+
+    const selectChangeHandler = (value: any, field) => {
+        const updateInfo = {};
+        if (field === FormField.sourceType) {
+            const [sourceType, driver] = value;
+            updateInfo[FormField.sourceType] = sourceType;
+            updateInfo[FormField.driver] = driver ?? '';
+        } else {
+            updateInfo[field] = value;
+        }
         const updatedData = {
             ...formData,
+            ...updateInfo,
         };
-        const [sourceType] = value;
-        updatedData[FormField.sourceType] = sourceType;
         updateDataSourceFormData(updatedData);
     };
+
+    const getConnectionTitle = (index) => {
+        return index < 1 ? 'Connection (Primary)' : 'Connection (GSB)';
+    };
+
+    const groupOptions = groupList?.map((item) => {
+        return (
+            <Option key={item.urn} value={item.urn}>
+                {item.name}
+            </Option>
+        );
+    });
+
+    const regionOptions = regionList?.map((item) => {
+        return (
+            <Option key={item.value} value={item.value}>
+                {item.label}
+            </Option>
+        );
+    });
+
+    const dataCenterOptions = dataCenterList?.map((item) => {
+        return (
+            <Option key={item.value} value={item.value}>
+                {item.label}
+            </Option>
+        );
+    });
 
     const dataSourceBasic = () => {
         return (
@@ -232,8 +332,38 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                     <Cascader
                         defaultValue={[formData.sourceType, formData.driver]}
                         options={typeDrivers}
-                        onChange={handleTypeChange}
+                        onChange={(value) => {
+                            selectChangeHandler(value, FormField.sourceType);
+                        }}
                     />
+                </Form.Item>
+                <Form.Item
+                    name="group"
+                    label="Group"
+                    rules={[{ required: true, message: 'Please choose dataSource Group!' }]}
+                >
+                    <Select
+                        defaultValue={formData.group}
+                        onChange={(value) => {
+                            selectChangeHandler(value, FormField.group);
+                        }}
+                    >
+                        {groupOptions}
+                    </Select>
+                </Form.Item>
+                <Form.Item
+                    name="region"
+                    label="Region"
+                    rules={[{ required: true, message: 'Please choose dataSource Region!' }]}
+                >
+                    <Select
+                        defaultValue={formData.region}
+                        onChange={(value) => {
+                            selectChangeHandler(value, FormField.region);
+                        }}
+                    >
+                        {regionOptions}
+                    </Select>
                 </Form.Item>
                 <Form.Item
                     name="name"
@@ -271,14 +401,14 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                     style={{ marginTop: 16 }}
                     type="inner"
                     size="small"
-                    title="Connection Info"
+                    title={getConnectionTitle(index)}
                     extra={index >= 1 && <DeleteOutlined onClick={() => removeConnectionItem(index)} />}
                     key={info.id}
                 >
                     <Space direction="vertical" style={{ width: '100%', marginTop: 0 }}>
                         <Form.Item
                             name={`hiveUri_${info.id}`}
-                            label="hive Metastore Uri"
+                            label="Uri"
                             rules={[{ required: true, message: 'Please input connection hive meta store uri!' }]}
                         >
                             <Input
@@ -290,6 +420,20 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                                     updateDataSourceConnections(e.target.value, FormField.hiveMetastoreUris, index)
                                 }
                             />
+                        </Form.Item>
+                        <Form.Item
+                            name={`dataCenter_${info.id}`}
+                            label="Data Center"
+                            rules={[{ required: false, message: 'Please input connection data center!' }]}
+                        >
+                            <Select
+                                defaultValue={info.dataCenter}
+                                onChange={(value) => {
+                                    dataCenterChangeHandler(value, FormField.dataCenter, index);
+                                }}
+                            >
+                                {dataCenterOptions}
+                            </Select>
                         </Form.Item>
                     </Space>
                 </Card>
@@ -304,19 +448,19 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                     style={{ marginTop: 16 }}
                     type="inner"
                     size="small"
-                    title="Connection Info"
+                    title={getConnectionTitle(index)}
                     extra={index >= 1 && <DeleteOutlined onClick={() => removeConnectionItem(index)} />}
                     key={info.id}
                 >
                     <Space direction="vertical" style={{ width: '100%', marginTop: 0 }}>
                         <Form.Item
-                            name={`topicPatternAllow_${info.id}`}
-                            label="Topic PatternAllow"
-                            rules={[{ required: true, message: 'Please input connection topic PatternAllow!' }]}
+                            name={`topicPattern_${info.id}`}
+                            label="Topic Pattern"
+                            rules={[{ required: true, message: 'Please input connection topic pattern allow!' }]}
                         >
                             <Input
                                 type="text"
-                                placeholder="Please input connection topic PatternAllow"
+                                placeholder="Please input connection topic pattern allow"
                                 autoComplete="off"
                                 defaultValue={info.topicPatternsAllow}
                                 onChange={(e) =>
@@ -331,29 +475,28 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                         >
                             <Input
                                 type="text"
-                                placeholder="Please input connection bootstrapServer"
+                                placeholder="Please input connection bootstrap Server"
                                 autoComplete="off"
                                 defaultValue={info.bootstrap}
                                 onChange={(e) =>
-                                    updateDataSourceConnections(e.target.value, FormField.bootstrapServer, index)
+                                    updateDataSourceConnections(e.target.value, FormField.bootstrap, index)
                                 }
                             />
                         </Form.Item>
-                        {/* <Form.Item
-                            name={`topicSplitField_${info.id}`}
-                            label="Topic Split Field"
-                            rules={[{ required: false, message: 'Please input topic split field!' }]}
+                        <Form.Item
+                            name={`dataCenter_${info.id}`}
+                            label="Data Center"
+                            rules={[{ required: false, message: 'Please input connection data center!' }]}
                         >
-                            <Input
-                                type="text"
-                                placeholder="Please input topic split field!"
-                                autoComplete="off"
-                                defaultValue={info.topicSplitField}
-                                onChange={(e) =>
-                                    updateDataSourceConnections(e.target.value, FormField.bootstrapServer, index)
-                                }
-                            />
-                        </Form.Item> */}
+                            <Select
+                                defaultValue={info.dataCenter}
+                                onChange={(value) => {
+                                    dataCenterChangeHandler(value, FormField.dataCenter, index);
+                                }}
+                            >
+                                {dataCenterOptions}
+                            </Select>
+                        </Form.Item>
                     </Space>
                 </Card>
             );
@@ -366,7 +509,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                     style={{ marginTop: 16 }}
                     type="inner"
                     size="small"
-                    title="Connection Info"
+                    title={getConnectionTitle(index)}
                     extra={index >= 1 && <DeleteOutlined onClick={() => removeConnectionItem(index)} />}
                     key={info.id}
                 >
@@ -397,6 +540,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                                 onChange={(e) => updateDataSourceConnections(e.target.value, FormField.password, index)}
                             />
                         </Form.Item>
+
                         <Form.Item
                             name={`hostPort_${info.id}`}
                             label="Host port"
@@ -422,12 +566,12 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                             />
                         </Form.Item>
                         <Form.Item
-                            name={`tablePatternAllow_${info.id}`}
-                            label="Table PatternAllow"
-                            rules={[{ required: false, message: 'Please input connection table PatternAllow!' }]}
+                            name={`tablePattern_${info.id}`}
+                            label="Table Pattern"
+                            rules={[{ required: false, message: 'Please input connection table pattern allow!' }]}
                         >
                             <Input
-                                placeholder="Please input connection table PatternAllow"
+                                placeholder="Please input connection table pattern allow"
                                 autoComplete="off"
                                 defaultValue={info.tablePatternAllow}
                                 onChange={(e) =>
@@ -436,19 +580,33 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                             />
                         </Form.Item>
                         <Form.Item
-                            name={`schemaPatternAllow_${info.id}`}
-                            label="Schema PatternAllow"
-                            rules={[{ required: false, message: 'Please input connection schema PatternAllow!' }]}
+                            name={`schemaPattern_${info.id}`}
+                            label="Schema Pattern"
+                            rules={[{ required: false, message: 'Please input connection schema pattern allow!' }]}
                         >
                             <Input
                                 type="text"
-                                placeholder="Please input connection url"
+                                placeholder="Please input connection schema pattern allow"
                                 autoComplete="off"
                                 defaultValue={info.schemaPatternAllow}
                                 onChange={(e) =>
                                     updateDataSourceConnections(e.target.value, FormField.schemaPatternAllow, index)
                                 }
                             />
+                        </Form.Item>
+                        <Form.Item
+                            name={`dataCenter_${info.id}`}
+                            label="Data Center"
+                            rules={[{ required: false, message: 'Please input connection data center!' }]}
+                        >
+                            <Select
+                                defaultValue={info.dataCenter}
+                                onChange={(value) => {
+                                    dataCenterChangeHandler(value, FormField.dataCenter, index);
+                                }}
+                            >
+                                {dataCenterOptions}
+                            </Select>
                         </Form.Item>
                     </Space>
                 </Card>
@@ -461,7 +619,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             title={title}
             visible={visible}
             onCancel={onClose}
-            width={800}
+            width={900}
             okText="Add"
             style={{ paddingTop: 0 }}
             footer={
@@ -482,7 +640,19 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             <Space direction="vertical" style={{ width: '100%', marginTop: 0 }}>
                 <Form {...layout} form={form} name="control-ref">
                     {dataSourceBasic()}
-                    <Card style={{ marginTop: 16 }} title="Connection Information">
+                    <Card
+                        style={{ marginTop: 16 }}
+                        title="Connection Information"
+                        extra={
+                            <>
+                                {formData.connections?.length < 2 && (
+                                    <Button type="link" onClick={onAddMoreBtnClick}>
+                                        Add GSB
+                                    </Button>
+                                )}
+                            </>
+                        }
+                    >
                         {isInKafka() && getKafkaConnection(formData.connections)}
                         {isIceBerge() && getIceBergeConnection(formData.connections)}
                         {!isIceBerge() && !isInKafka() && getJDBCConnections(formData.connections)}

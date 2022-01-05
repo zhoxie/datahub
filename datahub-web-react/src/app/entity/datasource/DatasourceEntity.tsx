@@ -68,8 +68,8 @@ export class DatasourceEntity implements Entity<Datasource> {
 
     getCollectionName = () => 'Datasources';
 
-    getDelete = (urn: string) => {
-        return <DatasourceDelete urn={urn} />;
+    getDelete = (urn: string, name: string) => {
+        return <DatasourceDelete urn={urn} name={name} />;
     };
 
     getEdit = (data: Datasource) => {
@@ -143,7 +143,7 @@ export class DatasourceEntity implements Entity<Datasource> {
                 owners={data.ownership?.owners}
                 globalTags={data.globalTags}
                 glossaryTerms={data.glossaryTerms}
-                delEle={this.getDelete(data.urn)}
+                delEle={this.getDelete(data.urn, data.name)}
                 editEle={this.getEdit(data)}
             />
         );

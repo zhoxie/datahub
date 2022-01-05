@@ -19,23 +19,36 @@ export default function DatasourceEdit({ datasource: { urn } }: Props) {
             urn,
         },
     });
-
+    console.log('datasource edit res...', res);
     const dataSource = res?.data?.datasource;
     const typeName = dataSource?.primaryConn?.connection?.__typename;
     const selectedType = typeDrivers.find((item) => {
         return typeName?.toLocaleLowerCase().includes(item.value);
     });
-    const conn = dataSource?.primaryConn?.connection;
+    const conn = dataSource?.primaryConn;
+    const gsbConn = dataSource?.gsbConn;
+    const conns = [
+        {
+            id: 1,
+            ...conn?.connection,
+            dataCenter: conn?.dataCenter,
+        },
+    ];
+    if (gsbConn) {
+        conns.push({
+            id: 2,
+            ...gsbConn.connection,
+            dataCenter: gsbConn?.dataCenter,
+        });
+    }
     const originData: IFormData = {
         sourceType: selectedType?.value || '',
         name: dataSource?.name || '',
         category: dataSource?.category || '',
         driver: selectedType?.children[0]?.value || '',
-        connections: [
-            {
-                ...conn,
-            },
-        ],
+        group: dataSource?.group?.urn || '',
+        region: dataSource?.region || '',
+        connections: conns,
     };
 
     const updateModalStatus = () => {

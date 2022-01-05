@@ -6,9 +6,10 @@ import { showRequestResult } from '../service/NotificationUtil';
 
 export type Props = {
     urn: string;
+    name: string;
 };
 
-export default function DatasourceDelete({ urn }: Props) {
+export default function DatasourceDelete({ urn, name }: Props) {
     const [deleteDatasourceMutation] = useDeleteDatasourceMutation();
     const [loading, updateLoading] = useState(false);
 
@@ -48,7 +49,7 @@ export default function DatasourceDelete({ urn }: Props) {
         Modal.confirm({
             title: 'Confirm',
             icon: <ExclamationCircleOutlined />,
-            content: `Are you confirm Delete ${urn}`,
+            content: `Are you confirm Delete ${name}`,
             okText: 'OK',
             cancelText: 'Cancel',
             onOk: () => {
