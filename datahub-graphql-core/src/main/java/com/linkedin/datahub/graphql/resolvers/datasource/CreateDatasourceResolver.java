@@ -28,11 +28,11 @@ import java.util.concurrent.CompletableFuture;
 public class CreateDatasourceResolver implements DataFetcher<CompletableFuture<String>> {
     private final EntityClient datasourcesClient;
 
-    private static final String KAFKA_SOURCE_NAME = "kafka";
-    private static final String ORACLE_SOURCE_NAME = "oracle";
-    private static final String MYSQL_SOURCE_NAME = "mysql";
-    private static final String ICEBERG_SOURCE_NAME = "iceberg";
-    private static final String POSTGRES_SOURCE_NAME = "postgres";
+    static final String KAFKA_SOURCE_NAME = "kafka";
+    static final String ORACLE_SOURCE_NAME = "oracle";
+    static final String MYSQL_SOURCE_NAME = "mysql";
+    static final String ICEBERG_SOURCE_NAME = "iceberg";
+    static final String POSTGRES_SOURCE_NAME = "postgres";
 
 
     public CreateDatasourceResolver(EntityClient datasourcesClient) {
@@ -159,6 +159,13 @@ public class CreateDatasourceResolver implements DataFetcher<CompletableFuture<S
         }
 
         final boolean hasGSB = gsbConn != null;
+
+        String customDashboardRequestBody = null;
+        if ("true".equals(System.getenv("CUSTOM_DASHBOARD_API_ENABLE"))
+                && System.getenv("CUSTOM_DASHBOARD_GROUP").equals(inputMap.get("group"))) {
+            customDashboardRequestBody = CustomDashboardAPIUtil.buildCreateRequestBody(inputMap);
+            CustomDashboardAPIClient.createDatasource(customDashboardRequestBody, CustomDashboardAPIUtil.getAccessToken());
+        }
 
         return CompletableFuture.supplyAsync(() -> {
             try {

@@ -33,7 +33,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     const groupRes = useListGroupsQuery({
         variables: {
             input: {
-                start: 1,
+                start: 0,
                 count: 200,
             },
         },
