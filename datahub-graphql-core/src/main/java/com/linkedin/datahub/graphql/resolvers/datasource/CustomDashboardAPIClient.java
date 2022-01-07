@@ -39,6 +39,8 @@ public class CustomDashboardAPIClient {
                 if (!resMap.get("statusCode").toString().equals("200")) {
                     throw new IllegalStateException(resStr);
                 }
+            } else {
+                throw new IllegalStateException("create datasource failed."+resp.getStatusLine().getReasonPhrase());
             }
         }  catch (IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -62,6 +64,8 @@ public class CustomDashboardAPIClient {
                 if (!resMap.get("statusCode").toString().equals("200")) {
                     throw new IllegalStateException(resStr);
                 }
+            } else {
+                throw new IllegalStateException("create datasource failed."+resp.getStatusLine().getReasonPhrase());
             }
         }  catch (IOException ioe) {
             throw new IllegalStateException(ioe);
