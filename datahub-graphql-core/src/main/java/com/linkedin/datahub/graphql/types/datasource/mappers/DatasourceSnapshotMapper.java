@@ -18,6 +18,7 @@ import com.linkedin.datahub.graphql.types.mappers.ModelMapper;
 import com.linkedin.datahub.graphql.types.tag.mappers.GlobalTagsMapper;
 import com.linkedin.datasource.DatasourceConnectionGSB;
 import com.linkedin.datasource.DatasourceConnectionPrimary;
+import com.linkedin.datasource.DatasourceCustomDashboardInfo;
 import com.linkedin.datasource.DatasourceDeprecation;
 import com.linkedin.datasource.DatasourceInfo;
 import com.linkedin.datasource.DatasourceProperties;
@@ -48,10 +49,12 @@ public class DatasourceSnapshotMapper implements ModelMapper<DatasourceSnapshot,
         result.setUrn(datasource.getUrn().toString());
         result.setType(EntityType.DATASOURCE);
         result.setName(datasource.getUrn().getDatasourceNameEntity());
-        result.setOrigin(Enum.valueOf(FabricType.class, datasource.getUrn().getOriginEntity().toString()));
+        result.setRegion(datasource.getUrn().getRegionEntity());
+        result.setOrigin(FabricType.PROD);
         DataPlatform partialPlatform = new DataPlatform();
         partialPlatform.setUrn(datasource.getUrn().getPlatformEntity().toString());
         result.setPlatform(partialPlatform);
+        result.setSyncCDAPI(false);
 
         ModelUtils.getAspectsFromSnapshot(datasource).forEach(aspect -> {
             result.setTags(new ArrayList<>());
@@ -74,7 +77,6 @@ public class DatasourceSnapshotMapper implements ModelMapper<DatasourceSnapshot,
                 }
             } else if (aspect instanceof DatasourceInfo) {
                 DatasourceInfo datasourceInfo = (DatasourceInfo) aspect;
-                result.setCategory(datasourceInfo.getCategory());
                 CorpGroup group = new CorpGroup();
                 group.setUrn(datasourceInfo.getGroup().toString());
                 group.setName(datasourceInfo.getGroup().getGroupNameEntity());
@@ -100,6 +102,8 @@ public class DatasourceSnapshotMapper implements ModelMapper<DatasourceSnapshot,
                 result.setPrimaryConn(DatasourceConnectionPrimaryMapper.map((DatasourceConnectionPrimary) aspect));
             } else if (aspect instanceof DatasourceConnectionGSB) {
                 result.setGsbConn(DatasourceConnectionGSBMapper.map((DatasourceConnectionGSB) aspect));
+            } else if (aspect instanceof DatasourceCustomDashboardInfo) {
+                result.setSyncCDAPI(true);
             }
         });
 

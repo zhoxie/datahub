@@ -6,6 +6,7 @@ import { Datasource } from '../../../../types.generated';
 import { IFormData } from '../service/DataSouceType';
 import { typeDrivers } from '../service/FormInitValue';
 import AddDataSourceModal from './AddDataSouceModal';
+import { useGetAuthenticatedUser } from '../../../useGetAuthenticatedUser';
 
 export type Props = {
     datasource: Datasource;
@@ -14,6 +15,7 @@ export type Props = {
 export default function DatasourceEdit({ datasource: { urn } }: Props) {
     const [showEditModal, setShowEditModal] = useState(false);
     const [loading, updateLoading] = useState(false);
+    const corpUserUrn = useGetAuthenticatedUser()?.corpUser?.urn;
     const res = useGetDatasourceQuery({
         variables: {
             urn,
@@ -44,11 +46,13 @@ export default function DatasourceEdit({ datasource: { urn } }: Props) {
     const originData: IFormData = {
         sourceType: selectedType?.value || '',
         name: dataSource?.name || '',
-        category: dataSource?.category || '',
+        syncCDAPI: dataSource?.syncCDAPI || false,
+        create: false,
         driver: selectedType?.children[0]?.value || '',
         group: dataSource?.group?.urn || '',
         region: dataSource?.region || '',
         connections: conns,
+        oracleTNSType: dataSource?.oracleTNSType || 'tns',
     };
 
     const updateModalStatus = () => {
@@ -60,17 +64,24 @@ export default function DatasourceEdit({ datasource: { urn } }: Props) {
         }, 1000);
     };
 
+    const showEdit = () => {
+        return corpUserUrn !== undefined && corpUserUrn !== null;
+    };
+
     return (
         <>
-            <Button type="link" onClick={updateModalStatus} loading={loading}>
-                Edit
-                <EditOutlined />
-            </Button>
+            {showEdit() && (
+                <Button type="link" onClick={updateModalStatus} loading={loading}>
+                    Edit
+                    <EditOutlined />
+                </Button>
+            )}
             {showEditModal && (
                 <AddDataSourceModal
                     originData={originData}
                     visible
                     title="Edit DataSource"
+                    corpUserUrn={corpUserUrn}
                     onClose={() => {
                         setShowEditModal(false);
                     }}

@@ -30,6 +30,8 @@ record PostgresSource {
   */
   databaseAlias: optional string
 
+  jdbcParams: optional string
+
   /**
   * List of regex patterns for tables to include in ingestion.
   */

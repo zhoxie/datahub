@@ -1,6 +1,5 @@
 package com.linkedin.common.urn;
 
-import com.linkedin.common.FabricType;
 import com.linkedin.data.template.Custom;
 import com.linkedin.data.template.DirectCoercer;
 import com.linkedin.data.template.TemplateOutputCastException;
@@ -14,13 +13,13 @@ public final class DatasourceUrn extends Urn {
 
   private final DataPlatformUrn _platform;
   private final String _datasourceName;
-  private final FabricType _origin;
+  private final String _region;
 
-  public DatasourceUrn(DataPlatformUrn platform, String name, FabricType origin) {
-    super(ENTITY_TYPE, TupleKey.create(platform, name, origin));
+  public DatasourceUrn(DataPlatformUrn platform, String name, String region) {
+    super(ENTITY_TYPE, TupleKey.create(platform, name, region));
     this._platform = platform;
     this._datasourceName = name;
-    this._origin = origin;
+    this._region = region;
   }
 
   public DataPlatformUrn getPlatformEntity() {
@@ -31,8 +30,8 @@ public final class DatasourceUrn extends Urn {
     return _datasourceName;
   }
 
-  public FabricType getOriginEntity() {
-    return _origin;
+  public String getRegionEntity() {
+    return _region;
   }
 
   public static DatasourceUrn createFromString(String rawUrn) throws URISyntaxException {
@@ -51,7 +50,7 @@ public final class DatasourceUrn extends Urn {
       } else {
         try {
           return new DatasourceUrn(key.getAs(0, DataPlatformUrn.class),
-              key.getAs(1, String.class), key.getAs(2, FabricType.class));
+              key.getAs(1, String.class), key.getAs(2, String.class));
         } catch (Exception var3) {
           throw new URISyntaxException(urn.toString(), "Invalid URN Parameter: '" + var3.getMessage());
         }
@@ -65,7 +64,6 @@ public final class DatasourceUrn extends Urn {
 
   static {
     Custom.initializeCustomClass(DatasourceUrn.class);
-    Custom.initializeCustomClass(FabricType.class);
     Custom.registerCoercer(new DirectCoercer<DatasourceUrn>() {
       public Object coerceInput(DatasourceUrn object) throws ClassCastException {
         return object.toString();

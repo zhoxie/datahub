@@ -92,7 +92,6 @@ fragment relationshipFields on Entity {
         globalTags {
             ...globalTagsFields
         }
-        category
         region
         primaryConn {
             dataCenter

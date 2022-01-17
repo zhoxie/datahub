@@ -1,5 +1,5 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Modal, Space, Cascader, Select } from 'antd';
+import { Checkbox, Button, Card, Form, Input, Modal, Space, Cascader, Select, Alert } from 'antd';
 import React, { useState } from 'react';
 import { FormField, IDatasourceSourceInput, IFormConnectionData, IFormData } from '../service/DataSouceType';
 import { showMessageByNotification, showRequestResult } from '../service/NotificationUtil';
@@ -11,8 +11,11 @@ import {
     regionList,
 } from '../service/FormInitValue';
 import { useCreateDatasourceMutation } from '../../../../graphql/datasource.generated';
-import { DatasourceCreateInput } from '../../../../types.generated';
-import { useListGroupsQuery } from '../../../../graphql/group.generated';
+import { CorpGroup, DatasourceCreateInput } from '../../../../types.generated';
+import { useGetUserQuery } from '../../../../graphql/user.generated';
+import { Message } from '../../../shared/Message';
+
+const messageStyle = { marginTop: '10%' };
 
 const { Option } = Select;
 
@@ -21,33 +24,38 @@ type AddDataSourceModalProps = {
     onClose: () => void;
     title: string;
     originData?: any;
+    corpUserUrn: any;
 };
 
 const layout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 20 },
 };
-export default function AddDataSourceModal({ visible, onClose, title, originData }: AddDataSourceModalProps) {
+export default function AddDataSourceModal({
+    visible,
+    onClose,
+    title,
+    originData,
+    corpUserUrn,
+}: AddDataSourceModalProps) {
     let count = 1; // when originData exists ,show the edit
     const [createDatasourceMutation] = useCreateDatasourceMutation();
-    const groupRes = useListGroupsQuery({
-        variables: {
-            input: {
-                start: 0,
-                count: 200,
-            },
-        },
-    });
-    const groupList = groupRes?.data?.listGroups?.groups ?? defaultGroupList;
-    const [loading, updateLoading] = useState(false);
+    const urn = corpUserUrn;
+    const { loading, error, data } = useGetUserQuery({ variables: { urn, groupsCount: 20 } });
+
+    const relationships = data?.corpUser?.relationships;
+    const groupList = relationships?.relationships?.map((rel) => rel.entity as CorpGroup) || defaultGroupList;
+    const [saveLoading, updateLoading] = useState(false);
 
     const initData: IFormData = originData ?? {
         sourceType: typeDrivers[0].value,
         drive: typeDrivers[0]?.children[0]?.value,
-        category: '',
         name: '',
+        syncCDAPI: false,
+        create: true,
         group: groupList[0]?.urn,
         region: regionList[0]?.value,
+        oracleTNSType: 'tns',
         connections: [
             {
                 id: 1,
@@ -67,9 +75,22 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     const [formData, updateDataSourceFormData] = useState(initData);
     const [form] = Form.useForm();
 
+    if (error || (!loading && !error && !data)) {
+        return <Alert type="error" message={error?.message || 'Entity failed to load'} />;
+    }
+
     const showValidateMsg = (msg) => {
         showMessageByNotification(msg);
     };
+
+    const enableSync =
+        formData.sourceType === DbSourceTypeData.Oracle ||
+        formData.sourceType === DbSourceTypeData.TiDB ||
+        formData.sourceType === DbSourceTypeData.Pinot ||
+        formData.sourceType === DbSourceTypeData.Postgres ||
+        formData.sourceType === DbSourceTypeData.Hive ||
+        formData.sourceType === DbSourceTypeData.presto ||
+        formData.sourceType === DbSourceTypeData.trino;
 
     const isInKafka = () => {
         return formData.sourceType === DbSourceTypeData.Kafka;
@@ -79,12 +100,48 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         return formData.sourceType === DbSourceTypeData.Iceberg;
     };
 
+    const isOracle = () => {
+        return formData.sourceType === DbSourceTypeData.Oracle;
+    };
+
+    const isTrino = () => {
+        return formData.sourceType === DbSourceTypeData.trino;
+    };
+
+    const isPinot = () => {
+        return formData.sourceType === DbSourceTypeData.Pinot;
+    };
+
+    const isPresto = () => {
+        return formData.sourceType === DbSourceTypeData.presto;
+    };
+
+    const isTiDB = () => {
+        return formData.sourceType === DbSourceTypeData.TiDB;
+    };
+
+    const isHive = () => {
+        return formData.sourceType === DbSourceTypeData.Hive;
+    };
+
+    const isMysql = () => {
+        return formData.sourceType === DbSourceTypeData.Mysql;
+    };
+
+    const isPostgres = () => {
+        return formData.sourceType === DbSourceTypeData.Postgres;
+    };
+
+    const isOracleTNSType = () => {
+        return formData.oracleTNSType === 'tns';
+    };
+
     const checkFormData = () => {
         if (!formData) {
             return false;
         }
-        const { sourceType, name, category, group, region } = formData;
-        const isBasicOK = !!sourceType && !!name && !!category && !!group && !!region;
+        const { sourceType, name, group, region } = formData;
+        const isBasicOK = !!sourceType && !!name && !!group && !!region;
         let isOk = isBasicOK;
         if (!isBasicOK) {
             return false;
@@ -99,7 +156,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             });
         } else {
             isOk = !formData.connections?.some((item) => {
-                return item.username === '' || item.password === '' || item.hostPort === '' || item.database === '';
+                return item.username === '' || item.password === '' || item.hostPort === '';
             });
         }
         return isOk;
@@ -165,7 +222,8 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
         const dataSources: IDatasourceSourceInput[] = getDataSourceInputData();
         let input: DatasourceCreateInput = {
             name: formData.name,
-            category: formData.category,
+            syncCDAPI: formData.syncCDAPI,
+            create: formData.create,
             primaryConn: dataSources[0],
             group: formData.group,
             region: formData.region,
@@ -343,7 +401,7 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                     rules={[{ required: true, message: 'Please choose dataSource Group!' }]}
                 >
                     <Select
-                        defaultValue={formData.group}
+                        defaultValue={groupList[0]?.urn}
                         onChange={(value) => {
                             selectChangeHandler(value, FormField.group);
                         }}
@@ -378,17 +436,17 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                     />
                 </Form.Item>
                 <Form.Item
-                    name="category"
-                    label="Category"
-                    rules={[{ required: true, message: 'Please input dataSource category!' }]}
+                    name="syncCDAPI"
+                    label="Sync"
+                    rules={[{ required: false, message: 'sync the Datasource to Custom Dashboard.' }]}
                 >
-                    <Input
-                        type="text"
-                        placeholder="Please input dataSource category"
-                        autoComplete="off"
-                        defaultValue={formData.category}
-                        onChange={(e) => updateDataSourceBasicInfo(e.target.value, FormField.category)}
-                    />
+                    <Checkbox
+                        disabled={!enableSync}
+                        defaultChecked={formData.syncCDAPI}
+                        onChange={(e) => updateDataSourceBasicInfo(e.target.checked, FormField.syncCDAPI)}
+                    >
+                        Sync to Custom Dashboard
+                    </Checkbox>
                 </Form.Item>
             </Card>
         );
@@ -502,6 +560,192 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
             );
         });
     };
+    const getUserNamePassForm = (info: IFormConnectionData, index: number) => {
+        return (
+            <>
+                <Form.Item
+                    name={`username_${info.id}`}
+                    label="User Name"
+                    rules={[{ required: true, message: 'Please input connection userName!' }]}
+                >
+                    {/* username as value ,will input issue */}
+                    <Input
+                        type="text"
+                        placeholder="Please input connection username"
+                        autoComplete="off"
+                        defaultValue={info.username}
+                        onChange={(e) => updateDataSourceConnections(e.target.value, FormField.username, index)}
+                    />
+                </Form.Item>
+                <Form.Item
+                    name={`password_${info.id}`}
+                    label="Password"
+                    rules={[{ required: true, message: 'Please input connection password!' }]}
+                >
+                    <Input.Password
+                        placeholder="Please input connection password"
+                        autoComplete="off"
+                        defaultValue={info.password}
+                        onChange={(e) => updateDataSourceConnections(e.target.value, FormField.password, index)}
+                    />
+                </Form.Item>
+            </>
+        );
+    };
+
+    const getHostPortForm = (info: IFormConnectionData, index: number) => {
+        return (
+            <>
+                <Form.Item
+                    name={`hostPort_${info.id}`}
+                    label="Host port"
+                    rules={[{ required: true, message: 'Please input connection host port!' }]}
+                >
+                    <Input
+                        placeholder="Please input connection host port"
+                        autoComplete="off"
+                        defaultValue={info.hostPort}
+                        onChange={(e) => updateDataSourceConnections(e.target.value, FormField.hostPort, index)}
+                    />
+                </Form.Item>
+            </>
+        );
+    };
+
+    const getDatabaseForm = (info: IFormConnectionData, index: number) => {
+        return (
+            <>
+                <Form.Item
+                    name={`database_${info.id}`}
+                    label="Database"
+                    rules={[{ required: true, message: 'Please input connection database!' }]}
+                >
+                    <Input
+                        placeholder="Please input connection database"
+                        autoComplete="off"
+                        defaultValue={info.database}
+                        onChange={(e) => updateDataSourceConnections(e.target.value, FormField.database, index)}
+                    />
+                </Form.Item>
+            </>
+        );
+    };
+
+    const getOracleTNSForm = (info: IFormConnectionData, index: number) => {
+        return (
+            <>
+                <Form.Item
+                    name={`tnsName_${info.id}`}
+                    label="TNSName"
+                    rules={[{ required: true, message: 'Please input connection service name!' }]}
+                >
+                    <Input
+                        placeholder="Please input connection TNS name"
+                        autoComplete="off"
+                        defaultValue={info.tnsName}
+                        onChange={(e) => updateDataSourceConnections(e.target.value, FormField.tnsName, index)}
+                    />
+                </Form.Item>
+            </>
+        );
+    };
+
+    const getOracleServiceNameForm = (info: IFormConnectionData, index: number) => {
+        return (
+            <>
+                {getHostPortForm(info, index)}
+                <Form.Item
+                    name={`serviceName_${info.id}`}
+                    label="ServiceName"
+                    rules={[{ required: true, message: 'Please input connection service name!' }]}
+                >
+                    <Input
+                        placeholder="Please input connection service name"
+                        autoComplete="off"
+                        defaultValue={info.serviceName}
+                        onChange={(e) => updateDataSourceConnections(e.target.value, FormField.serviceName, index)}
+                    />
+                </Form.Item>
+            </>
+        );
+    };
+
+    const getOracleForm = (info: IFormConnectionData, index: number) => {
+        return (
+            <>
+                <Form.Item
+                    name={`oracleTNSType_${info.id}`}
+                    label="JDBCFormat"
+                    rules={[{ required: true, message: 'Please select JDBC Format!' }]}
+                >
+                    <Select
+                        defaultValue={formData.oracleTNSType}
+                        onChange={(value) => {
+                            selectChangeHandler(value, FormField.oracleTNSType);
+                        }}
+                    >
+                        <Option key="tns" value="tns">
+                            TNS
+                        </Option>
+                        <Option key="serviceName" value="serviceName">
+                            ServiceName
+                        </Option>
+                    </Select>
+                </Form.Item>
+                {isOracleTNSType() && getOracleTNSForm(info, index)}
+                {!isOracleTNSType() && getOracleServiceNameForm(info, index)}
+            </>
+        );
+    };
+
+    const getJDDBCParamsForm = (info: IFormConnectionData, index: number) => {
+        return (
+            <>
+                <Form.Item
+                    name={`jdbcParams_${info.id}`}
+                    label="JDBC Params"
+                    rules={[{ required: false, message: 'Please input JDBC Params!' }]}
+                >
+                    <Input
+                        placeholder="Please input JDBC Params"
+                        autoComplete="off"
+                        defaultValue={info.jdbcParams}
+                        onChange={(e) => updateDataSourceConnections(e.target.value, FormField.jdbcParams, index)}
+                    />
+                </Form.Item>
+            </>
+        );
+    };
+    const getTrinoForm = (info: IFormConnectionData, index: number) => {
+        return (
+            <>
+                <Form.Item
+                    name={`catalog_${info.id}`}
+                    label="Catalog"
+                    rules={[{ required: false, message: 'Please input connection catalog!' }]}
+                >
+                    <Input
+                        placeholder="Please input connection catalog"
+                        autoComplete="off"
+                        defaultValue={info.catalog}
+                        onChange={(e) => updateDataSourceConnections(e.target.value, FormField.catalog, index)}
+                    />
+                </Form.Item>
+                <Form.Item
+                    name={`schema_${info.id}`}
+                    label="Schema"
+                    rules={[{ required: true, message: 'Please input connection schema!' }]}
+                >
+                    <Input
+                        placeholder="Please input connection schema"
+                        autoComplete="off"
+                        defaultValue={info.schema}
+                        onChange={(e) => updateDataSourceConnections(e.target.value, FormField.schema, index)}
+                    />
+                </Form.Item>
+            </>
+        );
+    };
     const getJDBCConnections = (params: IFormConnectionData[]) => {
         return params.map((info: IFormConnectionData, index: number) => {
             return (
@@ -515,56 +759,45 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                 >
                     <Space direction="vertical" style={{ width: '100%', marginTop: 0 }}>
                         <Form.Item
-                            name={`username_${info.id}`}
-                            label="User Name"
-                            rules={[{ required: true, message: 'Please input connection userName!' }]}
+                            name={`dataCenter_${info.id}`}
+                            label="Data Center"
+                            rules={[{ required: false, message: 'Please input connection data center!' }]}
                         >
-                            {/* username as value ,will input issue */}
-                            <Input
-                                type="text"
-                                placeholder="Please input connection username"
-                                autoComplete="off"
-                                defaultValue={info.username}
-                                onChange={(e) => updateDataSourceConnections(e.target.value, FormField.username, index)}
-                            />
+                            <Select
+                                defaultValue={info.dataCenter}
+                                onChange={(value) => {
+                                    dataCenterChangeHandler(value, FormField.dataCenter, index);
+                                }}
+                            >
+                                {dataCenterOptions}
+                            </Select>
                         </Form.Item>
-                        <Form.Item
-                            name={`password_${info.id}`}
-                            label="Password"
-                            rules={[{ required: true, message: 'Please input connection password!' }]}
-                        >
-                            <Input.Password
-                                placeholder="Please input connection password"
-                                autoComplete="off"
-                                defaultValue={info.password}
-                                onChange={(e) => updateDataSourceConnections(e.target.value, FormField.password, index)}
-                            />
-                        </Form.Item>
+                        {isOracle() && getOracleForm(info, index)}
 
-                        <Form.Item
-                            name={`hostPort_${info.id}`}
-                            label="Host port"
-                            rules={[{ required: true, message: 'Please input connection host port!' }]}
-                        >
-                            <Input
-                                placeholder="Please input connection host port"
-                                autoComplete="off"
-                                defaultValue={info.database}
-                                onChange={(e) => updateDataSourceConnections(e.target.value, FormField.hostPort, index)}
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            name={`database_${info.id}`}
-                            label="Database"
-                            rules={[{ required: true, message: 'Please input connection database!' }]}
-                        >
-                            <Input
-                                placeholder="Please input connection database"
-                                autoComplete="off"
-                                defaultValue={info.database}
-                                onChange={(e) => updateDataSourceConnections(e.target.value, FormField.database, index)}
-                            />
-                        </Form.Item>
+                        {isTiDB() && getHostPortForm(info, index)}
+                        {isPostgres() && getHostPortForm(info, index)}
+                        {isPinot() && getHostPortForm(info, index)}
+                        {isHive() && getHostPortForm(info, index)}
+                        {isTrino() && getHostPortForm(info, index)}
+                        {isPresto() && getHostPortForm(info, index)}
+                        {isMysql() && getHostPortForm(info, index)}
+
+                        {getUserNamePassForm(info, index)}
+
+                        {isPostgres() && getDatabaseForm(info, index)}
+                        {isHive() && getDatabaseForm(info, index)}
+                        {isTiDB() && getDatabaseForm(info, index)}
+                        {isMysql() && getDatabaseForm(info, index)}
+                        {isTrino() && getTrinoForm(info, index)}
+                        {isPresto() && getTrinoForm(info, index)}
+
+                        {isHive() && getJDDBCParamsForm(info, index)}
+                        {isMysql() && getJDDBCParamsForm(info, index)}
+                        {isPostgres() && getJDDBCParamsForm(info, index)}
+                        {isTiDB() && getJDDBCParamsForm(info, index)}
+                        {isTrino() && getJDDBCParamsForm(info, index)}
+                        {isPresto() && getJDDBCParamsForm(info, index)}
+
                         <Form.Item
                             name={`tablePattern_${info.id}`}
                             label="Table Pattern"
@@ -594,20 +827,6 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
                                 }
                             />
                         </Form.Item>
-                        <Form.Item
-                            name={`dataCenter_${info.id}`}
-                            label="Data Center"
-                            rules={[{ required: false, message: 'Please input connection data center!' }]}
-                        >
-                            <Select
-                                defaultValue={info.dataCenter}
-                                onChange={(value) => {
-                                    dataCenterChangeHandler(value, FormField.dataCenter, index);
-                                }}
-                            >
-                                {dataCenterOptions}
-                            </Select>
-                        </Form.Item>
                     </Space>
                 </Card>
             );
@@ -615,50 +834,55 @@ export default function AddDataSourceModal({ visible, onClose, title, originData
     };
 
     return (
-        <Modal
-            title={title}
-            visible={visible}
-            onCancel={onClose}
-            width={900}
-            okText="Add"
-            style={{ paddingTop: 0 }}
-            footer={
-                <>
-                    <Button
-                        onClick={() => {
-                            onCancelBtnClick();
-                        }}
-                    >
-                        Cancel
-                    </Button>
-                    <Button loading={loading} onClick={onSaveBtnClick}>
-                        Save
-                    </Button>
-                </>
-            }
-        >
-            <Space direction="vertical" style={{ width: '100%', marginTop: 0 }}>
-                <Form {...layout} form={form} name="control-ref">
-                    {dataSourceBasic()}
-                    <Card
-                        style={{ marginTop: 16 }}
-                        title="Connection Information"
-                        extra={
-                            <>
-                                {formData.connections?.length < 2 && (
-                                    <Button type="link" onClick={onAddMoreBtnClick}>
-                                        Add GSB
-                                    </Button>
-                                )}
-                            </>
-                        }
-                    >
-                        {isInKafka() && getKafkaConnection(formData.connections)}
-                        {isIceBerge() && getIceBergeConnection(formData.connections)}
-                        {!isIceBerge() && !isInKafka() && getJDBCConnections(formData.connections)}
-                    </Card>
-                </Form>
-            </Space>
-        </Modal>
+        <>
+            {loading && <Message type="loading" content="Loading..." style={messageStyle} />}
+            {data && data.corpUser && (
+                <Modal
+                    title={title}
+                    visible={visible}
+                    onCancel={onClose}
+                    width={900}
+                    okText="Add"
+                    style={{ paddingTop: 0 }}
+                    footer={
+                        <>
+                            <Button
+                                onClick={() => {
+                                    onCancelBtnClick();
+                                }}
+                            >
+                                Cancel
+                            </Button>
+                            <Button loading={saveLoading} onClick={onSaveBtnClick}>
+                                Save
+                            </Button>
+                        </>
+                    }
+                >
+                    <Space direction="vertical" style={{ width: '100%', marginTop: 0 }}>
+                        <Form {...layout} form={form} name="control-ref">
+                            {dataSourceBasic()}
+                            <Card
+                                style={{ marginTop: 16 }}
+                                title="Connection Information"
+                                extra={
+                                    <>
+                                        {formData.connections?.length < 2 && (
+                                            <Button type="link" onClick={onAddMoreBtnClick}>
+                                                Add GSB
+                                            </Button>
+                                        )}
+                                    </>
+                                }
+                            >
+                                {isInKafka() && getKafkaConnection(formData.connections)}
+                                {isIceBerge() && getIceBergeConnection(formData.connections)}
+                                {!isIceBerge() && !isInKafka() && getJDBCConnections(formData.connections)}
+                            </Card>
+                        </Form>
+                    </Space>
+                </Modal>
+            )}
+        </>
     );
 }

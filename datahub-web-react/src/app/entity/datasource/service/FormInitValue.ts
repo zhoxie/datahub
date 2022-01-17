@@ -26,8 +26,8 @@ const typeDrivers = [
         label: 'Oracle',
         children: [
             {
-                value: 'oracle.jdbc.driver.OracleDriver',
-                label: 'oracle.jdbc.driver.OracleDriver',
+                value: 'oracle.jdbc.OracleDriver',
+                label: 'oracle.jdbc.OracleDriver',
             },
         ],
     },
@@ -52,6 +52,46 @@ const typeDrivers = [
         ],
     },
     {
+        value: 'tiDB',
+        label: 'TiDB',
+        children: [
+            {
+                value: 'com.mysql.jdbc.Driver',
+                label: 'com.mysql.jdbc.Driver',
+            },
+        ],
+    },
+    {
+        value: 'presto',
+        label: 'presto',
+        children: [
+            {
+                value: 'com.facebook.presto.jdbc.PrestoDriver',
+                label: 'com.facebook.presto.jdbc.PrestoDriver',
+            },
+        ],
+    },
+    {
+        value: 'trino',
+        label: 'trino',
+        children: [
+            {
+                value: 'io.trino.jdbc.TrinoDriver',
+                label: 'io.trino.jdbc.TrinoDriver',
+            },
+        ],
+    },
+    {
+        value: 'hive',
+        label: 'hive',
+        children: [
+            {
+                value: 'org.apache.hive.jdbc.HiveDriver',
+                label: 'org.apache.hive.jdbc.HiveDriver',
+            },
+        ],
+    },
+    {
         value: 'kafka',
         label: 'Kafka',
         children: [
@@ -68,7 +108,12 @@ const typeDrivers = [
     {
         value: 'pinot',
         label: 'Pinot',
-        children: [],
+        children: [
+            {
+                value: 'org.apache.pinot.client.PinotDriver',
+                label: 'org.apache.pinot.client.PinotDriver',
+            },
+        ],
     },
     {
         value: 'iceberg',
@@ -79,20 +124,8 @@ const typeDrivers = [
 
 const groupList = [
     {
-        name: 'mats',
-        urn: 'urn:li:corpGroup:mats',
-    },
-    {
-        name: 'metadata-admin',
-        urn: 'urn:li:corpGroup:metadata-admin',
-    },
-    {
-        name: 'platform-admin',
-        urn: 'urn:li:corpGroup:platform-admin',
-    },
-    {
-        name: 'unified-ingestion',
-        urn: 'urn:li:corpGroup:unified-ingestion',
+        name: 'None',
+        urn: 'urn:li:corpGroup:none',
     },
 ];
 
@@ -185,7 +218,10 @@ enum DbSourceTypeData {
     Oracle = 'oracle',
     Pinot = 'pinot',
     Postgres = 'postgres',
-    TiDB = 'tidB',
+    TiDB = 'tiDB',
+    Hive = 'hive',
+    presto = 'presto',
+    trino = 'trino',
 }
 
 export { groupList, initDataCenter, initCluster, typeDrivers, dataCenterList, regionList, DbSourceTypeData };

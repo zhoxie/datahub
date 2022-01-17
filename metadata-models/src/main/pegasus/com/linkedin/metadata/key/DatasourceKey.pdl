@@ -1,7 +1,6 @@
 namespace com.linkedin.metadata.key
 
 import com.linkedin.common.Urn
-import com.linkedin.common.FabricType
 
 /**
  * Key for a Datasource
@@ -37,5 +36,5 @@ record DatasourceKey {
     "addToFilters": true,
     "queryByDefault": false
   }
-  origin: FabricType
+  region: string
 }

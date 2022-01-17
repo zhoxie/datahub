@@ -23,9 +23,9 @@ namespace com.linkedin.common
     "type" : "string",
     "maxLength" : 210
   }, {
-    "type" : "com.linkedin.common.FabricType",
-    "name" : "origin",
-    "doc" : "Fabric type where datasource belongs to or where it was generated."
+    "type" : "string",
+    "name" : "region",
+    "doc" : "the the region of Datasource."
   } ],
   "maxLength" : 284
 }

@@ -5,6 +5,11 @@ import com.linkedin.datasource.sources.KafkaMetadataSource
 import com.linkedin.datasource.sources.MysqlSource
 import com.linkedin.datasource.sources.OracleSource
 import com.linkedin.datasource.sources.PostgresSource
+import com.linkedin.datasource.sources.TiDBSource
+import com.linkedin.datasource.sources.TrinoSource
+import com.linkedin.datasource.sources.PinotSource
+import com.linkedin.datasource.sources.HiveSource
+import com.linkedin.datasource.sources.PrestoSource
 
 @Aspect = {
   "name": "datasourceConnectionGSB"
@@ -19,5 +24,5 @@ record DatasourceConnectionGSB {
   }
   dataCenter: string
 
-  connection: union[IcebergSource, KafkaMetadataSource, MysqlSource, OracleSource, PostgresSource]
+  connection: union[IcebergSource, KafkaMetadataSource, MysqlSource, OracleSource, PostgresSource, TiDBSource, TrinoSource, PinotSource, HiveSource, PrestoSource]
 }

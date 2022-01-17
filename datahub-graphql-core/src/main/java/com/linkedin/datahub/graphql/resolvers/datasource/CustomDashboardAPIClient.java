@@ -22,8 +22,8 @@ public class CustomDashboardAPIClient {
     private static final String PREFIX = "/api/v2/";
     private static final String CREATE_PATH = "datasourceGroup";
 
-    public static void deleteDatasource(String name, String category, String type, String region, String bearerToken) {
-        String url = System.getenv("CUSTOM_DASHBOARD_API_URL") + PREFIX + "datasource/" + name
+    public static String deleteDatasource(String name, String category, String type, String region, String bearerToken) {
+        String url = System.getProperty("CUSTOM_DASHBOARD_API_URL") + PREFIX + "datasource/" + name
                 + "/category/" + category + "/type/" + type + "/region/" + region;
         HttpDelete delete = new HttpDelete(url);
         delete.setHeader("Content-Type", "application/json");
@@ -39,16 +39,17 @@ public class CustomDashboardAPIClient {
                 if (!resMap.get("statusCode").toString().equals("200")) {
                     throw new IllegalStateException(resStr);
                 }
+                return resStr;
             } else {
-                throw new IllegalStateException("create datasource failed."+resp.getStatusLine().getReasonPhrase());
+                throw new IllegalStateException("create datasource failed." + resp.getStatusLine().getReasonPhrase());
             }
         }  catch (IOException ioe) {
             throw new IllegalStateException(ioe);
         }
     }
 
-    public static void createDatasource(String body, String bearerToken) {
-        String url = System.getenv("CUSTOM_DASHBOARD_API_URL") + PREFIX + CREATE_PATH;
+    public static String createDatasource(String body, String bearerToken) {
+        String url = System.getProperty("CUSTOM_DASHBOARD_API_URL") + PREFIX + CREATE_PATH;
         HttpPost post = new HttpPost(url);
         post.setHeader("Content-Type", "application/json");
         post.setHeader("Authorization", bearerToken);
@@ -64,8 +65,9 @@ public class CustomDashboardAPIClient {
                 if (!resMap.get("statusCode").toString().equals("200")) {
                     throw new IllegalStateException(resStr);
                 }
+                return resStr;
             } else {
-                throw new IllegalStateException("create datasource failed."+resp.getStatusLine().getReasonPhrase());
+                throw new IllegalStateException("create datasource failed." + resp.getStatusLine().getReasonPhrase());
             }
         }  catch (IOException ioe) {
             throw new IllegalStateException(ioe);

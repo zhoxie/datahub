@@ -11,6 +11,11 @@ export interface IFormConnectionData {
     password?: string;
     hostPort?: string;
     database?: string;
+    tnsName?: string;
+    serviceName?: string;
+    catalog?: string;
+    schema?: string;
+    jdbcParams?: string;
     dataCenter?: string;
     databaseAlias?: string;
     tablePatternAllow?: string;
@@ -30,17 +35,21 @@ export interface IFormConnectionData {
 export interface IFormData {
     sourceType: string;
     driver: string;
-    category: string;
     name: string;
+    syncCDAPI: boolean;
+    create: boolean;
     group: string;
     region: string;
     connections: any[];
+    oracleTNSType: string;
 }
 
 export enum FormField {
     bootstrap = 'bootstrap',
-    category = 'category',
     database = 'database',
+    tnsName = 'tnsName',
+    jdbcParams = 'jdbcParams',
+    syncCDAPI = 'syncCDAPI',
     dataCenter = 'dataCenter',
     driver = 'driver',
     group = 'group',
@@ -55,6 +64,10 @@ export enum FormField {
     topicPatternsAllow = 'topicPatternsAllow',
     topicSplitField = 'topicSplitField',
     username = 'username',
+    serviceName = 'serviceName',
+    catalog = 'catalog',
+    schema = 'schema',
+    oracleTNSType = 'oracleTNSType',
 }
 
 export enum NotificationLevel {
@@ -97,6 +110,11 @@ export interface IOracleSourceInput extends IBasicDataSourceInput {
     serviceName?: string;
 }
 export interface IPostgresSourceInput extends IBasicDataSourceInput {}
+export interface ITiDBSourceInput extends IBasicDataSourceInput {}
+export interface IHiveSourceInput extends IBasicDataSourceInput {}
+export interface IPrestoSourceInput extends IBasicDataSourceInput {}
+export interface ITrinoSourceInput extends IBasicDataSourceInput {}
+export interface IPinotSourceInput extends IBasicDataSourceInput {}
 
 export interface IDatasourceSourceInput {
     dataCenter: string;
@@ -105,4 +123,9 @@ export interface IDatasourceSourceInput {
     mysql?: IMysqlSourceInput;
     oracle?: IOracleSourceInput;
     postgres?: IPostgresSourceInput;
+    tiDB?: ITiDBSourceInput;
+    hive?: IHiveSourceInput;
+    presto?: IPrestoSourceInput;
+    trino?: ITrinoSourceInput;
+    pinot?: IPinotSourceInput;
 }

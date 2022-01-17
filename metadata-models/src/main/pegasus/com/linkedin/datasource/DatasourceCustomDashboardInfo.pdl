@@ -1,0 +1,12 @@
+namespace com.linkedin.datasource
+
+@Aspect = {
+  "name": "datasourceCustomDashboardInfo"
+}
+record DatasourceCustomDashboardInfo {
+
+  postParam: string
+
+  response: string
+
+}

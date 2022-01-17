@@ -11,6 +11,7 @@ import AddDataSourceModal from '../entity/datasource/profile/AddDataSouceModal';
 import { navigateToLineageUrl } from '../lineage/utils/navigateToLineageUrl';
 import useIsLineageMode from '../lineage/utils/useIsLineageMode';
 import { useEntityRegistry } from '../useEntityRegistry';
+import { useGetAuthenticatedUser } from '../useGetAuthenticatedUser';
 
 interface Props {
     type: EntityType;
@@ -64,6 +65,7 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
     const location = useLocation();
     const isLineageMode = useIsLineageMode();
     const [showAddModal, setShowAddModal] = useState(false);
+    const corpUserUrn = useGetAuthenticatedUser()?.corpUser?.urn;
 
     const createPartialPath = (parts: Array<string>) => {
         return parts.join('/');
@@ -86,7 +88,7 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
         </Breadcrumb.Item>
     ));
     const showAdd = () => {
-        return type === EntityType.Datasource && path.length < 1;
+        return type === EntityType.Datasource && path.length < 1 && corpUserUrn;
     };
     return (
         <BrowseRow>
@@ -110,6 +112,7 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
                 <AddDataSourceModal
                     visible
                     title="Add DataSource"
+                    corpUserUrn={corpUserUrn}
                     onClose={() => {
                         setShowAddModal(false);
                     }}

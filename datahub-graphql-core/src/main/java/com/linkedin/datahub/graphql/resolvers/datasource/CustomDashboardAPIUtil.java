@@ -24,13 +24,104 @@ public class CustomDashboardAPIUtil {
     }
 
     static final Map<String, String> JDBC_DRIVER;
+    static final Map<String, String> JDBC_TYPE;
     static {
         Map<String, String> map = new HashMap<>();
         map.put(CreateDatasourceResolver.POSTGRES_SOURCE_NAME, "org.postgresql.Driver");
-        map.put(CreateDatasourceResolver.ORACLE_SOURCE_NAME, "oracle.jdbc.driver.OracleDriver");
-        map.put(CreateDatasourceResolver.MYSQL_SOURCE_NAME, "com.mysql.cj.jdbc.Driver");
-
+        map.put(CreateDatasourceResolver.ORACLE_SOURCE_NAME, "oracle.jdbc.OracleDriver");
+        map.put(CreateDatasourceResolver.TIDB_SOURCE_NAME, "com.mysql.jdbc.Driver");
+        map.put(CreateDatasourceResolver.HIVE_SOURCE_NAME, "org.apache.hive.jdbc.HiveDriver");
+        map.put(CreateDatasourceResolver.PRESTO_SOURCE_NAME, "com.facebook.presto.jdbc.PrestoDriver");
+        map.put(CreateDatasourceResolver.PINOT_SOURCE_NAME, "org.apache.pinot.client.PinotDriver");
+        map.put(CreateDatasourceResolver.TRINO_SOURCE_NAME, "io.trino.jdbc.TrinoDriver");
         JDBC_DRIVER = Collections.unmodifiableMap(map);
+
+        map = new HashMap<>();
+        map.put(CreateDatasourceResolver.POSTGRES_SOURCE_NAME, "postgresql");
+        map.put(CreateDatasourceResolver.ORACLE_SOURCE_NAME, "oracle:thin");
+        map.put(CreateDatasourceResolver.TIDB_SOURCE_NAME, "mysql");
+        map.put(CreateDatasourceResolver.HIVE_SOURCE_NAME, "hive2");
+        map.put(CreateDatasourceResolver.PRESTO_SOURCE_NAME, "presto");
+        map.put(CreateDatasourceResolver.PINOT_SOURCE_NAME, "pinot");
+        map.put(CreateDatasourceResolver.TRINO_SOURCE_NAME, "trino");
+        JDBC_TYPE = Collections.unmodifiableMap(map);
+
+    }
+
+    private static void parseJDBCRequestBody(String type, Map<String, Object> dbMap, ObjectNode node) {
+        String jdbcUrl;
+
+        //pinot
+        if (CreateDatasourceResolver.PINOT_SOURCE_NAME.equals(type)) {
+            jdbcUrl = "jdbc:" + JDBC_TYPE.get(type) + "://" + dbMap.get("hostPort");
+        //trino presto
+        } else if (CreateDatasourceResolver.TRINO_SOURCE_NAME.equals(type)
+            || CreateDatasourceResolver.PRESTO_SOURCE_NAME.equals(type)) {
+            jdbcUrl = "jdbc:" + JDBC_TYPE.get(type) + "://" + dbMap.get("hostPort");;
+            if (dbMap.containsKey("catalog")) {
+                jdbcUrl = jdbcUrl + "/" + dbMap.get("catalog");
+                if (dbMap.containsKey("schema")) {
+                    jdbcUrl = jdbcUrl + "/" + dbMap.get("schema");
+                }
+            }
+            if (dbMap.containsKey("jdbcParams")) {
+                String jdbcParams = (String) dbMap.get("jdbcParams");
+                jdbcParams = jdbcParams.startsWith("?") ? jdbcParams : ("?" + jdbcParams);
+                jdbcUrl = jdbcUrl + jdbcParams;
+            }
+        //hive
+        } else if (CreateDatasourceResolver.HIVE_SOURCE_NAME.equals(type)) {
+            jdbcUrl = "jdbc:" + JDBC_TYPE.get(type) + "://" + dbMap.get("hostPort") + "/" + dbMap.get("database");
+            if (dbMap.containsKey("jdbcParams")) {
+                String jdbcParams = (String) dbMap.get("jdbcParams");
+                jdbcParams = jdbcParams.startsWith(";") ? jdbcParams : (";" + jdbcParams);
+                jdbcUrl = jdbcUrl + jdbcParams;
+            }
+        //postgres TiDB
+        } else if (CreateDatasourceResolver.POSTGRES_SOURCE_NAME.equals(type)
+                || CreateDatasourceResolver.TIDB_SOURCE_NAME.equals(type)) {
+            jdbcUrl = "jdbc:" + JDBC_TYPE.get(type) + "://" + dbMap.get("hostPort") + "/" + dbMap.get("database");
+            if (dbMap.containsKey("jdbcParams")) {
+                String jdbcParams = (String) dbMap.get("jdbcParams");
+                jdbcParams = jdbcParams.startsWith("?") ? jdbcParams : ("?" + jdbcParams);
+                jdbcUrl = jdbcUrl + jdbcParams;
+            }
+        //oracle
+        } else if (CreateDatasourceResolver.ORACLE_SOURCE_NAME.equals(type)) {
+            jdbcUrl = "jdbc:" + JDBC_TYPE.get(type) + ":@";
+            if (dbMap.containsKey("hostPort") && dbMap.containsKey("serviceName")) {
+                jdbcUrl = jdbcUrl + "//" + dbMap.get("hostPort") + "/" + dbMap.get("serviceName");
+            } else {
+                jdbcUrl = jdbcUrl + dbMap.get("tnsName");
+            }
+
+        } else {
+            throw new IllegalArgumentException("Custom Dashboard not support the type:" + type);
+        }
+
+        node.put("username", (String) dbMap.get("username"));
+        node.put("password", (String) dbMap.get("password"));
+        node.put("url", jdbcUrl);
+    }
+
+    private static String getType(Map<String, Object> connMap) {
+        if (connMap.containsKey(CreateDatasourceResolver.POSTGRES_SOURCE_NAME)) {
+            return CreateDatasourceResolver.POSTGRES_SOURCE_NAME;
+        } else if (connMap.containsKey(CreateDatasourceResolver.HIVE_SOURCE_NAME)) {
+            return CreateDatasourceResolver.HIVE_SOURCE_NAME;
+        } else if (connMap.containsKey(CreateDatasourceResolver.TIDB_SOURCE_NAME)) {
+            return CreateDatasourceResolver.TIDB_SOURCE_NAME;
+        } else if (connMap.containsKey(CreateDatasourceResolver.ORACLE_SOURCE_NAME)) {
+            return CreateDatasourceResolver.ORACLE_SOURCE_NAME;
+        } else if (connMap.containsKey(CreateDatasourceResolver.PINOT_SOURCE_NAME)) {
+            return CreateDatasourceResolver.PINOT_SOURCE_NAME;
+        } else if (connMap.containsKey(CreateDatasourceResolver.PRESTO_SOURCE_NAME)) {
+            return CreateDatasourceResolver.PRESTO_SOURCE_NAME;
+        } else if (connMap.containsKey(CreateDatasourceResolver.TRINO_SOURCE_NAME)) {
+            return CreateDatasourceResolver.TRINO_SOURCE_NAME;
+        } else {
+            throw new IllegalArgumentException("the source type not supported.");
+        }
     }
 
     public static String buildCreateRequestBody(Map<String, Object> inputMap) {
@@ -38,92 +129,23 @@ public class CustomDashboardAPIUtil {
         ObjectNode json = mapper.createObjectNode();
         json.put("flag", true);
         json.put("name", (String) inputMap.get("name"));
-        String primaryType;
         Map<String, Object> primaryConnMap = (Map<String, Object>) inputMap.get("primaryConn");
         ObjectNode primaryNode = mapper.createObjectNode();
-        if (primaryConnMap.containsKey(CreateDatasourceResolver.POSTGRES_SOURCE_NAME)) {
-            primaryType = CreateDatasourceResolver.POSTGRES_SOURCE_NAME;
-            Map<String, Object> postgresMap = (Map<String, Object>) primaryConnMap.get(CreateDatasourceResolver.POSTGRES_SOURCE_NAME);
-            String hostPort = (String) postgresMap.get("hostPort");
-            String database = (String) postgresMap.get("database");
-            String url =  "jdbc:postgresql://" + hostPort + "/" + database;
-            primaryNode.put("username", (String) postgresMap.get("username"));
-            primaryNode.put("password", (String) postgresMap.get("password"));
-            primaryNode.put("url", url);
-
-        } else if (primaryConnMap.containsKey(CreateDatasourceResolver.ORACLE_SOURCE_NAME)) {
-            primaryType = CreateDatasourceResolver.ORACLE_SOURCE_NAME;
-            Map<String, Object> oracleMap = (Map<String, Object>) primaryConnMap.get(CreateDatasourceResolver.ORACLE_SOURCE_NAME);
-            String hostPort = (String) oracleMap.get("hostPort");
-            String database;
-            if (oracleMap.containsKey("database")) {
-                database = (String) oracleMap.get("database");
-            } else {
-                database = (String) oracleMap.get("serviceName");
-            }
-            String url =  " jdbc:oracle:thin:@" + hostPort + ":" + database;
-            primaryNode.put("username", (String) oracleMap.get("username"));
-            primaryNode.put("password", (String) oracleMap.get("password"));
-            primaryNode.put("url", url);
-        } else if (primaryConnMap.containsKey(CreateDatasourceResolver.MYSQL_SOURCE_NAME)) {
-            primaryType = CreateDatasourceResolver.MYSQL_SOURCE_NAME;
-            Map<String, Object> mysqlMap = (Map<String, Object>) primaryConnMap.get(CreateDatasourceResolver.MYSQL_SOURCE_NAME);
-            String hostPort = (String) mysqlMap.get("hostPort");
-            String database = (String) mysqlMap.get("database");
-            String url =  "jdbc:mysql://" + hostPort + "/" + database;
-            primaryNode.put("username", (String) mysqlMap.get("username"));
-            primaryNode.put("password", (String) mysqlMap.get("password"));
-            primaryNode.put("url", url);
-        } else {
-            throw new IllegalArgumentException("the source type not supported.");
-        }
+        String primaryType = getType(primaryConnMap);
+        parseJDBCRequestBody(primaryType, (Map<String, Object>) primaryConnMap.get(primaryType), primaryNode);
 
         primaryNode.put("cluster", "PRIMARY");
         primaryNode.put("driver", JDBC_DRIVER.get(primaryType));
         ArrayNode dataSources = mapper.createArrayNode();
         dataSources.add(primaryNode);
 
-
         boolean hasGSB = inputMap.containsKey("gsbConn");
         if (hasGSB) {
             ObjectNode gsbNode = mapper.createObjectNode();
             Map<String, Object> gsbConnMap = (Map<String, Object>) inputMap.get("gsbConn");
-            String gsbType;
-            if (gsbConnMap.containsKey(CreateDatasourceResolver.POSTGRES_SOURCE_NAME)) {
-                gsbType = CreateDatasourceResolver.POSTGRES_SOURCE_NAME;
-                Map<String, Object> postgresMap = (Map<String, Object>) gsbConnMap.get(CreateDatasourceResolver.POSTGRES_SOURCE_NAME);
-                String hostPort = (String) postgresMap.get("hostPort");
-                String database = (String) postgresMap.get("database");
-                String url =  "jdbc:postgresql://" + hostPort + "/" + database;
-                gsbNode.put("username", (String) postgresMap.get("username"));
-                gsbNode.put("password", (String) postgresMap.get("password"));
-                gsbNode.put("url", url);
-            } else if (gsbConnMap.containsKey(CreateDatasourceResolver.ORACLE_SOURCE_NAME)) {
-                gsbType = CreateDatasourceResolver.ORACLE_SOURCE_NAME;
-                Map<String, Object> oracleMap = (Map<String, Object>) gsbConnMap.get(CreateDatasourceResolver.ORACLE_SOURCE_NAME);
-                String hostPort = (String) oracleMap.get("hostPort");
-                String database;
-                if (oracleMap.containsKey("database")) {
-                    database = (String) oracleMap.get("database");
-                } else {
-                    database = (String) oracleMap.get("serviceName");
-                }
-                String url =  " jdbc:oracle:thin:@" + hostPort + ":" + database;
-                gsbNode.put("username", (String) oracleMap.get("username"));
-                gsbNode.put("password", (String) oracleMap.get("password"));
-                gsbNode.put("url", url);
-            } else if (gsbConnMap.containsKey(CreateDatasourceResolver.MYSQL_SOURCE_NAME)) {
-                gsbType = CreateDatasourceResolver.MYSQL_SOURCE_NAME;
-                Map<String, Object> mysqlMap = (Map<String, Object>) gsbConnMap.get(CreateDatasourceResolver.MYSQL_SOURCE_NAME);
-                String hostPort = (String) mysqlMap.get("hostPort");
-                String database = (String) mysqlMap.get("database");
-                String url =  "jdbc:mysql://" + hostPort + "/" + database;
-                gsbNode.put("username", (String) mysqlMap.get("username"));
-                gsbNode.put("password", (String) mysqlMap.get("password"));
-                gsbNode.put("url", url);
-            } else {
-                throw new IllegalArgumentException("the source type not supported.");
-            }
+            String gsbType = getType(gsbConnMap);
+            parseJDBCRequestBody(gsbType, (Map<String, Object>) gsbConnMap.get(gsbType), gsbNode);
+
             if (!gsbType.equals(primaryType)) {
                 throw new IllegalArgumentException("GSB type was different from primary type.");
             }
@@ -133,7 +155,7 @@ public class CustomDashboardAPIUtil {
             dataSources.add(gsbNode);
         }
         json.put("type", primaryType);
-        json.put("category", (String) inputMap.get("category"));
+        json.put("category", System.getProperty("CUSTOM_DASHBOARD_API_CATEGORY"));
         json.put("region", (String) inputMap.get("region"));
         json.put("dataSources", dataSources);
 
@@ -144,11 +166,11 @@ public class CustomDashboardAPIUtil {
     private static long expiresTimestamp = 0;
     public static synchronized String getAccessToken() {
         if (accessToken == null || System.currentTimeMillis() > expiresTimestamp) {
-            String machineAccountPass = new String(Base64Utils.decodeFromString(System.getenv("MATS_CI_MACHINE_ACCOUNT_PASS")));
-            String bearerToken = getBearerToken(System.getenv("MATS_CI_ORG_ID"), System.getenv("MATS_CI_MACHINE_ACCOUNT_NAME"),
+            String machineAccountPass = new String(Base64Utils.decodeFromString(System.getProperty("MATS_CI_MACHINE_ACCOUNT_PASS")));
+            String bearerToken = getBearerToken(System.getProperty("MATS_CI_ORG_ID"), System.getProperty("MATS_CI_MACHINE_ACCOUNT_NAME"),
                     machineAccountPass);
-            Map<String, Object> map = getAccessTokenObj(bearerToken, System.getenv("MATS_CI_CLIENT_ID"),
-                    System.getenv("MATS_CI_CLIENT_PASS"), System.getenv("MATS_CI_SCOPE"));
+            Map<String, Object> map = getAccessTokenObj(bearerToken, System.getProperty("MATS_CI_CLIENT_ID"),
+                    System.getProperty("MATS_CI_CLIENT_PASS"), System.getProperty("MATS_CI_SCOPE"));
             accessToken = (String) map.get("access_token");
             expiresTimestamp = System.currentTimeMillis() + ((int) map.get("expires_in") - 600) * 1000;
         }
@@ -156,7 +178,7 @@ public class CustomDashboardAPIUtil {
     }
 
     private static String getBearerToken(String orgId, String machineAccountName, String machineAccountPass) {
-        String url = System.getenv("MATS_CI_HOST") + "/idb/token/" + orgId + "/v2/actions/GetBearerToken/invoke";
+        String url = System.getProperty("MATS_CI_HOST") + "/idb/token/" + orgId + "/v2/actions/GetBearerToken/invoke";
         HttpPost post = new HttpPost(url);
         post.setHeader("Content-Type", "application/json");
         post.setEntity(
@@ -179,7 +201,7 @@ public class CustomDashboardAPIUtil {
 
     private static HashMap<String, Object> getAccessTokenObj(String bearerToken, String clientId, String clientPass, String scope) {
         String clientAuth = "Basic " + new String(Base64Utils.encode((clientId.concat(":").concat(clientPass)).getBytes()));
-        String url = System.getenv("MATS_CI_HOST") + "/idb/oauth2/v1/access_token";
+        String url = System.getProperty("MATS_CI_HOST") + "/idb/oauth2/v1/access_token";
         HttpPost post = new HttpPost(url);
         post.setHeader("Content-Type", "application/x-www-form-urlencoded");
         post.setHeader("Authorization", clientAuth);

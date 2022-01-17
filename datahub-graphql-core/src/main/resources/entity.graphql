@@ -756,7 +756,9 @@ type Datasource implements EntityWithRelationships & Entity {
     """
     status: Status
 
-    category: String
+    syncCDAPI: Boolean
+
+    oracleTNSType: String
 
     region: String
 
@@ -802,7 +804,7 @@ type DatasourceConnection {
     connection: DatasourceSources
 }
 
-union DatasourceSources = IcebergSource | KafkaMetadataSource | MysqlSource | OracleSource | PostgresSource
+union DatasourceSources = IcebergSource | KafkaMetadataSource | MysqlSource | OracleSource | PostgresSource | TrinoSource | PinotSource | PrestoSource | HiveSource
 
 type OracleSource {
     username: String!
@@ -810,6 +812,7 @@ type OracleSource {
     hostPort: String!
     database: String
     serviceName: String
+    tnsName: String
     databaseAlias: String
     tablePatternAllow: String
     tablePatternDeny: String
@@ -862,6 +865,82 @@ type MysqlSource {
     includeViews: Boolean
 }
 
+type HiveSource {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    databaseAlias: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+type PrestoSource {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    databaseAlias: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+type PinotSource {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    databaseAlias: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+type TrinoSource {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    databaseAlias: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
 type KafkaMetadataSource {
     bootstrap: String!
     schemaRegistryUrl: String!
@@ -881,6 +960,10 @@ input DatasourceSourceInput {
     mysql:MysqlSourceInput
     oracle:OracleSourceInput
     postgres:PostgresSourceInput
+    trino:TrinoSourceInput
+    pinot:PinotSourceInput
+    presto:PrestoSourceInput
+    hive:HiveSourceInput
 }
 
 input OracleSourceInput {
@@ -888,7 +971,9 @@ input OracleSourceInput {
     password: String!
     hostPort: String!
     database: String
+    jdbcParams: String
     serviceName: String
+    tnsName: String
     databaseAlias: String
     tablePatternAllow: String
     tablePatternDeny: String
@@ -909,6 +994,7 @@ input PostgresSourceInput {
     hostPort: String!
     database: String
     databaseAlias: String
+    jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
     tablePatternIgnoreCase: Boolean
@@ -928,6 +1014,87 @@ input MysqlSourceInput {
     hostPort: String!
     database: String
     databaseAlias: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+input HiveSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    databaseAlias: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+input PrestoSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    databaseAlias: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+input PinotSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    databaseAlias: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+    viewPatternAllow: String
+    viewPatternDeny: String
+    viewPatternIgnoreCase: Boolean
+    includeTables: Boolean
+    includeViews: Boolean
+}
+
+input TrinoSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    databaseAlias: String
+    jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
     tablePatternIgnoreCase: Boolean
@@ -2647,9 +2814,10 @@ input DatasetUpdateInput {
 
 input DatasourceCreateInput {
     name: String!
-    category: String
     group: String
     region: String
+    syncCDAPI: Boolean!
+    create: Boolean!
     primaryConn: DatasourceSourceInput!
     gsbConn: DatasourceSourceInput
     ownership: OwnershipUpdate

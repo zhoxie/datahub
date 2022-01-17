@@ -30,10 +30,14 @@ record OracleSource {
   */
   serviceName: optional string
 
+  tnsName: optional string
+
   /**
   * Alias to apply to database when ingesting.
   */
   databaseAlias: optional string
+
+  jdbcParams: optional string
 
   /**
   * List of regex patterns for tables to include in ingestion.

@@ -14,6 +14,16 @@ import java.util.concurrent.CompletableFuture;
 
 public class DeleteDatasourceResolver implements DataFetcher<CompletableFuture<String>> {
     private final EntityClient datasourcesClient;
+    static final String KAFKA_SOURCE_NAME = "kafka";
+    static final String ORACLE_SOURCE_NAME = "oracle";
+    static final String MYSQL_SOURCE_NAME = "mysql";
+    static final String ICEBERG_SOURCE_NAME = "iceberg";
+    static final String POSTGRES_SOURCE_NAME = "postgres";
+    static final String HIVE_SOURCE_NAME = "hive";
+    static final String PINOT_SOURCE_NAME = "pinot";
+    static final String PRESTO_SOURCE_NAME = "presto";
+    static final String TIDB_SOURCE_NAME = "tiDB";
+    static final String TRINO_SOURCE_NAME = "trino";
 
     public DeleteDatasourceResolver(EntityClient datasourcesClient) {
         this.datasourcesClient = datasourcesClient;
@@ -31,6 +41,8 @@ public class DeleteDatasourceResolver implements DataFetcher<CompletableFuture<S
         String category = null;
         String region = null;
         String type = null;
+        boolean sync = false;
+        boolean supportType = false;
         for (DatasourceAspect aspect : entity.getValue().getDatasourceSnapshot().getAspects()) {
             if (aspect.isDatasourceInfo()) {
                 DatasourceInfo info = aspect.getDatasourceInfo();
@@ -41,21 +53,40 @@ public class DeleteDatasourceResolver implements DataFetcher<CompletableFuture<S
             if (aspect.isDatasourceConnectionPrimary()) {
                 DatasourceConnectionPrimary.Connection conn = aspect.getDatasourceConnectionPrimary().getConnection();
                 if (conn.isIcebergSource()) {
-                    type = "iceberg";
+                    type = ICEBERG_SOURCE_NAME;
                 } else if (conn.isKafkaMetadataSource()) {
-                    type = "kafka";
+                    type = KAFKA_SOURCE_NAME;
                 } else if (conn.isMysqlSource()) {
-                    type = "mysql";
+                    type = MYSQL_SOURCE_NAME;
                 } else if (conn.isOracleSource()) {
-                    type = "oracle";
+                    type = ORACLE_SOURCE_NAME;
+                    supportType = true;
+                } else if (conn.isHiveSource()) {
+                    type = HIVE_SOURCE_NAME;
+                    supportType = true;
+                } else if (conn.isPinotSource()) {
+                    type = PINOT_SOURCE_NAME;
+                    supportType = true;
+                } else if (conn.isPrestoSource()) {
+                    type = PRESTO_SOURCE_NAME;
+                    supportType = true;
+                } else if (conn.isTiDBSource()) {
+                    type = TIDB_SOURCE_NAME;
+                    supportType = true;
+                } else if (conn.isTrinoSource()) {
+                    type = TRINO_SOURCE_NAME;
+                    supportType = true;
                 } else {
-                    type = "postgres";
+                    type = POSTGRES_SOURCE_NAME;
+                    supportType = true;
                 }
+            }
+            if (aspect.isDatasourceCustomDashboardInfo()) {
+                sync = true;
             }
         }
 
-        if ("true".equals(System.getenv("CUSTOM_DASHBOARD_API_ENABLE"))
-                && System.getenv("CUSTOM_DASHBOARD_GROUP").equals(groupUrn)) {
+        if ("true".equals(System.getProperty("CUSTOM_DASHBOARD_API_ENABLE")) && sync && supportType) {
             CustomDashboardAPIClient.deleteDatasource(urn.getEntityKey().get(1), category, type, region, CustomDashboardAPIUtil.getAccessToken());
         }
 

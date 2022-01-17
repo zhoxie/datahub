@@ -58,8 +58,8 @@
         "graphql": "^15.5.0",
         "graphql-tag": "2.10.3",
         "graphql.macro": "^1.4.2",
+        "har-validator": "^5.1.5",
         "history": "^5.0.0",
-        "http-proxy-middleware": "^2.0.1",
         "js-cookie": "^2.2.1",
         "lodash.debounce": "^4.0.8",
         "miragejs": "^0.1.41",
@@ -135,7 +135,7 @@
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-prettier": "^3.4.0",
         "eslint-plugin-react": "^7.23.2",
-        "http-proxy-middleware": "2.0.0",
+        "http-proxy-middleware": "^2.0.1",
         "prettier": "^2.3.0",
         "source-map-explorer": "^2.5.2"
     },
