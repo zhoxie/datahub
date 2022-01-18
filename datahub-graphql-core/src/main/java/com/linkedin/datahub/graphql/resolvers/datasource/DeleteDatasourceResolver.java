@@ -7,6 +7,7 @@ import com.linkedin.datasource.DatasourceInfo;
 import com.linkedin.entity.Entity;
 import com.linkedin.entity.client.EntityClient;
 import com.linkedin.metadata.aspect.DatasourceAspect;
+import com.linkedin.util.Configuration;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 
@@ -86,7 +87,7 @@ public class DeleteDatasourceResolver implements DataFetcher<CompletableFuture<S
             }
         }
 
-        if ("true".equals(System.getProperty("CUSTOM_DASHBOARD_API_ENABLE")) && sync && supportType) {
+        if ("true".equals(Configuration.getEnvironmentVariable("CUSTOM_DASHBOARD_API_ENABLE")) && sync && supportType) {
             CustomDashboardAPIClient.deleteDatasource(urn.getEntityKey().get(1), category, type, region, CustomDashboardAPIUtil.getAccessToken());
         }
 

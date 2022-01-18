@@ -24,6 +24,7 @@ import com.linkedin.events.metadata.ChangeType;
 import com.linkedin.metadata.entity.EntityService;
 import com.linkedin.metadata.utils.GenericAspectUtils;
 import com.linkedin.mxe.MetadataChangeProposal;
+import com.linkedin.util.Configuration;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 
@@ -163,7 +164,8 @@ public class CreateDatasourceResolver implements DataFetcher<CompletableFuture<S
         String sourceName = (String) inputMap.get("name");
 
         final DatasourceInfo datasourceInfo = new DatasourceInfo();
-        datasourceInfo.setCategory(System.getProperty("CUSTOM_DASHBOARD_API_CATEGORY"));
+
+        datasourceInfo.setCategory(Configuration.getEnvironmentVariable("CUSTOM_DASHBOARD_API_CATEGORY"));
         String sourceRegion = (String) inputMap.get("region");
         datasourceInfo.setRegion(sourceRegion);
 
@@ -235,7 +237,7 @@ public class CreateDatasourceResolver implements DataFetcher<CompletableFuture<S
         String customDashboardResponse = null;
         final MetadataChangeProposal customDashboardInfoProposal = new MetadataChangeProposal();
         final boolean syncCDAPI = (boolean) inputMap.get("syncCDAPI") && isCustmDashboardSupportType(primaryConnMap);
-        if ("true".equals(System.getProperty("CUSTOM_DASHBOARD_API_ENABLE")) && syncCDAPI) {
+        if ("true".equals(Configuration.getEnvironmentVariable("CUSTOM_DASHBOARD_API_ENABLE")) && syncCDAPI) {
             customDashboardRequestBody = CustomDashboardAPIUtil.buildCreateRequestBody(inputMap);
             customDashboardResponse = CustomDashboardAPIClient.createDatasource(customDashboardRequestBody, CustomDashboardAPIUtil.getAccessToken());
 

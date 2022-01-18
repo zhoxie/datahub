@@ -4,6 +4,7 @@ package com.linkedin.datahub.graphql.resolvers.datasource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.linkedin.util.Configuration;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -155,7 +156,7 @@ public class CustomDashboardAPIUtil {
             dataSources.add(gsbNode);
         }
         json.put("type", primaryType);
-        json.put("category", System.getProperty("CUSTOM_DASHBOARD_API_CATEGORY"));
+        json.put("category", Configuration.getEnvironmentVariable("CUSTOM_DASHBOARD_API_CATEGORY"));
         json.put("region", (String) inputMap.get("region"));
         json.put("dataSources", dataSources);
 
@@ -166,11 +167,16 @@ public class CustomDashboardAPIUtil {
     private static long expiresTimestamp = 0;
     public static synchronized String getAccessToken() {
         if (accessToken == null || System.currentTimeMillis() > expiresTimestamp) {
-            String machineAccountPass = new String(Base64Utils.decodeFromString(System.getProperty("MATS_CI_MACHINE_ACCOUNT_PASS")));
-            String bearerToken = getBearerToken(System.getProperty("MATS_CI_ORG_ID"), System.getProperty("MATS_CI_MACHINE_ACCOUNT_NAME"),
+            String machineAccountPass = new String(Base64Utils.decodeFromString(
+                    Configuration.getEnvironmentVariable("MATS_CI_MACHINE_ACCOUNT_PASS")
+            ));
+            String bearerToken = getBearerToken(Configuration.getEnvironmentVariable("MATS_CI_ORG_ID"),
+                    Configuration.getEnvironmentVariable("MATS_CI_MACHINE_ACCOUNT_NAME"),
                     machineAccountPass);
-            Map<String, Object> map = getAccessTokenObj(bearerToken, System.getProperty("MATS_CI_CLIENT_ID"),
-                    System.getProperty("MATS_CI_CLIENT_PASS"), System.getProperty("MATS_CI_SCOPE"));
+            Map<String, Object> map = getAccessTokenObj(bearerToken,
+                    Configuration.getEnvironmentVariable("MATS_CI_CLIENT_ID"),
+                    Configuration.getEnvironmentVariable("MATS_CI_CLIENT_PASS"),
+                    Configuration.getEnvironmentVariable("MATS_CI_SCOPE"));
             accessToken = (String) map.get("access_token");
             expiresTimestamp = System.currentTimeMillis() + ((int) map.get("expires_in") - 600) * 1000;
         }
@@ -178,11 +184,13 @@ public class CustomDashboardAPIUtil {
     }
 
     private static String getBearerToken(String orgId, String machineAccountName, String machineAccountPass) {
-        String url = System.getProperty("MATS_CI_HOST") + "/idb/token/" + orgId + "/v2/actions/GetBearerToken/invoke";
+        String url = Configuration.getEnvironmentVariable("MATS_CI_HOST") + "/idb/token/"
+                + orgId + "/v2/actions/GetBearerToken/invoke";
         HttpPost post = new HttpPost(url);
         post.setHeader("Content-Type", "application/json");
         post.setEntity(
-                new StringEntity("{\"name\":\"" + machineAccountName + "\",\"password\":\"" + machineAccountPass + "\"}",
+                new StringEntity("{\"name\":\"" + machineAccountName
+                        + "\",\"password\":\"" + machineAccountPass + "\"}",
                         ContentType.APPLICATION_JSON));
         try (CloseableHttpClient httpClient = HttpClientBuilder.create().build();
              CloseableHttpResponse resp = httpClient.execute(post)
@@ -201,7 +209,7 @@ public class CustomDashboardAPIUtil {
 
     private static HashMap<String, Object> getAccessTokenObj(String bearerToken, String clientId, String clientPass, String scope) {
         String clientAuth = "Basic " + new String(Base64Utils.encode((clientId.concat(":").concat(clientPass)).getBytes()));
-        String url = System.getProperty("MATS_CI_HOST") + "/idb/oauth2/v1/access_token";
+        String url = Configuration.getEnvironmentVariable("MATS_CI_HOST") + "/idb/oauth2/v1/access_token";
         HttpPost post = new HttpPost(url);
         post.setHeader("Content-Type", "application/x-www-form-urlencoded");
         post.setHeader("Authorization", clientAuth);

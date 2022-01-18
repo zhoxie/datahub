@@ -2,6 +2,7 @@ package com.linkedin.datahub.graphql.resolvers.datasource;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.linkedin.util.Configuration;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpDelete;
@@ -23,7 +24,7 @@ public class CustomDashboardAPIClient {
     private static final String CREATE_PATH = "datasourceGroup";
 
     public static String deleteDatasource(String name, String category, String type, String region, String bearerToken) {
-        String url = System.getProperty("CUSTOM_DASHBOARD_API_URL") + PREFIX + "datasource/" + name
+        String url = Configuration.getEnvironmentVariable("CUSTOM_DASHBOARD_API_URL") + PREFIX + "datasource/" + name
                 + "/category/" + category + "/type/" + type + "/region/" + region;
         HttpDelete delete = new HttpDelete(url);
         delete.setHeader("Content-Type", "application/json");
@@ -49,7 +50,7 @@ public class CustomDashboardAPIClient {
     }
 
     public static String createDatasource(String body, String bearerToken) {
-        String url = System.getProperty("CUSTOM_DASHBOARD_API_URL") + PREFIX + CREATE_PATH;
+        String url = Configuration.getEnvironmentVariable("CUSTOM_DASHBOARD_API_URL") + PREFIX + CREATE_PATH;
         HttpPost post = new HttpPost(url);
         post.setHeader("Content-Type", "application/json");
         post.setHeader("Authorization", bearerToken);

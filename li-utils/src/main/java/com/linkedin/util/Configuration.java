@@ -24,11 +24,12 @@ public class Configuration {
 
     @Nonnull
     public static String getEnvironmentVariable(@Nonnull String envVar) {
-        return System.getenv(envVar);
+        return Optional.ofNullable(System.getenv(envVar)).orElse(System.getProperty(envVar));
     }
 
     @Nonnull
     public static String getEnvironmentVariable(@Nonnull String envVar, @Nonnull String defaultVal) {
-        return Optional.ofNullable(System.getenv(envVar)).orElse(defaultVal);
+        return Optional.ofNullable(System.getenv(envVar))
+                .orElse(Optional.ofNullable(System.getProperty(envVar)).orElse(defaultVal));
     }
 }
