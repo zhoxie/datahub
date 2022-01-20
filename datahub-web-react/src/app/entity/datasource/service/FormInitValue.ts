@@ -20,105 +20,46 @@ const initCluster = [
     },
 ];
 
-const typeDrivers = [
+const sourceTypeList = [
     {
-        value: 'oracle',
-        label: 'Oracle',
-        children: [
-            {
-                value: 'oracle.jdbc.OracleDriver',
-                label: 'oracle.jdbc.OracleDriver',
-            },
-        ],
-    },
-    {
-        value: 'mysql',
         label: 'Mysql',
-        children: [
-            {
-                value: 'com.mysql.jdbc.Driver',
-                label: 'com.mysql.jdbc.Driver',
-            },
-        ],
+        value: 'mysql',
     },
     {
-        value: 'postgres',
+        label: 'Oracle',
+        value: 'oracle',
+    },
+    {
         label: 'Postgres',
-        children: [
-            {
-                value: 'org.postgresql.Driver',
-                label: 'org.postgresql.Driver',
-            },
-        ],
+        value: 'postgres',
     },
     {
-        value: 'tiDB',
         label: 'TiDB',
-        children: [
-            {
-                value: 'com.mysql.jdbc.Driver',
-                label: 'com.mysql.jdbc.Driver',
-            },
-        ],
+        value: 'tiDB',
     },
     {
-        value: 'presto',
         label: 'presto',
-        children: [
-            {
-                value: 'com.facebook.presto.jdbc.PrestoDriver',
-                label: 'com.facebook.presto.jdbc.PrestoDriver',
-            },
-        ],
+        value: 'presto',
     },
     {
-        value: 'trino',
         label: 'trino',
-        children: [
-            {
-                value: 'io.trino.jdbc.TrinoDriver',
-                label: 'io.trino.jdbc.TrinoDriver',
-            },
-        ],
+        value: 'trino',
     },
     {
-        value: 'hive',
         label: 'hive',
-        children: [
-            {
-                value: 'org.apache.hive.jdbc.HiveDriver',
-                label: 'org.apache.hive.jdbc.HiveDriver',
-            },
-        ],
+        value: 'hive',
     },
     {
-        value: 'kafka',
         label: 'Kafka',
-        children: [
-            {
-                label: 'Plaintext Kafka',
-                value: 'plaintextKafka',
-            },
-            {
-                label: 'Secured Kafka',
-                value: 'securedKafka',
-            },
-        ],
+        value: 'kafka',
     },
     {
-        value: 'pinot',
         label: 'Pinot',
-        children: [
-            {
-                value: 'org.apache.pinot.client.PinotDriver',
-                label: 'org.apache.pinot.client.PinotDriver',
-            },
-        ],
+        value: 'pinot',
     },
     {
-        value: 'iceberg',
         label: 'Iceberg',
-        children: [],
+        value: 'iceberg',
     },
 ];
 
@@ -224,4 +165,4 @@ enum DbSourceTypeData {
     trino = 'trino',
 }
 
-export { groupList, initDataCenter, initCluster, typeDrivers, dataCenterList, regionList, DbSourceTypeData };
+export { groupList, initDataCenter, initCluster, sourceTypeList, dataCenterList, regionList, DbSourceTypeData };

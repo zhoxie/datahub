@@ -1,16 +1,16 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { Checkbox, Button, Card, Form, Input, Modal, Space, Cascader, Select, Alert } from 'antd';
+import { Checkbox, Button, Card, Form, Input, Modal, Space, Select, Alert } from 'antd';
 import React, { useState } from 'react';
 import { FormField, IDatasourceSourceInput, IFormConnectionData, IFormData } from '../service/DataSouceType';
 import { showMessageByNotification, showRequestResult } from '../service/NotificationUtil';
 import {
-    typeDrivers,
+    sourceTypeList,
     DbSourceTypeData,
     groupList as defaultGroupList,
     dataCenterList,
     regionList,
 } from '../service/FormInitValue';
-import { useCreateDatasourceMutation } from '../../../../graphql/datasource.generated';
+import { useCreateDatasourceMutation, useTestDatasourceMutation } from '../../../../graphql/datasource.generated';
 import { CorpGroup, DatasourceCreateInput } from '../../../../types.generated';
 import { useGetUserQuery } from '../../../../graphql/user.generated';
 import { Message } from '../../../shared/Message';
@@ -40,16 +40,17 @@ export default function AddDataSourceModal({
 }: AddDataSourceModalProps) {
     let count = 1; // when originData exists ,show the edit
     const [createDatasourceMutation] = useCreateDatasourceMutation();
+    const [testDatasourceMutation] = useTestDatasourceMutation();
     const urn = corpUserUrn;
     const { loading, error, data } = useGetUserQuery({ variables: { urn, groupsCount: 20 } });
 
     const relationships = data?.corpUser?.relationships;
     const groupList = relationships?.relationships?.map((rel) => rel.entity as CorpGroup) || defaultGroupList;
     const [saveLoading, updateLoading] = useState(false);
+    const [testLoading, updateTestLoading] = useState(false);
 
     const initData: IFormData = originData ?? {
-        sourceType: typeDrivers[0].value,
-        drive: typeDrivers[0]?.children[0]?.value,
+        sourceType: sourceTypeList[0].value,
         name: '',
         syncCDAPI: false,
         create: true,
@@ -82,6 +83,12 @@ export default function AddDataSourceModal({
     const showValidateMsg = (msg) => {
         showMessageByNotification(msg);
     };
+
+    const databaseRequired =
+        formData.sourceType === DbSourceTypeData.TiDB ||
+        formData.sourceType === DbSourceTypeData.Postgres ||
+        formData.sourceType === DbSourceTypeData.Hive ||
+        formData.sourceType === DbSourceTypeData.Mysql;
 
     const enableSync =
         formData.sourceType === DbSourceTypeData.Oracle ||
@@ -154,6 +161,22 @@ export default function AddDataSourceModal({
             isOk = !formData.connections?.some((item) => {
                 return item.topicPatternsAllow === '' || item.bootstrapServer === '';
             });
+        } else if (isPinot() || isTrino() || isPresto()) {
+            isOk = !formData.connections?.some((item) => {
+                return item.username === '' || item.password === '' || item.hostPort === '';
+            });
+        } else if (isHive() || isMysql() || isTiDB() || isPostgres()) {
+            isOk = !formData.connections?.some((item) => {
+                return item.username === '' || item.password === '' || item.hostPort === '' || item.database === '';
+            });
+        } else if (isOracle()) {
+            isOk = !formData.connections?.some((item) => {
+                return (
+                    item.username === '' ||
+                    item.password === '' ||
+                    ((item.hostPort === '' || item.serviceName === '') && item.tnsName === '')
+                );
+            });
         } else {
             isOk = !formData.connections?.some((item) => {
                 return item.username === '' || item.password === '' || item.hostPort === '';
@@ -210,6 +233,156 @@ export default function AddDataSourceModal({
             return dataSource;
         });
         return dataSources;
+    };
+
+    const onTestBtnClick = (ix: number) => {
+        // check form data
+        updateTestLoading(true);
+
+        let conn: IDatasourceSourceInput = {
+            dataCenter: formData.connections[ix].dataCenter,
+        };
+
+        switch (formData.sourceType) {
+            case DbSourceTypeData.Postgres: {
+                conn = {
+                    ...conn,
+                    postgres: {
+                        username: formData.connections[ix].username || '',
+                        password: formData.connections[ix].password || '',
+                        hostPort: formData.connections[ix].hostPort || '',
+                        database: formData.connections[ix].database || '',
+                        jdbcParams: formData.connections[ix].jdbcParams || '',
+                    },
+                };
+                break;
+            }
+            case DbSourceTypeData.Mysql: {
+                conn = {
+                    ...conn,
+                    mysql: {
+                        username: formData.connections[ix].username || '',
+                        password: formData.connections[ix].password || '',
+                        hostPort: formData.connections[ix].hostPort || '',
+                        database: formData.connections[ix].database || '',
+                        jdbcParams: formData.connections[ix].jdbcParams || '',
+                    },
+                };
+                break;
+            }
+            case DbSourceTypeData.Hive: {
+                conn = {
+                    ...conn,
+                    hive: {
+                        username: formData.connections[ix].username || '',
+                        password: formData.connections[ix].password || '',
+                        hostPort: formData.connections[ix].hostPort || '',
+                        database: formData.connections[ix].database || '',
+                        jdbcParams: formData.connections[ix].jdbcParams || '',
+                    },
+                };
+                break;
+            }
+            case DbSourceTypeData.TiDB: {
+                conn = {
+                    ...conn,
+                    tiDB: {
+                        username: formData.connections[ix].username || '',
+                        password: formData.connections[ix].password || '',
+                        hostPort: formData.connections[ix].hostPort || '',
+                        database: formData.connections[ix].database || '',
+                        jdbcParams: formData.connections[ix].jdbcParams || '',
+                    },
+                };
+                break;
+            }
+            case DbSourceTypeData.Pinot: {
+                conn = {
+                    ...conn,
+                    pinot: {
+                        username: formData.connections[ix].username || '',
+                        password: formData.connections[ix].password || '',
+                        hostPort: formData.connections[ix].hostPort || '',
+                    },
+                };
+                break;
+            }
+            case DbSourceTypeData.presto: {
+                conn = {
+                    ...conn,
+                    presto: {
+                        username: formData.connections[ix].username || '',
+                        password: formData.connections[ix].password || '',
+                        hostPort: formData.connections[ix].hostPort || '',
+                        catalog: formData.connections[ix].catalog || '',
+                        schema: formData.connections[ix].schema || '',
+                        jdbcParams: formData.connections[ix].jdbcParams || '',
+                    },
+                };
+                break;
+            }
+            case DbSourceTypeData.trino: {
+                conn = {
+                    ...conn,
+                    trino: {
+                        username: formData.connections[ix].username || '',
+                        password: formData.connections[ix].password || '',
+                        hostPort: formData.connections[ix].hostPort || '',
+                        catalog: formData.connections[ix].catalog || '',
+                        schema: formData.connections[ix].schema || '',
+                        jdbcParams: formData.connections[ix].jdbcParams || '',
+                    },
+                };
+                break;
+            }
+            case DbSourceTypeData.Oracle: {
+                conn = {
+                    ...conn,
+                    oracle: {
+                        username: formData.connections[ix].username || '',
+                        password: formData.connections[ix].password || '',
+                        hostPort: formData.connections[ix].hostPort || '',
+                        serviceName: formData.connections[ix].serviceName || '',
+                        tnsName: formData.connections[ix].tnsName || '',
+                    },
+                };
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        const input = {
+            connection: {
+                ...conn,
+            },
+        };
+
+        testDatasourceMutation({
+            variables: {
+                input,
+            },
+        })
+            .then((res) => {
+                console.log('testDatasourceMutation res....', res, input);
+                if (!res) {
+                    showRequestResult(500, 'Failed', true);
+                    return;
+                }
+                if (res?.data?.testDatasource === true) {
+                    showRequestResult(200, 'Success', true);
+                } else {
+                    showRequestResult(500, 'Failed', true);
+                }
+            })
+            .catch((err) => {
+                console.log('testDatasourceMutation error....', err, input);
+                showRequestResult(500, 'Failed', true);
+            })
+            .finally(() => {
+                updateTestLoading(false);
+            });
     };
 
     const onSaveBtnClick = () => {
@@ -341,13 +514,7 @@ export default function AddDataSourceModal({
 
     const selectChangeHandler = (value: any, field) => {
         const updateInfo = {};
-        if (field === FormField.sourceType) {
-            const [sourceType, driver] = value;
-            updateInfo[FormField.sourceType] = sourceType;
-            updateInfo[FormField.driver] = driver ?? '';
-        } else {
-            updateInfo[field] = value;
-        }
+        updateInfo[field] = value;
         const updatedData = {
             ...formData,
             ...updateInfo,
@@ -375,6 +542,14 @@ export default function AddDataSourceModal({
         );
     });
 
+    const sourceTypeOptions = sourceTypeList?.map((item) => {
+        return (
+            <Option key={item.value} value={item.value}>
+                {item.label}
+            </Option>
+        );
+    });
+
     const dataCenterOptions = dataCenterList?.map((item) => {
         return (
             <Option key={item.value} value={item.value}>
@@ -387,13 +562,15 @@ export default function AddDataSourceModal({
         return (
             <Card title="Data Source">
                 <Form.Item label="Type" rules={[{ required: true, message: 'Please input dataSource type!' }]}>
-                    <Cascader
-                        defaultValue={[formData.sourceType, formData.driver]}
-                        options={typeDrivers}
+                    <Select
+                        disabled={!formData.create}
+                        defaultValue={formData.sourceType}
                         onChange={(value) => {
                             selectChangeHandler(value, FormField.sourceType);
                         }}
-                    />
+                    >
+                        {sourceTypeOptions}
+                    </Select>
                 </Form.Item>
                 <Form.Item
                     name="group"
@@ -401,6 +578,7 @@ export default function AddDataSourceModal({
                     rules={[{ required: true, message: 'Please choose dataSource Group!' }]}
                 >
                     <Select
+                        disabled={!formData.create}
                         defaultValue={groupList[0]?.urn}
                         onChange={(value) => {
                             selectChangeHandler(value, FormField.group);
@@ -415,6 +593,7 @@ export default function AddDataSourceModal({
                     rules={[{ required: true, message: 'Please choose dataSource Region!' }]}
                 >
                     <Select
+                        disabled={!formData.create}
                         defaultValue={formData.region}
                         onChange={(value) => {
                             selectChangeHandler(value, FormField.region);
@@ -429,6 +608,7 @@ export default function AddDataSourceModal({
                     rules={[{ required: true, message: 'Please input dataSource name!' }]}
                 >
                     <Input
+                        disabled={!formData.create}
                         placeholder="Please input dataSource name"
                         autoComplete="off"
                         defaultValue={formData.name}
@@ -441,7 +621,7 @@ export default function AddDataSourceModal({
                     rules={[{ required: false, message: 'sync the Datasource to Custom Dashboard.' }]}
                 >
                     <Checkbox
-                        disabled={!enableSync}
+                        disabled={!enableSync || !formData.create}
                         defaultChecked={formData.syncCDAPI}
                         onChange={(e) => updateDataSourceBasicInfo(e.target.checked, FormField.syncCDAPI)}
                     >
@@ -618,7 +798,7 @@ export default function AddDataSourceModal({
                 <Form.Item
                     name={`database_${info.id}`}
                     label="Database"
-                    rules={[{ required: true, message: 'Please input connection database!' }]}
+                    rules={[{ required: databaseRequired, message: 'Please input connection database!' }]}
                 >
                     <Input
                         placeholder="Please input connection database"
@@ -734,7 +914,7 @@ export default function AddDataSourceModal({
                 <Form.Item
                     name={`schema_${info.id}`}
                     label="Schema"
-                    rules={[{ required: true, message: 'Please input connection schema!' }]}
+                    rules={[{ required: false, message: 'Please input connection schema!' }]}
                 >
                     <Input
                         placeholder="Please input connection schema"
@@ -827,6 +1007,15 @@ export default function AddDataSourceModal({
                                 }
                             />
                         </Form.Item>
+                        {enableSync && (
+                            <Button
+                                loading={testLoading}
+                                onClick={() => onTestBtnClick(index)}
+                                style={{ float: 'right' }}
+                            >
+                                Test Connection
+                            </Button>
+                        )}
                     </Space>
                 </Card>
             );

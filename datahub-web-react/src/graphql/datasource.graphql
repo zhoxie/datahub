@@ -12,6 +12,10 @@ mutation deleteDatasource($urn: String!) {
     deleteDatasource(urn: $urn)
 }
 
+mutation testDatasource($input: DatasourceTestInput!) {
+    testDatasource(input: $input)
+}
+
 query getDatasource($urn: String!) {
     datasource(urn: $urn) {
         ...nonRecursiveDatasourceFields

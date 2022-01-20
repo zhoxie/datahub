@@ -34,7 +34,6 @@ export interface IFormConnectionData {
 
 export interface IFormData {
     sourceType: string;
-    driver: string;
     name: string;
     syncCDAPI: boolean;
     create: boolean;
@@ -90,8 +89,7 @@ export interface IKafkaMetadataSourceInput {
 export interface IBasicDataSourceInput {
     username: string;
     password: string;
-    hostPort: string;
-    database: string;
+
     databaseAlias?: string;
     tablePatternAllow?: string;
     tablePatternDeny?: string;
@@ -105,16 +103,46 @@ export interface IBasicDataSourceInput {
     includeTables?: boolean;
     includeViews?: boolean;
 }
-export interface IMysqlSourceInput extends IBasicDataSourceInput {}
+export interface IPinotSourceInput extends IBasicDataSourceInput {
+    hostPort: string;
+}
+export interface IPrestoSourceInput extends IBasicDataSourceInput {
+    hostPort: string;
+    catalog?: string;
+    schema?: string;
+    jdbcParams?: string;
+}
+export interface ITrinoSourceInput extends IBasicDataSourceInput {
+    hostPort: string;
+    catalog?: string;
+    schema?: string;
+    jdbcParams?: string;
+}
+export interface IHiveSourceInput extends IBasicDataSourceInput {
+    hostPort: string;
+    database: string;
+    jdbcParams?: string;
+}
+export interface IMysqlSourceInput extends IBasicDataSourceInput {
+    hostPort: string;
+    database: string;
+    jdbcParams?: string;
+}
+export interface IPostgresSourceInput extends IBasicDataSourceInput {
+    hostPort: string;
+    database: string;
+    jdbcParams?: string;
+}
+export interface ITiDBSourceInput extends IBasicDataSourceInput {
+    hostPort: string;
+    database: string;
+    jdbcParams?: string;
+}
 export interface IOracleSourceInput extends IBasicDataSourceInput {
+    hostPort?: string;
+    tnsName?: string;
     serviceName?: string;
 }
-export interface IPostgresSourceInput extends IBasicDataSourceInput {}
-export interface ITiDBSourceInput extends IBasicDataSourceInput {}
-export interface IHiveSourceInput extends IBasicDataSourceInput {}
-export interface IPrestoSourceInput extends IBasicDataSourceInput {}
-export interface ITrinoSourceInput extends IBasicDataSourceInput {}
-export interface IPinotSourceInput extends IBasicDataSourceInput {}
 
 export interface IDatasourceSourceInput {
     dataCenter: string;

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useGetDatasourceQuery } from '../../../../graphql/datasource.generated';
 import { Datasource } from '../../../../types.generated';
 import { IFormData } from '../service/DataSouceType';
-import { typeDrivers } from '../service/FormInitValue';
+import { sourceTypeList } from '../service/FormInitValue';
 import AddDataSourceModal from './AddDataSouceModal';
 import { useGetAuthenticatedUser } from '../../../useGetAuthenticatedUser';
 
@@ -24,7 +24,7 @@ export default function DatasourceEdit({ datasource: { urn } }: Props) {
     console.log('datasource edit res...', res);
     const dataSource = res?.data?.datasource;
     const typeName = dataSource?.primaryConn?.connection?.__typename;
-    const selectedType = typeDrivers.find((item) => {
+    const selectedType = sourceTypeList.find((item) => {
         return typeName?.toLocaleLowerCase().includes(item.value);
     });
     const conn = dataSource?.primaryConn;
@@ -48,7 +48,6 @@ export default function DatasourceEdit({ datasource: { urn } }: Props) {
         name: dataSource?.name || '',
         syncCDAPI: dataSource?.syncCDAPI || false,
         create: false,
-        driver: selectedType?.children[0]?.value || '',
         group: dataSource?.group?.urn || '',
         region: dataSource?.region || '',
         connections: conns,

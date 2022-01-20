@@ -42,6 +42,7 @@ import com.linkedin.datahub.graphql.generated.MLPrimaryKeyProperties;
 import com.linkedin.datahub.graphql.resolvers.MeResolver;
 import com.linkedin.datahub.graphql.resolvers.datasource.CreateDatasourceResolver;
 import com.linkedin.datahub.graphql.resolvers.datasource.DeleteDatasourceResolver;
+import com.linkedin.datahub.graphql.resolvers.datasource.TestDatasourceResolver;
 import com.linkedin.datahub.graphql.resolvers.group.AddGroupMembersResolver;
 import com.linkedin.datahub.graphql.resolvers.group.CreateGroupResolver;
 import com.linkedin.datahub.graphql.resolvers.group.EntityCountsResolver;
@@ -478,6 +479,7 @@ public class GmsGraphQLEngine {
             .dataFetcher("updateDataset", new AuthenticatedResolver<>(new MutableTypeResolver<>(datasetType)))
             .dataFetcher("updateDatasource", new AuthenticatedResolver<>(new MutableTypeResolver<>(datasourceType)))
             .dataFetcher("createDatasource", new AuthenticatedResolver<>(new CreateDatasourceResolver(entityClient, entityService)))
+            .dataFetcher("testDatasource", new AuthenticatedResolver<>(new TestDatasourceResolver()))
             .dataFetcher("deleteDatasource", new AuthenticatedResolver<>(new DeleteDatasourceResolver(entityClient)))
             .dataFetcher("updateTag", new AuthenticatedResolver<>(new MutableTypeResolver<>(tagType)))
             .dataFetcher("updateChart", new AuthenticatedResolver<>(new MutableTypeResolver<>(chartType)))

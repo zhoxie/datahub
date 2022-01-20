@@ -124,6 +124,8 @@ type Mutation {
 
     createDatasource(input: DatasourceCreateInput!): String
 
+    testDatasource(input: DatasourceTestInput!): Boolean
+
     deleteDatasource(urn: String!): String
 
     """
@@ -969,7 +971,7 @@ input DatasourceSourceInput {
 input OracleSourceInput {
     username: String!
     password: String!
-    hostPort: String!
+    hostPort: String
     database: String
     jdbcParams: String
     serviceName: String
@@ -2821,6 +2823,10 @@ input DatasourceCreateInput {
     primaryConn: DatasourceSourceInput!
     gsbConn: DatasourceSourceInput
     ownership: OwnershipUpdate
+}
+
+input DatasourceTestInput {
+    connection: DatasourceSourceInput!
 }
 
 input DatasourceUpdateInput {

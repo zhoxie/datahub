@@ -28,36 +28,49 @@ public class CustomDashboardAPIUtil {
     static final Map<String, String> JDBC_TYPE;
     static {
         Map<String, String> map = new HashMap<>();
-        map.put(CreateDatasourceResolver.POSTGRES_SOURCE_NAME, "org.postgresql.Driver");
-        map.put(CreateDatasourceResolver.ORACLE_SOURCE_NAME, "oracle.jdbc.OracleDriver");
-        map.put(CreateDatasourceResolver.TIDB_SOURCE_NAME, "com.mysql.jdbc.Driver");
-        map.put(CreateDatasourceResolver.HIVE_SOURCE_NAME, "org.apache.hive.jdbc.HiveDriver");
-        map.put(CreateDatasourceResolver.PRESTO_SOURCE_NAME, "com.facebook.presto.jdbc.PrestoDriver");
-        map.put(CreateDatasourceResolver.PINOT_SOURCE_NAME, "org.apache.pinot.client.PinotDriver");
-        map.put(CreateDatasourceResolver.TRINO_SOURCE_NAME, "io.trino.jdbc.TrinoDriver");
+        map.put(DatasourceConstants.POSTGRES_SOURCE_NAME, "org.postgresql.Driver");
+        map.put(DatasourceConstants.ORACLE_SOURCE_NAME, "oracle.jdbc.OracleDriver");
+        map.put(DatasourceConstants.TIDB_SOURCE_NAME, "com.mysql.jdbc.Driver");
+        map.put(DatasourceConstants.MYSQL_SOURCE_NAME, "com.mysql.jdbc.Driver");
+        map.put(DatasourceConstants.HIVE_SOURCE_NAME, "org.apache.hive.jdbc.HiveDriver");
+        map.put(DatasourceConstants.PRESTO_SOURCE_NAME, "com.facebook.presto.jdbc.PrestoDriver");
+        map.put(DatasourceConstants.PINOT_SOURCE_NAME, "org.apache.pinot.client.PinotDriver");
+        map.put(DatasourceConstants.TRINO_SOURCE_NAME, "io.trino.jdbc.TrinoDriver");
         JDBC_DRIVER = Collections.unmodifiableMap(map);
 
         map = new HashMap<>();
-        map.put(CreateDatasourceResolver.POSTGRES_SOURCE_NAME, "postgresql");
-        map.put(CreateDatasourceResolver.ORACLE_SOURCE_NAME, "oracle:thin");
-        map.put(CreateDatasourceResolver.TIDB_SOURCE_NAME, "mysql");
-        map.put(CreateDatasourceResolver.HIVE_SOURCE_NAME, "hive2");
-        map.put(CreateDatasourceResolver.PRESTO_SOURCE_NAME, "presto");
-        map.put(CreateDatasourceResolver.PINOT_SOURCE_NAME, "pinot");
-        map.put(CreateDatasourceResolver.TRINO_SOURCE_NAME, "trino");
+        map.put(DatasourceConstants.POSTGRES_SOURCE_NAME, "postgresql");
+        map.put(DatasourceConstants.ORACLE_SOURCE_NAME, "oracle:thin");
+        map.put(DatasourceConstants.TIDB_SOURCE_NAME, "mysql");
+        map.put(DatasourceConstants.MYSQL_SOURCE_NAME, "mysql");
+        map.put(DatasourceConstants.HIVE_SOURCE_NAME, "hive2");
+        map.put(DatasourceConstants.PRESTO_SOURCE_NAME, "presto");
+        map.put(DatasourceConstants.PINOT_SOURCE_NAME, "pinot");
+        map.put(DatasourceConstants.TRINO_SOURCE_NAME, "trino");
         JDBC_TYPE = Collections.unmodifiableMap(map);
 
     }
 
-    private static void parseJDBCRequestBody(String type, Map<String, Object> dbMap, ObjectNode node) {
+    public static String buildTestRequestBody(String type, Map<String, Object> dbMap) {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode json = mapper.createObjectNode();
+        json.put("type", type.equals(DatasourceConstants.POSTGRES_SOURCE_NAME) ? "postgresql" : type);
+        json.put("driver", JDBC_DRIVER.get(type));
+        json.put("username", (String) dbMap.get("username"));
+        json.put("passphase", (String) dbMap.get("password"));
+        json.put("url", parseJDBCURL(type, dbMap));
+        return json.toString();
+    }
+
+    public static String parseJDBCURL(String type, Map<String, Object> dbMap) {
         String jdbcUrl;
 
         //pinot
-        if (CreateDatasourceResolver.PINOT_SOURCE_NAME.equals(type)) {
+        if (DatasourceConstants.PINOT_SOURCE_NAME.equals(type)) {
             jdbcUrl = "jdbc:" + JDBC_TYPE.get(type) + "://" + dbMap.get("hostPort");
-        //trino presto
-        } else if (CreateDatasourceResolver.TRINO_SOURCE_NAME.equals(type)
-            || CreateDatasourceResolver.PRESTO_SOURCE_NAME.equals(type)) {
+            //trino presto
+        } else if (DatasourceConstants.TRINO_SOURCE_NAME.equals(type)
+                || DatasourceConstants.PRESTO_SOURCE_NAME.equals(type)) {
             jdbcUrl = "jdbc:" + JDBC_TYPE.get(type) + "://" + dbMap.get("hostPort");;
             if (dbMap.containsKey("catalog")) {
                 jdbcUrl = jdbcUrl + "/" + dbMap.get("catalog");
@@ -70,25 +83,26 @@ public class CustomDashboardAPIUtil {
                 jdbcParams = jdbcParams.startsWith("?") ? jdbcParams : ("?" + jdbcParams);
                 jdbcUrl = jdbcUrl + jdbcParams;
             }
-        //hive
-        } else if (CreateDatasourceResolver.HIVE_SOURCE_NAME.equals(type)) {
+            //hive
+        } else if (DatasourceConstants.HIVE_SOURCE_NAME.equals(type)) {
             jdbcUrl = "jdbc:" + JDBC_TYPE.get(type) + "://" + dbMap.get("hostPort") + "/" + dbMap.get("database");
             if (dbMap.containsKey("jdbcParams")) {
                 String jdbcParams = (String) dbMap.get("jdbcParams");
                 jdbcParams = jdbcParams.startsWith(";") ? jdbcParams : (";" + jdbcParams);
                 jdbcUrl = jdbcUrl + jdbcParams;
             }
-        //postgres TiDB
-        } else if (CreateDatasourceResolver.POSTGRES_SOURCE_NAME.equals(type)
-                || CreateDatasourceResolver.TIDB_SOURCE_NAME.equals(type)) {
+            //postgres TiDB
+        } else if (DatasourceConstants.POSTGRES_SOURCE_NAME.equals(type)
+                || DatasourceConstants.MYSQL_SOURCE_NAME.equals(type)
+                || DatasourceConstants.TIDB_SOURCE_NAME.equals(type)) {
             jdbcUrl = "jdbc:" + JDBC_TYPE.get(type) + "://" + dbMap.get("hostPort") + "/" + dbMap.get("database");
             if (dbMap.containsKey("jdbcParams")) {
                 String jdbcParams = (String) dbMap.get("jdbcParams");
                 jdbcParams = jdbcParams.startsWith("?") ? jdbcParams : ("?" + jdbcParams);
                 jdbcUrl = jdbcUrl + jdbcParams;
             }
-        //oracle
-        } else if (CreateDatasourceResolver.ORACLE_SOURCE_NAME.equals(type)) {
+            //oracle
+        } else if (DatasourceConstants.ORACLE_SOURCE_NAME.equals(type)) {
             jdbcUrl = "jdbc:" + JDBC_TYPE.get(type) + ":@";
             if (dbMap.containsKey("hostPort") && dbMap.containsKey("serviceName")) {
                 jdbcUrl = jdbcUrl + "//" + dbMap.get("hostPort") + "/" + dbMap.get("serviceName");
@@ -100,29 +114,43 @@ public class CustomDashboardAPIUtil {
             throw new IllegalArgumentException("Custom Dashboard not support the type:" + type);
         }
 
+        return jdbcUrl;
+    }
+
+    private static void parseJDBCRequestBody(String type, Map<String, Object> dbMap, ObjectNode node) {
         node.put("username", (String) dbMap.get("username"));
         node.put("password", (String) dbMap.get("password"));
-        node.put("url", jdbcUrl);
+        node.put("url", parseJDBCURL(type, dbMap));
     }
 
     private static String getType(Map<String, Object> connMap) {
-        if (connMap.containsKey(CreateDatasourceResolver.POSTGRES_SOURCE_NAME)) {
-            return CreateDatasourceResolver.POSTGRES_SOURCE_NAME;
-        } else if (connMap.containsKey(CreateDatasourceResolver.HIVE_SOURCE_NAME)) {
-            return CreateDatasourceResolver.HIVE_SOURCE_NAME;
-        } else if (connMap.containsKey(CreateDatasourceResolver.TIDB_SOURCE_NAME)) {
-            return CreateDatasourceResolver.TIDB_SOURCE_NAME;
-        } else if (connMap.containsKey(CreateDatasourceResolver.ORACLE_SOURCE_NAME)) {
-            return CreateDatasourceResolver.ORACLE_SOURCE_NAME;
-        } else if (connMap.containsKey(CreateDatasourceResolver.PINOT_SOURCE_NAME)) {
-            return CreateDatasourceResolver.PINOT_SOURCE_NAME;
-        } else if (connMap.containsKey(CreateDatasourceResolver.PRESTO_SOURCE_NAME)) {
-            return CreateDatasourceResolver.PRESTO_SOURCE_NAME;
-        } else if (connMap.containsKey(CreateDatasourceResolver.TRINO_SOURCE_NAME)) {
-            return CreateDatasourceResolver.TRINO_SOURCE_NAME;
+        if (connMap.containsKey(DatasourceConstants.POSTGRES_SOURCE_NAME)) {
+            return DatasourceConstants.POSTGRES_SOURCE_NAME;
+        } else if (connMap.containsKey(DatasourceConstants.HIVE_SOURCE_NAME)) {
+            return DatasourceConstants.HIVE_SOURCE_NAME;
+        } else if (connMap.containsKey(DatasourceConstants.TIDB_SOURCE_NAME)) {
+            return DatasourceConstants.TIDB_SOURCE_NAME;
+        } else if (connMap.containsKey(DatasourceConstants.ORACLE_SOURCE_NAME)) {
+            return DatasourceConstants.ORACLE_SOURCE_NAME;
+        } else if (connMap.containsKey(DatasourceConstants.PINOT_SOURCE_NAME)) {
+            return DatasourceConstants.PINOT_SOURCE_NAME;
+        } else if (connMap.containsKey(DatasourceConstants.PRESTO_SOURCE_NAME)) {
+            return DatasourceConstants.PRESTO_SOURCE_NAME;
+        } else if (connMap.containsKey(DatasourceConstants.TRINO_SOURCE_NAME)) {
+            return DatasourceConstants.TRINO_SOURCE_NAME;
         } else {
             throw new IllegalArgumentException("the source type not supported.");
         }
+    }
+
+    public static boolean supportType(String type) {
+        return DatasourceConstants.POSTGRES_SOURCE_NAME.equals(type)
+                || DatasourceConstants.HIVE_SOURCE_NAME.equals(type)
+                || DatasourceConstants.TIDB_SOURCE_NAME.equals(type)
+                || DatasourceConstants.ORACLE_SOURCE_NAME.equals(type)
+                || DatasourceConstants.PINOT_SOURCE_NAME.equals(type)
+                || DatasourceConstants.PRESTO_SOURCE_NAME.equals(type)
+                || DatasourceConstants.TRINO_SOURCE_NAME.equals(type);
     }
 
     public static String buildCreateRequestBody(Map<String, Object> inputMap) {

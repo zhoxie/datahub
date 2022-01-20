@@ -23,6 +23,29 @@ public class CustomDashboardAPIClient {
     private static final String PREFIX = "/api/v2/";
     private static final String CREATE_PATH = "datasourceGroup";
 
+    public static boolean testConnection(String body, String bearerToken) {
+        String url = Configuration.getEnvironmentVariable("CUSTOM_DASHBOARD_API_URL")
+                + PREFIX + "datasource/test-connection";
+        HttpPost post = new HttpPost(url);
+        post.setHeader("Content-Type", "application/json");
+        post.setHeader("Authorization", bearerToken);
+        post.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
+
+
+        try (CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+             CloseableHttpResponse resp = httpClient.execute(post)
+        ) {
+            if (resp.getStatusLine().getStatusCode() == 200) {
+                String resStr = EntityUtils.toString(resp.getEntity());
+                return Boolean.parseBoolean(resStr);
+            } else {
+                throw new IllegalStateException("create datasource failed." + resp.getStatusLine().getReasonPhrase());
+            }
+        }  catch (IOException ioe) {
+            throw new IllegalStateException(ioe);
+        }
+    }
+
     public static String deleteDatasource(String name, String category, String type, String region, String bearerToken) {
         String url = Configuration.getEnvironmentVariable("CUSTOM_DASHBOARD_API_URL") + PREFIX + "datasource/" + name
                 + "/category/" + category + "/type/" + type + "/region/" + region;
