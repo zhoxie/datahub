@@ -659,9 +659,9 @@
           "name" : "datasourceName",
           "type" : "string"
         }, {
-          "doc" : "Fabric type where datasource belongs to or where it was generated.",
-          "name" : "origin",
-          "type" : "com.linkedin.common.FabricType"
+          "doc" : "the the region of Datasource.",
+          "name" : "region",
+          "type" : "string"
         } ],
         "maxLength" : 284,
         "name" : "Datasource",
@@ -1988,8 +1988,8 @@
           "fieldType" : "TEXT_PARTIAL"
         }
       }, {
-        "name" : "origin",
-        "type" : "com.linkedin.common.FabricType",
+        "name" : "region",
+        "type" : "string",
         "doc" : "Fabric type where datasource belongs to or where it was generated.",
         "Searchable" : {
           "addToFilters" : true,

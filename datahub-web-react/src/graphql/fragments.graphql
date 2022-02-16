@@ -212,6 +212,19 @@ fragment nonRecursiveDatasourceFields on Datasource {
             ... on IcebergSource {
                 hiveMetastoreUris
             }
+            ... on HiveSource {
+                username
+                password
+                hostPort
+                database
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
             ... on KafkaMetadataSource {
                 bootstrap
                 schemaRegistryUrl
@@ -224,55 +237,90 @@ fragment nonRecursiveDatasourceFields on Datasource {
                 password
                 hostPort
                 database
-                databaseAlias
                 tablePatternAllow
                 tablePatternDeny
                 tablePatternIgnoreCase
                 schemaPatternAllow
                 schemaPatternDeny
                 schemaPatternIgnoreCase
-                viewPatternAllow
-                viewPatternDeny
-                viewPatternIgnoreCase
-                includeTables
-                includeViews
             }
             ... on PostgresSource {
                 username
                 password
                 hostPort
                 database
-                databaseAlias
+                jdbcParams
                 tablePatternAllow
                 tablePatternDeny
                 tablePatternIgnoreCase
                 schemaPatternAllow
                 schemaPatternDeny
                 schemaPatternIgnoreCase
-                viewPatternAllow
-                viewPatternDeny
-                viewPatternIgnoreCase
-                includeTables
-                includeViews
             }
             ... on OracleSource {
                 username
                 password
                 hostPort
-                database
                 serviceName
-                databaseAlias
+                tnsName
                 tablePatternAllow
                 tablePatternDeny
                 tablePatternIgnoreCase
                 schemaPatternAllow
                 schemaPatternDeny
                 schemaPatternIgnoreCase
-                viewPatternAllow
-                viewPatternDeny
-                viewPatternIgnoreCase
-                includeTables
-                includeViews
+            }
+            ... on PinotSource {
+                username
+                password
+                hostPort
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on TiDBSource {
+                username
+                password
+                hostPort
+                database
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on PrestoSource {
+                username
+                password
+                hostPort
+                catalog
+                schema
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on TrinoSource {
+                username
+                password
+                hostPort
+                catalog
+                schema
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
             }
         }
     }
@@ -282,6 +330,19 @@ fragment nonRecursiveDatasourceFields on Datasource {
             ... on IcebergSource {
                 hiveMetastoreUris
             }
+            ... on HiveSource {
+                username
+                password
+                hostPort
+                database
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
             ... on KafkaMetadataSource {
                 bootstrap
                 schemaRegistryUrl
@@ -294,55 +355,90 @@ fragment nonRecursiveDatasourceFields on Datasource {
                 password
                 hostPort
                 database
-                databaseAlias
                 tablePatternAllow
                 tablePatternDeny
                 tablePatternIgnoreCase
                 schemaPatternAllow
                 schemaPatternDeny
                 schemaPatternIgnoreCase
-                viewPatternAllow
-                viewPatternDeny
-                viewPatternIgnoreCase
-                includeTables
-                includeViews
             }
             ... on PostgresSource {
                 username
                 password
                 hostPort
                 database
-                databaseAlias
+                jdbcParams
                 tablePatternAllow
                 tablePatternDeny
                 tablePatternIgnoreCase
                 schemaPatternAllow
                 schemaPatternDeny
                 schemaPatternIgnoreCase
-                viewPatternAllow
-                viewPatternDeny
-                viewPatternIgnoreCase
-                includeTables
-                includeViews
             }
             ... on OracleSource {
                 username
                 password
                 hostPort
-                database
                 serviceName
-                databaseAlias
+                tnsName
                 tablePatternAllow
                 tablePatternDeny
                 tablePatternIgnoreCase
                 schemaPatternAllow
                 schemaPatternDeny
                 schemaPatternIgnoreCase
-                viewPatternAllow
-                viewPatternDeny
-                viewPatternIgnoreCase
-                includeTables
-                includeViews
+            }
+            ... on PinotSource {
+                username
+                password
+                hostPort
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on TiDBSource {
+                username
+                password
+                hostPort
+                database
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on PrestoSource {
+                username
+                password
+                hostPort
+                catalog
+                schema
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on TrinoSource {
+                username
+                password
+                hostPort
+                catalog
+                schema
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
             }
         }
     }

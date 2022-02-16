@@ -806,153 +806,130 @@ type DatasourceConnection {
     connection: DatasourceSources
 }
 
-union DatasourceSources = IcebergSource | KafkaMetadataSource | MysqlSource | OracleSource | PostgresSource | TrinoSource | PinotSource | PrestoSource | HiveSource
+union DatasourceSources = IcebergSource | KafkaMetadataSource | MysqlSource | OracleSource | PostgresSource | TrinoSource | PinotSource | PrestoSource | HiveSource | TiDBSource
 
-type OracleSource {
-    username: String!
-    password: String!
-    hostPort: String!
+type TiDBSource {
+    username: String
+    password: String
+    hostPort: String
     database: String
-    serviceName: String
-    tnsName: String
-    databaseAlias: String
+    jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
     tablePatternIgnoreCase: Boolean
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
+}
+
+type OracleSource {
+    username: String
+    password: String
+    hostPort: String
+    serviceName: String
+    tnsName: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
 }
 
 type PostgresSource {
-    username: String!
-    password: String!
-    hostPort: String!
+    username: String
+    password: String
+    hostPort: String
     database: String
-    databaseAlias: String
+    jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
     tablePatternIgnoreCase: Boolean
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
 }
 
 type MysqlSource {
-    username: String!
-    password: String!
-    hostPort: String!
+    username: String
+    password: String
+    hostPort: String
     database: String
-    databaseAlias: String
+    jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
     tablePatternIgnoreCase: Boolean
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
 }
 
 type HiveSource {
-    username: String!
-    password: String!
-    hostPort: String!
+    username: String
+    password: String
+    hostPort: String
     database: String
-    databaseAlias: String
+    jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
     tablePatternIgnoreCase: Boolean
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
 }
 
 type PrestoSource {
-    username: String!
-    password: String!
-    hostPort: String!
-    database: String
-    databaseAlias: String
+    username: String
+    password: String
+    hostPort: String
+    catalog: String
+    schema: String
+    jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
     tablePatternIgnoreCase: Boolean
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
 }
 
 type PinotSource {
-    username: String!
-    password: String!
-    hostPort: String!
-    database: String
-    databaseAlias: String
+    username: String
+    password: String
+    hostPort: String
     tablePatternAllow: String
     tablePatternDeny: String
     tablePatternIgnoreCase: Boolean
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
 }
 
 type TrinoSource {
-    username: String!
-    password: String!
-    hostPort: String!
-    database: String
-    databaseAlias: String
+    username: String
+    password: String
+    hostPort: String
+    catalog: String
+    schema: String
+    jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
     tablePatternIgnoreCase: Boolean
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
 }
 
 type KafkaMetadataSource {
-    bootstrap: String!
-    schemaRegistryUrl: String!
+    bootstrap: String
+    schemaRegistryUrl: String
     topicPatternsAllow: String
     topicPatternsDeny: String
     topicPatternsIgnoreCase: Boolean
 }
 
 type IcebergSource {
-    hiveMetastoreUris: String!
+    hiveMetastoreUris: String
 }
 
 input DatasourceSourceInput {
@@ -966,28 +943,21 @@ input DatasourceSourceInput {
     pinot:PinotSourceInput
     presto:PrestoSourceInput
     hive:HiveSourceInput
+    tiDB:TiDBSourceInput
 }
 
 input OracleSourceInput {
     username: String!
     password: String!
     hostPort: String
-    database: String
-    jdbcParams: String
     serviceName: String
     tnsName: String
-    databaseAlias: String
     tablePatternAllow: String
     tablePatternDeny: String
     tablePatternIgnoreCase: Boolean
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
 }
 
 input PostgresSourceInput {
@@ -995,7 +965,6 @@ input PostgresSourceInput {
     password: String!
     hostPort: String!
     database: String
-    databaseAlias: String
     jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
@@ -1003,11 +972,6 @@ input PostgresSourceInput {
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
 }
 
 input MysqlSourceInput {
@@ -1015,7 +979,6 @@ input MysqlSourceInput {
     password: String!
     hostPort: String!
     database: String
-    databaseAlias: String
     jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
@@ -1023,11 +986,20 @@ input MysqlSourceInput {
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
+}
+
+input TiDBSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
 }
 
 input HiveSourceInput {
@@ -1035,7 +1007,6 @@ input HiveSourceInput {
     password: String!
     hostPort: String!
     database: String
-    databaseAlias: String
     jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
@@ -1043,19 +1014,14 @@ input HiveSourceInput {
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
 }
 
 input PrestoSourceInput {
     username: String!
     password: String!
     hostPort: String!
-    database: String
-    databaseAlias: String
+    catalog: String
+    schema: String
     jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
@@ -1063,39 +1029,26 @@ input PrestoSourceInput {
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
 }
 
 input PinotSourceInput {
     username: String!
     password: String!
     hostPort: String!
-    database: String
-    databaseAlias: String
-    jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
     tablePatternIgnoreCase: Boolean
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
 }
 
 input TrinoSourceInput {
     username: String!
     password: String!
     hostPort: String!
-    database: String
-    databaseAlias: String
+    catalog: String
+    schema: String
     jdbcParams: String
     tablePatternAllow: String
     tablePatternDeny: String
@@ -1103,11 +1056,6 @@ input TrinoSourceInput {
     schemaPatternAllow: String
     schemaPatternDeny: String
     schemaPatternIgnoreCase: Boolean
-    viewPatternAllow: String
-    viewPatternDeny: String
-    viewPatternIgnoreCase: Boolean
-    includeTables: Boolean
-    includeViews: Boolean
 }
 
 input KafkaMetadataSourceInput {

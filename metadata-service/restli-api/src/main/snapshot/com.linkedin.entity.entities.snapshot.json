@@ -705,9 +705,9 @@
           "name" : "datasourceName",
           "type" : "string"
         }, {
-          "doc" : "Fabric type where datasource belongs to or where it was generated.",
-          "name" : "origin",
-          "type" : "com.linkedin.common.FabricType"
+          "doc" : "the the region of Datasource.",
+          "name" : "region",
+          "type" : "string"
         } ],
         "maxLength" : 284,
         "name" : "Datasource",
@@ -1885,9 +1885,8 @@
           "type" : "string",
           "doc" : "MySQL database."
         }, {
-          "name" : "databaseAlias",
+          "name" : "jdbcParams",
           "type" : "string",
-          "doc" : "Alias to apply to database when ingesting.",
           "optional" : true
         }, {
           "name" : "tablePatternAllow",
@@ -1919,34 +1918,6 @@
           "name" : "schemaPatternIgnoreCase",
           "type" : "boolean",
           "doc" : "Whether to ignore case sensitivity during pattern matching.",
-          "default" : true,
-          "optional" : true
-        }, {
-          "name" : "viewPatternAllow",
-          "type" : "string",
-          "doc" : "List of regex patterns for views to include in ingestion.",
-          "optional" : true
-        }, {
-          "name" : "viewPatternDeny",
-          "type" : "string",
-          "doc" : "List of regex patterns for views to exclude from ingestion.",
-          "optional" : true
-        }, {
-          "name" : "viewPatternIgnoreCase",
-          "type" : "boolean",
-          "doc" : "Whether to ignore case sensitivity during pattern matching.",
-          "default" : true,
-          "optional" : true
-        }, {
-          "name" : "includeTables",
-          "type" : "boolean",
-          "doc" : "Whether tables should be ingested.",
-          "default" : true,
-          "optional" : true
-        }, {
-          "name" : "includeViews",
-          "type" : "boolean",
-          "doc" : "Whether views should be ingested.",
           "default" : true,
           "optional" : true
         } ],
@@ -1970,19 +1941,13 @@
           "type" : "string",
           "doc" : "Oracle host URL."
         }, {
-          "name" : "database",
-          "type" : "string",
-          "doc" : "If using, omit service_name.",
-          "optional" : true
-        }, {
           "name" : "serviceName",
           "type" : "string",
           "doc" : "Oracle service name. If using, omit database.",
           "optional" : true
         }, {
-          "name" : "databaseAlias",
+          "name" : "tnsName",
           "type" : "string",
-          "doc" : "Alias to apply to database when ingesting.",
           "optional" : true
         }, {
           "name" : "tablePatternAllow",
@@ -2014,34 +1979,6 @@
           "name" : "schemaPatternIgnoreCase",
           "type" : "boolean",
           "doc" : "Whether to ignore case sensitivity during pattern matching.",
-          "default" : true,
-          "optional" : true
-        }, {
-          "name" : "viewPatternAllow",
-          "type" : "string",
-          "doc" : "List of regex patterns for views to include in ingestion.",
-          "optional" : true
-        }, {
-          "name" : "viewPatternDeny",
-          "type" : "string",
-          "doc" : "List of regex patterns for views to exclude from ingestion.",
-          "optional" : true
-        }, {
-          "name" : "viewPatternIgnoreCase",
-          "type" : "boolean",
-          "doc" : "Whether to ignore case sensitivity during pattern matching.",
-          "default" : true,
-          "optional" : true
-        }, {
-          "name" : "includeTables",
-          "type" : "boolean",
-          "doc" : "Whether tables should be ingested.",
-          "default" : true,
-          "optional" : true
-        }, {
-          "name" : "includeViews",
-          "type" : "boolean",
-          "doc" : "Whether views should be ingested.",
           "default" : true,
           "optional" : true
         } ],
@@ -2069,9 +2006,8 @@
           "type" : "string",
           "doc" : "Postgres database."
         }, {
-          "name" : "databaseAlias",
+          "name" : "jdbcParams",
           "type" : "string",
-          "doc" : "Alias to apply to database when ingesting.",
           "optional" : true
         }, {
           "name" : "tablePatternAllow",
@@ -2105,37 +2041,305 @@
           "doc" : "Whether to ignore case sensitivity during pattern matching.",
           "default" : true,
           "optional" : true
-        }, {
-          "name" : "viewPatternAllow",
+        } ],
+        "Aspect" : {
+          "name" : "PostgresSource"
+        }
+      }, {
+        "type" : "record",
+        "name" : "TiDBSource",
+        "namespace" : "com.linkedin.datasource.sources",
+        "fields" : [ {
+          "name" : "username",
           "type" : "string",
-          "doc" : "List of regex patterns for views to include in ingestion.",
+          "doc" : "tidb username."
+        }, {
+          "name" : "password",
+          "type" : "string",
+          "doc" : "tidb password."
+        }, {
+          "name" : "hostPort",
+          "type" : "string",
+          "doc" : "tidb host URL."
+        }, {
+          "name" : "database",
+          "type" : "string",
+          "doc" : "tidb database."
+        }, {
+          "name" : "jdbcParams",
+          "type" : "string",
           "optional" : true
         }, {
-          "name" : "viewPatternDeny",
+          "name" : "tablePatternAllow",
           "type" : "string",
-          "doc" : "List of regex patterns for views to exclude from ingestion.",
+          "doc" : "List of regex patterns for tables to include in ingestion.",
           "optional" : true
         }, {
-          "name" : "viewPatternIgnoreCase",
+          "name" : "tablePatternDeny",
+          "type" : "string",
+          "doc" : "List of regex patterns for tables to exclude from ingestion.",
+          "optional" : true
+        }, {
+          "name" : "tablePatternIgnoreCase",
           "type" : "boolean",
           "doc" : "Whether to ignore case sensitivity during pattern matching.",
           "default" : true,
           "optional" : true
         }, {
-          "name" : "includeTables",
-          "type" : "boolean",
-          "doc" : "Whether tables should be ingested.",
-          "default" : true,
+          "name" : "schemaPatternAllow",
+          "type" : "string",
+          "doc" : "List of regex patterns for schemas to include in ingestion.",
           "optional" : true
         }, {
-          "name" : "includeViews",
+          "name" : "schemaPatternDeny",
+          "type" : "string",
+          "doc" : "List of regex patterns for schemas to exclude from ingestion.",
+          "optional" : true
+        }, {
+          "name" : "schemaPatternIgnoreCase",
           "type" : "boolean",
-          "doc" : "Whether views should be ingested.",
+          "doc" : "Whether to ignore case sensitivity during pattern matching.",
           "default" : true,
           "optional" : true
         } ],
         "Aspect" : {
-          "name" : "PostgresSource"
+          "name" : "TiDBSource"
+        }
+      }, {
+        "type" : "record",
+        "name" : "TrinoSource",
+        "namespace" : "com.linkedin.datasource.sources",
+        "fields" : [ {
+          "name" : "username",
+          "type" : "string",
+          "doc" : "trino username."
+        }, {
+          "name" : "password",
+          "type" : "string",
+          "doc" : "trino password."
+        }, {
+          "name" : "hostPort",
+          "type" : "string",
+          "doc" : "trino host URL."
+        }, {
+          "name" : "catalog",
+          "type" : "string"
+        }, {
+          "name" : "schema",
+          "type" : "string"
+        }, {
+          "name" : "jdbcParams",
+          "type" : "string",
+          "optional" : true
+        }, {
+          "name" : "tablePatternAllow",
+          "type" : "string",
+          "doc" : "List of regex patterns for tables to include in ingestion.",
+          "optional" : true
+        }, {
+          "name" : "tablePatternDeny",
+          "type" : "string",
+          "doc" : "List of regex patterns for tables to exclude from ingestion.",
+          "optional" : true
+        }, {
+          "name" : "tablePatternIgnoreCase",
+          "type" : "boolean",
+          "doc" : "Whether to ignore case sensitivity during pattern matching.",
+          "default" : true,
+          "optional" : true
+        }, {
+          "name" : "schemaPatternAllow",
+          "type" : "string",
+          "doc" : "List of regex patterns for schemas to include in ingestion.",
+          "optional" : true
+        }, {
+          "name" : "schemaPatternDeny",
+          "type" : "string",
+          "doc" : "List of regex patterns for schemas to exclude from ingestion.",
+          "optional" : true
+        }, {
+          "name" : "schemaPatternIgnoreCase",
+          "type" : "boolean",
+          "doc" : "Whether to ignore case sensitivity during pattern matching.",
+          "default" : true,
+          "optional" : true
+        } ],
+        "Aspect" : {
+          "name" : "TrinoSource"
+        }
+      }, {
+        "type" : "record",
+        "name" : "PinotSource",
+        "namespace" : "com.linkedin.datasource.sources",
+        "fields" : [ {
+          "name" : "username",
+          "type" : "string",
+          "doc" : "pinot username."
+        }, {
+          "name" : "password",
+          "type" : "string",
+          "doc" : "pinot password."
+        }, {
+          "name" : "hostPort",
+          "type" : "string",
+          "doc" : "pinot host URL."
+        }, {
+          "name" : "tablePatternAllow",
+          "type" : "string",
+          "doc" : "List of regex patterns for tables to include in ingestion.",
+          "optional" : true
+        }, {
+          "name" : "tablePatternDeny",
+          "type" : "string",
+          "doc" : "List of regex patterns for tables to exclude from ingestion.",
+          "optional" : true
+        }, {
+          "name" : "tablePatternIgnoreCase",
+          "type" : "boolean",
+          "doc" : "Whether to ignore case sensitivity during pattern matching.",
+          "default" : true,
+          "optional" : true
+        }, {
+          "name" : "schemaPatternAllow",
+          "type" : "string",
+          "doc" : "List of regex patterns for schemas to include in ingestion.",
+          "optional" : true
+        }, {
+          "name" : "schemaPatternDeny",
+          "type" : "string",
+          "doc" : "List of regex patterns for schemas to exclude from ingestion.",
+          "optional" : true
+        }, {
+          "name" : "schemaPatternIgnoreCase",
+          "type" : "boolean",
+          "doc" : "Whether to ignore case sensitivity during pattern matching.",
+          "default" : true,
+          "optional" : true
+        } ],
+        "Aspect" : {
+          "name" : "PinotSource"
+        }
+      }, {
+        "type" : "record",
+        "name" : "HiveSource",
+        "namespace" : "com.linkedin.datasource.sources",
+        "fields" : [ {
+          "name" : "username",
+          "type" : "string",
+          "doc" : "hive username."
+        }, {
+          "name" : "password",
+          "type" : "string",
+          "doc" : "hive password."
+        }, {
+          "name" : "hostPort",
+          "type" : "string",
+          "doc" : "hive host URL."
+        }, {
+          "name" : "database",
+          "type" : "string",
+          "doc" : "hive database."
+        }, {
+          "name" : "jdbcParams",
+          "type" : "string",
+          "optional" : true
+        }, {
+          "name" : "tablePatternAllow",
+          "type" : "string",
+          "doc" : "List of regex patterns for tables to include in ingestion.",
+          "optional" : true
+        }, {
+          "name" : "tablePatternDeny",
+          "type" : "string",
+          "doc" : "List of regex patterns for tables to exclude from ingestion.",
+          "optional" : true
+        }, {
+          "name" : "tablePatternIgnoreCase",
+          "type" : "boolean",
+          "doc" : "Whether to ignore case sensitivity during pattern matching.",
+          "default" : true,
+          "optional" : true
+        }, {
+          "name" : "schemaPatternAllow",
+          "type" : "string",
+          "doc" : "List of regex patterns for schemas to include in ingestion.",
+          "optional" : true
+        }, {
+          "name" : "schemaPatternDeny",
+          "type" : "string",
+          "doc" : "List of regex patterns for schemas to exclude from ingestion.",
+          "optional" : true
+        }, {
+          "name" : "schemaPatternIgnoreCase",
+          "type" : "boolean",
+          "doc" : "Whether to ignore case sensitivity during pattern matching.",
+          "default" : true,
+          "optional" : true
+        } ],
+        "Aspect" : {
+          "name" : "HiveSource"
+        }
+      }, {
+        "type" : "record",
+        "name" : "PrestoSource",
+        "namespace" : "com.linkedin.datasource.sources",
+        "fields" : [ {
+          "name" : "username",
+          "type" : "string",
+          "doc" : "presto username."
+        }, {
+          "name" : "password",
+          "type" : "string",
+          "doc" : "presto password."
+        }, {
+          "name" : "hostPort",
+          "type" : "string",
+          "doc" : "presto host URL."
+        }, {
+          "name" : "catalog",
+          "type" : "string"
+        }, {
+          "name" : "schema",
+          "type" : "string"
+        }, {
+          "name" : "jdbcParams",
+          "type" : "string",
+          "optional" : true
+        }, {
+          "name" : "tablePatternAllow",
+          "type" : "string",
+          "doc" : "List of regex patterns for tables to include in ingestion.",
+          "optional" : true
+        }, {
+          "name" : "tablePatternDeny",
+          "type" : "string",
+          "doc" : "List of regex patterns for tables to exclude from ingestion.",
+          "optional" : true
+        }, {
+          "name" : "tablePatternIgnoreCase",
+          "type" : "boolean",
+          "doc" : "Whether to ignore case sensitivity during pattern matching.",
+          "default" : true,
+          "optional" : true
+        }, {
+          "name" : "schemaPatternAllow",
+          "type" : "string",
+          "doc" : "List of regex patterns for schemas to include in ingestion.",
+          "optional" : true
+        }, {
+          "name" : "schemaPatternDeny",
+          "type" : "string",
+          "doc" : "List of regex patterns for schemas to exclude from ingestion.",
+          "optional" : true
+        }, {
+          "name" : "schemaPatternIgnoreCase",
+          "type" : "boolean",
+          "doc" : "Whether to ignore case sensitivity during pattern matching.",
+          "default" : true,
+          "optional" : true
+        } ],
+        "Aspect" : {
+          "name" : "PrestoSource"
         }
       } ]
     } ],
@@ -2156,10 +2360,24 @@
       }
     }, {
       "name" : "connection",
-      "type" : [ "com.linkedin.datasource.sources.IcebergSource", "com.linkedin.datasource.sources.KafkaMetadataSource", "com.linkedin.datasource.sources.MysqlSource", "com.linkedin.datasource.sources.OracleSource", "com.linkedin.datasource.sources.PostgresSource" ]
+      "type" : [ "com.linkedin.datasource.sources.IcebergSource", "com.linkedin.datasource.sources.KafkaMetadataSource", "com.linkedin.datasource.sources.MysqlSource", "com.linkedin.datasource.sources.OracleSource", "com.linkedin.datasource.sources.PostgresSource", "com.linkedin.datasource.sources.TiDBSource", "com.linkedin.datasource.sources.TrinoSource", "com.linkedin.datasource.sources.PinotSource", "com.linkedin.datasource.sources.HiveSource", "com.linkedin.datasource.sources.PrestoSource" ]
     } ],
     "Aspect" : {
       "name" : "datasourceConnectionPrimary"
+    }
+  }, {
+    "type" : "record",
+    "name" : "DatasourceCustomDashboardInfo",
+    "namespace" : "com.linkedin.datasource",
+    "fields" : [ {
+      "name" : "postParam",
+      "type" : "string"
+    }, {
+      "name" : "response",
+      "type" : "string"
+    } ],
+    "Aspect" : {
+      "name" : "datasourceCustomDashboardInfo"
     }
   }, {
     "type" : "record",
@@ -2270,7 +2488,7 @@
     "Aspect" : {
       "name" : "editableDatasourceProperties"
     }
-  }, "com.linkedin.datasource.sources.IcebergSource", "com.linkedin.datasource.sources.KafkaMetadataSource", "com.linkedin.datasource.sources.MysqlSource", "com.linkedin.datasource.sources.OracleSource", "com.linkedin.datasource.sources.PostgresSource", {
+  }, "com.linkedin.datasource.sources.HiveSource", "com.linkedin.datasource.sources.IcebergSource", "com.linkedin.datasource.sources.KafkaMetadataSource", "com.linkedin.datasource.sources.MysqlSource", "com.linkedin.datasource.sources.OracleSource", "com.linkedin.datasource.sources.PinotSource", "com.linkedin.datasource.sources.PostgresSource", "com.linkedin.datasource.sources.PrestoSource", "com.linkedin.datasource.sources.TiDBSource", "com.linkedin.datasource.sources.TrinoSource", {
     "type" : "record",
     "name" : "Entity",
     "namespace" : "com.linkedin.entity",
@@ -3435,8 +3653,8 @@
                       "fieldType" : "TEXT_PARTIAL"
                     }
                   }, {
-                    "name" : "origin",
-                    "type" : "com.linkedin.common.FabricType",
+                    "name" : "region",
+                    "type" : "string",
                     "doc" : "Fabric type where datasource belongs to or where it was generated.",
                     "Searchable" : {
                       "addToFilters" : true,
@@ -3447,7 +3665,7 @@
                   "Aspect" : {
                     "name" : "datasourceKey"
                   }
-                }, "com.linkedin.datasource.DatasourceProperties", "com.linkedin.datasource.EditableDatasourceProperties", "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.common.InstitutionalMemory", "com.linkedin.common.Ownership", "com.linkedin.common.Status", "com.linkedin.datasource.DatasourceInfo", "com.linkedin.datasource.DatasourceConnectionPrimary", "com.linkedin.datasource.DatasourceConnectionGSB", "com.linkedin.common.GlobalTags", "com.linkedin.common.GlossaryTerms", "com.linkedin.common.BrowsePaths" ]
+                }, "com.linkedin.datasource.DatasourceProperties", "com.linkedin.datasource.EditableDatasourceProperties", "com.linkedin.datasource.DatasourceDeprecation", "com.linkedin.common.InstitutionalMemory", "com.linkedin.common.Ownership", "com.linkedin.common.Status", "com.linkedin.datasource.DatasourceInfo", "com.linkedin.datasource.DatasourceConnectionPrimary", "com.linkedin.datasource.DatasourceConnectionGSB", "com.linkedin.datasource.DatasourceCustomDashboardInfo", "com.linkedin.common.GlobalTags", "com.linkedin.common.GlossaryTerms", "com.linkedin.common.BrowsePaths" ]
               }
             },
             "doc" : "The list of metadata aspects associated with the datasource. Depending on the use case, this can either be all, or a selection, of supported aspects."

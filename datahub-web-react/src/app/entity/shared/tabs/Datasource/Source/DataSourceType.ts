@@ -27,6 +27,19 @@ export enum FormField {
     url = 'url',
 }
 
+export enum Platforms {
+    kafka = 'kafka',
+    oracle = 'oracle',
+    mysql = 'mysql',
+    iceberg = 'iceberg',
+    postgres = 'postgres',
+    hive = 'hive',
+    pinot = 'pinot',
+    presto = 'presto',
+    tiDB = 'tiDB',
+    trino = 'trino',
+}
+
 export interface IDataSourceAddData {
     'com.linkedin.metadata.snapshot.DatasourceSnapshot': IDataSourceAddEntity;
 }

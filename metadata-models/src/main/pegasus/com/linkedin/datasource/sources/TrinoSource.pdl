@@ -20,15 +20,9 @@ record TrinoSource {
   */
   hostPort: string
 
-  /**
-  * trino database.
-  */
-  database: string
+  catalog: string
 
-  /**
-  * Alias to apply to database when ingesting.
-  */
-  databaseAlias: optional string
+  schema: string
 
   jdbcParams: optional string
 
@@ -61,30 +55,4 @@ record TrinoSource {
   * Whether to ignore case sensitivity during pattern matching.
   */
   schemaPatternIgnoreCase: optional boolean = true
-
-  /**
-  * List of regex patterns for views to include in ingestion.
-  */
-  viewPatternAllow: optional string
-
-  /**
-  * List of regex patterns for views to exclude from ingestion.
-  */
-  viewPatternDeny: optional string
-
-  /**
-  * Whether to ignore case sensitivity during pattern matching.
-  */
-  viewPatternIgnoreCase: optional boolean = true
-
-  /**
-  * Whether tables should be ingested.
-  */
-  includeTables: optional boolean = true
-
-  /**
-  * Whether views should be ingested.
-  */
-  includeViews: optional boolean = true
-
 }

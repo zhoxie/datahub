@@ -1,5 +1,5 @@
 import { notification } from 'antd';
-import { NotificationLevel } from './DataSouceType';
+import { NotificationLevel } from './DataSourceType';
 
 const showMessageByNotification = (msg: string, level: string = NotificationLevel.ERROR) => {
     notification[level]({

@@ -14,6 +14,7 @@ import {
 } from '../../../graphql/datasource.generated';
 import { PropertiesTab } from '../shared/tabs/Properties/PropertiesTab';
 import { DocumentationTab } from '../shared/tabs/Documentation/DocumentationTab';
+import { Sources } from '../shared/tabs/Datasource/Source/Sources';
 import { Datasets } from '../shared/tabs/Datasource/Datasets/Datasets';
 import { SidebarAboutSection } from '../shared/containers/profile/sidebar/SidebarAboutSection';
 import { SidebarOwnerSection } from '../shared/containers/profile/sidebar/Ownership/SidebarOwnerSection';
@@ -84,6 +85,10 @@ export class DatasourceEntity implements Entity<Datasource> {
             useUpdateQuery={useUpdateDatasourceMutation}
             getOverrideProperties={this.getOverridePropertiesFromEntity}
             tabs={[
+                {
+                    name: 'Connections',
+                    component: Sources,
+                },
                 {
                     name: 'Documentation',
                     component: DocumentationTab,
