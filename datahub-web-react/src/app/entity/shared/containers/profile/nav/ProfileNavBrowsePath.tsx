@@ -135,6 +135,9 @@ export const ProfileNavBrowsePath = ({
         <BrowseRow>
             <Breadcrumb style={{ fontSize: '16px' }} separator=">">
                 <BreadcrumbItem disabled={!breadcrumbLinksEnabled}>
+                    {breadcrumbLinksEnabled ? <Link to={PageRoutes.HOME}>Home</Link> : 'Home'}
+                </BreadcrumbItem>
+                <BreadcrumbItem disabled={!breadcrumbLinksEnabled}>
                     {breadcrumbLinksEnabled ? (
                         <Link to={breadcrumbLinksEnabled ? baseBrowsePath : undefined}>
                             {entityRegistry.getCollectionName(type)}

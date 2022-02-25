@@ -1,3 +1,57 @@
+# docker build
 docker/mats-frontend/*
 docker/mats-gms/*
 docker/mats-nginx/*
+
+# change browse remove origin path
+metadata-io/src/main/java/com/linkedin/metadata/search/utils/BrowsePathUtils.java
+
+# add welcome page
+datahub-frontend/app/controllers/Application.java
+datahub-web-react/public/welcome.html
+datahub-web-react/public/webex-logo.svg
+datahub-web-react/src/conf/theme/theme_dark.config.json
+datahub-web-react/src/conf/theme/theme_light.config.json
+datahub-web-react/src/app/Routes.tsx
+datahub-web-react/src/app/welcome/*
+datahub-web-react/src/app/auth/LogIn.tsx
+datahub-web-react/src/app/ProtectedRoutes.tsx
+datahub-web-react/src/conf/Global.ts
+datahub-web-react/src/app/search/SearchHeader.tsx
+datahub-frontend/app/auth/sso/SsoConfigs.java
+
+# mats style(home page,back ground, title)
+datahub-web-react/src/images/bg_mid_4k.png
+datahub-web-react/src/images/bg_mid_sm.png
+datahub-web-react/src/images/bg_side_4k.png
+datahub-web-react/src/images/bg_side_sm.png
+datahub-web-react/src/app/home/HomePageHeader.tsx
+datahub-web-react/src/app/shared/admin/AdminHeaderLinks.tsx
+datahub-web-react/src/app/entity/shared/containers/profile/nav/ProfileNavBrowsePath.tsx
+datahub-web-react/src/app/browse/LegacyBrowsePath.tsx
+datahub-web-react/public/index.html
+
+# user avatar icon
+datahub-web-react/src/utils/formatter/dataProcess.ts
+datahub-web-react/src/app/shared/avatar/AvatarsGroup.tsx
+datahub-web-react/src/app/shared/ManageAccount.tsx
+datahub-web-react/src/app/search/SearchablePage.tsx
+datahub-web-react/src/app/identity/user/UserListItem.tsx
+datahub-web-react/src/app/entity/user/UserProfile.tsx
+datahub-web-react/src/app/entity/shared/containers/profile/sidebar/Ownership/AddOwnerModal.tsx
+datahub-web-react/src/app/entity/shared/components/styled/ExpandedOwner.tsx
+datahub-web-react/src/app/entity/shared/components/legacy/Ownership.tsx
+
+# analytics
+datahub-web-react/src/app/analyticsDashboard/components/Legend.tsx
+datahub-web-react/src/app/analyticsDashboard/components/lineColors.ts
+datahub-web-react/src/app/analyticsDashboard/components/PieChart.tsx
+datahub-web-react/src/graphql/analytics.graphql
+datahub-graphql-core/src/main/resources/analytics.graphql
+datahub-web-react/package.json
+datahub-web-react/src/app/analyticsDashboard/components/AnalyticsPage.tsx
+datahub-web-react/src/app/analyticsDashboard/components/AnalyticsChart.tsx
+datahub-graphql-core/src/main/java/com/linkedin/datahub/graphql/analytics/resolver/GetChartsResolver.java
+datahub-graphql-core/src/main/java/com/linkedin/datahub/graphql/analytics/service/AnalyticsService.java
+datahub-graphql-core/src/main/java/com/linkedin/datahub/graphql/analytics/resolver/AnalyticsChartTypeResolver.java
+metadata-jobs/mae-consumer/src/main/java/com/linkedin/metadata/kafka/hydrator/DatasetHydrator.java

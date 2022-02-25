@@ -9,6 +9,7 @@ import { CustomAvatar } from '../../../../shared/avatar';
 import { useEntityRegistry } from '../../../../useEntityRegistry';
 import analytics, { EventType, EntityActionType } from '../../../../analytics';
 import { useEntityData } from '../../EntityContext';
+import { getUserAvatar } from '../../../../../utils/formatter/dataProcess';
 
 type Props = {
     entityUrn: string;
@@ -37,7 +38,7 @@ export const ExpandedOwner = ({ entityUrn, owner, refetch }: Props) => {
         name = entityRegistry.getDisplayName(EntityType.CorpUser, owner.owner);
     }
 
-    const pictureLink = (owner.owner.__typename === 'CorpUser' && owner.owner.editableInfo?.pictureLink) || undefined;
+    const pictureLink = (owner.owner.__typename === 'CorpUser' && getUserAvatar(owner.owner.username)) || undefined;
 
     const onDelete = async () => {
         try {

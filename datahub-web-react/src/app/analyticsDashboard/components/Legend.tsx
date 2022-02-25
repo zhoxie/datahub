@@ -22,7 +22,7 @@ export default function Legend({ ordinalScale }: Props) {
                     return labels.map((label) => (
                         <Col span={8}>
                             <LegendItem key={`legend-quantile-${label}`}>
-                                <svg width={legendGlyphSize} height={legendGlyphSize} style={{ margin: '2px 0' }}>
+                                <svg width={legendGlyphSize} height={legendGlyphSize} style={{ margin: '2px' }}>
                                     <circle
                                         fill={label.value}
                                         r={legendGlyphSize / 2}
@@ -30,7 +30,17 @@ export default function Legend({ ordinalScale }: Props) {
                                         cy={legendGlyphSize / 2}
                                     />
                                 </svg>
-                                <LegendLabel align="left" margin="0 4px">
+                                <LegendLabel
+                                    align="left"
+                                    margin="0 4px"
+                                    style={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        width: '100px',
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                    title={label.text}
+                                >
                                     {label.text}
                                 </LegendLabel>
                             </LegendItem>

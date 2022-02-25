@@ -87,6 +87,11 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
     return (
         <BrowseRow>
             <Breadcrumb style={{ fontSize: '16px' }}>
+                {isBrowsable && (
+                    <Breadcrumb.Item key="homeIndex">
+                        <Link to={PageRoutes.HOME}>Home</Link>
+                    </Breadcrumb.Item>
+                )}
                 <Breadcrumb.Item>
                     <Link to={isBrowsable ? baseBrowsePath : '#'}>{entityRegistry.getCollectionName(type)}</Link>
                 </Breadcrumb.Item>

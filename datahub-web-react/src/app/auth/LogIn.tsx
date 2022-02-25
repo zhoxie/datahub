@@ -58,7 +58,7 @@ export const LogIn: React.VFC<LogInProps> = () => {
     if (isLoggedIn) {
         const params = QueryString.parse(location.search);
         const maybeRedirectUri = params.redirect_uri;
-        return <Redirect to={(maybeRedirectUri && decodeURIComponent(maybeRedirectUri as string)) || '/'} />;
+        return <Redirect to={(maybeRedirectUri && decodeURIComponent(maybeRedirectUri as string)) || '/index'} />;
     }
 
     return (

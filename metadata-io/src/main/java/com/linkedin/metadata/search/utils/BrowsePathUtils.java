@@ -42,7 +42,7 @@ public class BrowsePathUtils {
             dsKey.getPlatform(),
             getKeySchema(dsKey.getPlatform().getEntityType(),
                 entityRegistry));
-        return ("/" + dsKey.getOrigin() + "/" + dpKey.getPlatformName() + "/"
+        return ("/" + dpKey.getPlatformName() + "/"
             + dsKey.getName()).replace('.', '/').toLowerCase();
       case "chart":
         ChartKey chartKey = (ChartKey) EntityKeyUtils.convertUrnToEntityKey(urn, getKeySchema(urn.getEntityType(), entityRegistry));

@@ -10,6 +10,7 @@ import { UserAssets } from './UserAssets';
 import { ExtendedEntityRelationshipsResult } from './type';
 import { decodeUrn } from '../shared/utils';
 import UserInfoSideBar from './UserInfoSideBar';
+import { getLargeUserAvatar } from '../../../utils/formatter/dataProcess';
 
 export interface Props {
     onTabChange: (selectedTab: string) => void;
@@ -94,7 +95,7 @@ export default function UserProfile() {
 
     // Side bar data
     const sideBarData = {
-        photoUrl: data?.corpUser?.editableProperties?.pictureLink || undefined,
+        photoUrl: getLargeUserAvatar(data?.corpUser?.username) || undefined,
         avatarName:
             data?.corpUser?.editableProperties?.displayName ||
             data?.corpUser?.info?.displayName ||

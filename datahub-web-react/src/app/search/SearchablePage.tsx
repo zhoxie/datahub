@@ -9,6 +9,7 @@ import { useGetAutoCompleteMultipleResultsLazyQuery } from '../../graphql/search
 import { navigateToSearchUrl } from './utils/navigateToSearchUrl';
 import { useGetAuthenticatedUser } from '../useGetAuthenticatedUser';
 import analytics, { EventType } from '../analytics';
+import { getUserAvatar } from '../../utils/formatter/dataProcess';
 
 const styles = {
     children: {
@@ -86,7 +87,7 @@ export const SearchablePage = ({ initialQuery, onSearch, onAutoComplete, childre
                 onSearch={onSearch || search}
                 onQueryChange={onAutoComplete || autoComplete}
                 authenticatedUserUrn={user?.urn || ''}
-                authenticatedUserPictureLink={user?.editableProperties?.pictureLink}
+                authenticatedUserPictureLink={getUserAvatar(user?.username)}
                 entityRegistry={entityRegistry}
             />
             <div style={styles.children}>{children}</div>

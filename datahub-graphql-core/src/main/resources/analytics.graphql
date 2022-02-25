@@ -21,7 +21,7 @@ extend type Query {
 """
 For consumption by UI only
 """
-union AnalyticsChart = TimeSeriesChart | BarChart | TableChart
+union AnalyticsChart = TimeSeriesChart | BarChart | TableChart | PieChart
 
 """
 For consumption by UI only
@@ -127,3 +127,28 @@ type Highlight {
     title: String!
     body: String!
 }
+
+"""
+For consumption by UI only
+"""
+type PieSegment {
+    label: String!
+    value: Int!
+}
+
+"""
+For consumption by UI only
+"""
+type NamedPie {
+    name: String!
+    segment: PieSegment!
+}
+
+"""
+For consumption by UI only
+"""
+type PieChart {
+    title: String!
+    pies: [NamedPie!]!
+}
+

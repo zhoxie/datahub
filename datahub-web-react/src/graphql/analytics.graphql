@@ -38,6 +38,16 @@ query getAnalyticsCharts {
                     values
                 }
             }
+            ... on PieChart {
+                title
+                pies {
+                    name
+                    segment {
+                        label
+                        value
+                    }
+                }
+            }
         }
     }
 }

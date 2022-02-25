@@ -8,6 +8,7 @@ import CustomAvatar from '../../shared/avatar/CustomAvatar';
 import { useEntityRegistry } from '../../useEntityRegistry';
 import { useRemoveUserMutation } from '../../../graphql/user.generated';
 import { ANTD_GRAY, REDESIGN_COLORS } from '../../entity/shared/constants';
+import { getUserAvatar } from '../../../utils/formatter/dataProcess';
 
 type Props = {
     user: CorpUser;
@@ -37,6 +38,7 @@ const ButtonGroup = styled.div`
 export default function UserListItem({ user, onDelete }: Props) {
     const entityRegistry = useEntityRegistry();
     const displayName = entityRegistry.getDisplayName(EntityType.CorpUser, user);
+    const photoUrl = getUserAvatar(user?.username);
 
     const [removeUserMutation] = useRemoveUserMutation();
 
@@ -96,7 +98,7 @@ export default function UserListItem({ user, onDelete }: Props) {
             <UserItemContainer>
                 <Link to={entityRegistry.getEntityUrl(EntityType.CorpUser, user.urn)}>
                     <UserHeaderContainer>
-                        <CustomAvatar size={32} name={displayName} />
+                        <CustomAvatar size={32} name={displayName} photoUrl={photoUrl} />
                         <div style={{ marginLeft: 16, marginRight: 20 }}>
                             <div>
                                 <Typography.Text>{displayName}</Typography.Text>

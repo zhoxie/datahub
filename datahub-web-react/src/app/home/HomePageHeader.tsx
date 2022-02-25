@@ -14,20 +14,50 @@ import { EntityType } from '../../types.generated';
 import analytics, { EventType } from '../analytics';
 import { AdminHeaderLinks } from '../shared/admin/AdminHeaderLinks';
 import { ANTD_GRAY } from '../entity/shared/constants';
+import bgSideImage from '../../images/bg_side_sm.png';
+import bgMidImage from '../../images/bg_mid_sm.png';
+import bg4kSideImage from '../../images/bg_side_4k.png';
+import bg4kMidImage from '../../images/bg_mid_4k.png';
 
 const Background = styled.div`
     width: 100%;
-    background-image: linear-gradient(
-        ${(props) => props.theme.styles['homepage-background-upper-fade']},
-        75%,
-        ${(props) => props.theme.styles['homepage-background-lower-fade']}
-    );
+    @media (max-width: 1200px) {
+        background: url(${bgSideImage}) repeat;
+        -webkit-background-size: contain;
+        -moz-background-size: contain;
+        -o-background-size: contain;
+        background-size: contain;
+    }
+    @media (min-width: 1201px) {
+        background: url(${bg4kSideImage}) repeat;
+        -webkit-background-size: contain;
+        -moz-background-size: contain;
+        -o-background-size: contain;
+        background-size: contain;
+    }
+`;
+
+const BackCenterground = styled.div`
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+
+    @media (max-width: 1200px) {
+        background: url(${bgMidImage}) no-repeat;
+        background-size: contain;
+        background-position: center;
+    }
+
+    @media (min-width: 1201px) {
+        background: url(${bg4kMidImage}) no-repeat;
+        background-size: contain;
+        background-position: center;
+    }
 `;
 
 const WelcomeText = styled(Typography.Text)`
     font-size: 16px;
-    color: ${(props) =>
-        props.theme.styles['homepage-text-color'] || props.theme.styles['homepage-background-lower-fade']};
+    color: ${ANTD_GRAY[5]};
 `;
 
 const styles = {
@@ -43,7 +73,6 @@ const HeaderContainer = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
 `;
 
 const NavGroup = styled.div`
@@ -83,12 +112,13 @@ const SuggestionTag = styled(Tag)`
     && {
         padding: 8px 16px;
     }
+    background-color: ${ANTD_GRAY[2]};
 `;
 
 const SuggestedQueriesText = styled(Typography.Text)`
     margin-left: 12px;
     margin-bottom: 12px;
-    color: ${ANTD_GRAY[8]};
+    color: ${ANTD_GRAY[2]};
 `;
 
 const SearchBarContainer = styled.div`
@@ -200,61 +230,64 @@ export const HomePageHeader = () => {
 
     return (
         <Background>
-            <Row justify="space-between" style={styles.navBar}>
-                <WelcomeText>
-                    {!!user && (
-                        <>
-                            Welcome back, <b>{entityRegistry.getDisplayName(EntityType.CorpUser, user)}</b>.
-                        </>
+            <BackCenterground>
+                <Row justify="space-between" style={styles.navBar}>
+                    <WelcomeText>
+                        {!!user && (
+                            <>
+                                Welcome back, <b>{entityRegistry.getDisplayName(EntityType.CorpUser, user)}</b>.
+                            </>
+                        )}
+                    </WelcomeText>
+                    <NavGroup>
+                        <AdminHeaderLinks isHome />
+                        <ManageAccount
+                            urn={user?.urn || ''}
+                            pictureLink={user?.editableProperties?.pictureLink || ''}
+                            name={(user && entityRegistry.getDisplayName(EntityType.CorpUser, user)) || undefined}
+                            userName={user?.username || ''}
+                        />
+                    </NavGroup>
+                </Row>
+                <HeaderContainer>
+                    <Image src={themeConfig.assets.logoUrl} preview={false} style={styles.logoImage} />
+                    {!!themeConfig.content.subtitle && (
+                        <Typography.Text style={styles.subtitle}>{themeConfig.content.subtitle}</Typography.Text>
                     )}
-                </WelcomeText>
-                <NavGroup>
-                    <AdminHeaderLinks />
-                    <ManageAccount
-                        urn={user?.urn || ''}
-                        pictureLink={user?.editableProperties?.pictureLink || ''}
-                        name={(user && entityRegistry.getDisplayName(EntityType.CorpUser, user)) || undefined}
-                    />
-                </NavGroup>
-            </Row>
-            <HeaderContainer>
-                <Image src={themeConfig.assets.logoUrl} preview={false} style={styles.logoImage} />
-                {!!themeConfig.content.subtitle && (
-                    <Typography.Text style={styles.subtitle}>{themeConfig.content.subtitle}</Typography.Text>
-                )}
-                <SearchBarContainer>
-                    <SearchBar
-                        placeholderText={themeConfig.content.search.searchbarMessage}
-                        suggestions={suggestionsData?.autoCompleteForMultiple?.suggestions || []}
-                        onSearch={onSearch}
-                        onQueryChange={onAutoComplete}
-                        autoCompleteStyle={styles.searchBox}
-                        entityRegistry={entityRegistry}
-                    />
-                    {suggestionsToShow && suggestionsToShow.length > 0 && (
-                        <SuggestionsContainer>
-                            <SuggestedQueriesText strong>Try searching for</SuggestedQueriesText>
-                            <SuggestionTagContainer>
-                                {suggestionsToShow.slice(0, 3).map((suggestion) => (
-                                    <SuggestionButton
-                                        key={suggestion}
-                                        type="link"
-                                        onClick={() =>
-                                            navigateToSearchUrl({
-                                                type: undefined,
-                                                query: suggestion,
-                                                history,
-                                            })
-                                        }
-                                    >
-                                        <SuggestionTag>{truncate(suggestion, 40)}</SuggestionTag>
-                                    </SuggestionButton>
-                                ))}
-                            </SuggestionTagContainer>
-                        </SuggestionsContainer>
-                    )}
-                </SearchBarContainer>
-            </HeaderContainer>
+                    <SearchBarContainer>
+                        <SearchBar
+                            placeholderText={themeConfig.content.search.searchbarMessage}
+                            suggestions={suggestionsData?.autoCompleteForMultiple?.suggestions || []}
+                            onSearch={onSearch}
+                            onQueryChange={onAutoComplete}
+                            autoCompleteStyle={styles.searchBox}
+                            entityRegistry={entityRegistry}
+                        />
+                        {suggestionsToShow && suggestionsToShow.length > 0 && (
+                            <SuggestionsContainer>
+                                <SuggestedQueriesText strong>Try searching for</SuggestedQueriesText>
+                                <SuggestionTagContainer>
+                                    {suggestionsToShow.slice(0, 3).map((suggestion) => (
+                                        <SuggestionButton
+                                            key={suggestion}
+                                            type="link"
+                                            onClick={() =>
+                                                navigateToSearchUrl({
+                                                    type: undefined,
+                                                    query: suggestion,
+                                                    history,
+                                                })
+                                            }
+                                        >
+                                            <SuggestionTag>{truncate(suggestion, 40)}</SuggestionTag>
+                                        </SuggestionButton>
+                                    ))}
+                                </SuggestionTagContainer>
+                            </SuggestionsContainer>
+                        )}
+                    </SearchBarContainer>
+                </HeaderContainer>
+            </BackCenterground>
         </Background>
     );
 };

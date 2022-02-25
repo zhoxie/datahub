@@ -78,7 +78,7 @@ export const SearchHeader = ({
     return (
         <Header style={styles.header as any}>
             <LogoSearchContainer>
-                <Link to="/">
+                <Link to="/index">
                     <LogoImage src={themeConfig.assets.logoUrl} preview={false} />
                 </Link>
                 <SearchBar

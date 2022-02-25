@@ -12,6 +12,7 @@ import CustomAvatar from './avatar/CustomAvatar';
 import analytics, { EventType } from '../analytics';
 import { ANTD_GRAY } from '../entity/shared/constants';
 import { useAppConfig } from '../useAppConfig';
+import { getUserAvatar } from '../../utils/formatter/dataProcess';
 
 const MenuItem = styled(Menu.Item)`
     && {
@@ -36,13 +37,14 @@ interface Props {
     urn: string;
     pictureLink?: string;
     name?: string;
+    userName?: string;
 }
 
 const defaultProps = {
     pictureLink: undefined,
 };
 
-export const ManageAccount = ({ urn: _urn, pictureLink: _pictureLink, name }: Props) => {
+export const ManageAccount = ({ urn: _urn, pictureLink: _pictureLink, name, userName }: Props) => {
     const entityRegistry = useEntityRegistry();
     const themeConfig = useTheme();
     const { config } = useAppConfig();
@@ -52,6 +54,7 @@ export const ManageAccount = ({ urn: _urn, pictureLink: _pictureLink, name }: Pr
         Cookies.remove(GlobalCfg.CLIENT_AUTH_COOKIE);
     };
     const version = config?.appVersion;
+    const pictureLink = getUserAvatar(userName, _pictureLink);
     const menu = (
         <Menu>
             {version && <MenuItem key="version">{version}</MenuItem>}
@@ -80,7 +83,7 @@ export const ManageAccount = ({ urn: _urn, pictureLink: _pictureLink, name }: Pr
     return (
         <Dropdown overlay={menu}>
             <Link to={`/${entityRegistry.getPathName(EntityType.CorpUser)}/${_urn}`}>
-                <CustomAvatar photoUrl={_pictureLink} style={{ marginRight: 5 }} name={name} />
+                <CustomAvatar photoUrl={pictureLink} style={{ marginRight: 5 }} name={name} />
                 <DownArrow />
             </Link>
         </Dropdown>

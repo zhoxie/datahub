@@ -5,6 +5,7 @@ import { AnalyticsChart as AnalyticsChartType } from '../../../types.generated';
 import { TimeSeriesChart } from './TimeSeriesChart';
 import { BarChart } from './BarChart';
 import { TableChart } from './TableChart';
+import { PieChart } from './PieChart';
 import { ChartCard } from './ChartCard';
 import { ChartContainer } from './ChartContainer';
 
@@ -27,6 +28,9 @@ export const AnalyticsChart = ({ chartData, width, height }: Props) => {
             break;
         case 'TableChart':
             chartSection = <TableChart chartData={chartData} />;
+            break;
+        case 'PieChart':
+            chartSection = <PieChart chartData={chartData} width={width} height={height} />;
             break;
         default:
             break;
