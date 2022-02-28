@@ -159,7 +159,7 @@ export default function AddDataSourceModal({
             });
         } else if (isInKafka()) {
             isOk = !formData.connections?.some((item) => {
-                return item.topicPatternsAllow === '' || item.bootstrap === '';
+                return item.bootstrap === '';
             });
         } else if (isPinot() || isTrino() || isPresto()) {
             isOk = !formData.connections?.some((item) => {
@@ -202,6 +202,12 @@ export default function AddDataSourceModal({
                         bootstrap: conn.bootstrap,
                         topicPatternsAllow: conn.topicPatternsAllow,
                     };
+                    if (conn.schemaRegistryUrl !== '') {
+                        dataSource[`${formData.sourceType}`] = {
+                            ...dataSource[`${formData.sourceType}`],
+                            schemaRegistryUrl: conn.schemaRegistryUrl,
+                        };
+                    }
                     break;
                 }
                 case DbSourceTypeData.Mysql:
@@ -756,19 +762,18 @@ export default function AddDataSourceModal({
                 >
                     <Space direction="vertical" style={{ width: '100%', marginTop: 0 }}>
                         <Form.Item
-                            name={`topicPattern_${info.id}`}
-                            label="Topic Pattern"
-                            rules={[{ required: true, message: 'Please input connection topic pattern allow!' }]}
+                            name={`dataCenter_${info.id}`}
+                            label="Data Center"
+                            rules={[{ required: false, message: 'Please input connection data center!' }]}
                         >
-                            <Input
-                                type="text"
-                                placeholder="Please input connection topic pattern allow"
-                                autoComplete="off"
-                                defaultValue={info.topicPatternsAllow}
-                                onChange={(e) =>
-                                    updateDataSourceConnections(e.target.value, FormField.topicPatternsAllow, index)
-                                }
-                            />
+                            <Select
+                                defaultValue={info.dataCenter}
+                                onChange={(value) => {
+                                    dataCenterChangeHandler(value, FormField.dataCenter, index);
+                                }}
+                            >
+                                {dataCenterOptions}
+                            </Select>
                         </Form.Item>
                         <Form.Item
                             name={`bootstrapServer_${info.id}`}
@@ -786,18 +791,34 @@ export default function AddDataSourceModal({
                             />
                         </Form.Item>
                         <Form.Item
-                            name={`dataCenter_${info.id}`}
-                            label="Data Center"
-                            rules={[{ required: false, message: 'Please input connection data center!' }]}
+                            name={`schemaRegistryURL_${info.id}`}
+                            label="Schema Registry URL"
+                            rules={[{ required: false, message: 'Please input connection Schema Registry URL!' }]}
                         >
-                            <Select
-                                defaultValue={info.dataCenter}
-                                onChange={(value) => {
-                                    dataCenterChangeHandler(value, FormField.dataCenter, index);
-                                }}
-                            >
-                                {dataCenterOptions}
-                            </Select>
+                            <Input
+                                type="text"
+                                placeholder="Please input connection bootstrap Server"
+                                autoComplete="off"
+                                defaultValue={info.bootstrap}
+                                onChange={(e) =>
+                                    updateDataSourceConnections(e.target.value, FormField.schemaRegistryUrl, index)
+                                }
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name={`topicPattern_${info.id}`}
+                            label="Topic Pattern"
+                            rules={[{ required: false, message: 'Please input connection topic pattern allow!' }]}
+                        >
+                            <Input
+                                type="text"
+                                placeholder="Please input connection topic pattern allow"
+                                autoComplete="off"
+                                defaultValue={info.topicPatternsAllow}
+                                onChange={(e) =>
+                                    updateDataSourceConnections(e.target.value, FormField.topicPatternsAllow, index)
+                                }
+                            />
                         </Form.Item>
                     </Space>
                 </Card>

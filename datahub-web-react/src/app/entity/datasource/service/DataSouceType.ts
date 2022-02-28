@@ -45,6 +45,7 @@ export interface IFormData {
 
 export enum FormField {
     bootstrap = 'bootstrap',
+    schemaRegistryUrl = 'schemaRegistryUrl',
     database = 'database',
     tnsName = 'tnsName',
     jdbcParams = 'jdbcParams',

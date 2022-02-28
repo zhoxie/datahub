@@ -1060,7 +1060,7 @@ input TrinoSourceInput {
 
 input KafkaMetadataSourceInput {
     bootstrap: String!
-    schemaRegistryUrl: String!
+    schemaRegistryUrl: String
     topicPatternsAllow: String
     topicPatternsDeny: String
     topicPatternsIgnoreCase: Boolean

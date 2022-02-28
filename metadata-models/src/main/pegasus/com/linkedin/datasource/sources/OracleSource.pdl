@@ -18,7 +18,7 @@ record OracleSource {
   /**
   * Oracle host URL.
   */
-  hostPort: string
+  hostPort: optional string
 
   /**
   * Oracle service name. If using, omit database.

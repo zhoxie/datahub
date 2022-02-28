@@ -13,7 +13,7 @@ record KafkaMetadataSource {
   /**
   * Schema registry location.
   */
-  schemaRegistryUrl: string
+  schemaRegistryUrl: optional string
 
   /**
   * List of regex patterns for topics to include in ingestion.
