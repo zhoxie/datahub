@@ -5,7 +5,7 @@ import { useGetDatasourceQuery } from '../../../../graphql/datasource.generated'
 import { Datasource } from '../../../../types.generated';
 import { IFormData } from '../service/DataSouceType';
 import { sourceTypeList } from '../service/FormInitValue';
-import AddDataSourceModal from './AddDataSouceModal';
+import AddDataSourceModal from './AddDataSourceModal';
 import { useGetAuthenticatedUser } from '../../../useGetAuthenticatedUser';
 
 export type Props = {

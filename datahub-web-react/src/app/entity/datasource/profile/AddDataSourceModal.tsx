@@ -159,7 +159,7 @@ export default function AddDataSourceModal({
             });
         } else if (isInKafka()) {
             isOk = !formData.connections?.some((item) => {
-                return item.topicPatternsAllow === '' || item.bootstrapServer === '';
+                return item.topicPatternsAllow === '' || item.bootstrap === '';
             });
         } else if (isPinot() || isTrino() || isPresto()) {
             isOk = !formData.connections?.some((item) => {
@@ -187,40 +187,104 @@ export default function AddDataSourceModal({
 
     const getDataSourceInputData = () => {
         const dataSources: IDatasourceSourceInput[] = formData.connections?.map((conn) => {
-            let dataSource: IDatasourceSourceInput = {
+            const dataSource: IDatasourceSourceInput = {
                 dataCenter: conn.dataCenter,
             };
             switch (formData.sourceType) {
                 case DbSourceTypeData.Iceberg: {
-                    dataSource = {
-                        ...dataSource,
-                        iceberg: {
-                            hiveMetastoreUris: conn.hiveMetastoreUris || '',
-                        },
+                    dataSource[`${formData.sourceType}`] = {
+                        hiveMetastoreUris: conn.hiveMetastoreUris,
                     };
                     break;
                 }
                 case DbSourceTypeData.Kafka: {
-                    dataSource = {
-                        ...dataSource,
-                        kafka: {
-                            topicPatternsAllow: conn.topicPatternsAllow,
-                            bootstrap: conn.bootstrapServer || '',
-                            schemaRegistryUrl: conn.schemaPatternAllow || '',
-                        },
+                    dataSource[`${formData.sourceType}`] = {
+                        bootstrap: conn.bootstrap,
+                        topicPatternsAllow: conn.topicPatternsAllow,
                     };
                     break;
                 }
                 case DbSourceTypeData.Mysql:
-                case DbSourceTypeData.Pinot:
                 case DbSourceTypeData.Postgres:
                 case DbSourceTypeData.TiDB:
+                case DbSourceTypeData.Hive: {
+                    dataSource[`${formData.sourceType}`] = {
+                        username: conn.username,
+                        password: conn.password,
+                        hostPort: conn.hostPort,
+                        database: conn.database,
+                        tablePatternAllow: conn.tablePatternAllow,
+                        schemaPatternAllow: conn.schemaPatternAllow,
+                    };
+                    if (conn.jdbcParams !== '') {
+                        dataSource[`${formData.sourceType}`] = {
+                            ...dataSource[`${formData.sourceType}`],
+                            jdbcParams: conn.jdbcParams,
+                        };
+                    }
+                    break;
+                }
+                case DbSourceTypeData.trino:
+                case DbSourceTypeData.presto: {
+                    dataSource[`${formData.sourceType}`] = {
+                        username: conn.username,
+                        password: conn.password,
+                        hostPort: conn.hostPort,
+                        tablePatternAllow: conn.tablePatternAllow,
+                        schemaPatternAllow: conn.schemaPatternAllow,
+                    };
+                    if (conn.catalog !== '') {
+                        dataSource[`${formData.sourceType}`] = {
+                            ...dataSource[`${formData.sourceType}`],
+                            catalog: conn.catalog,
+                        };
+                    }
+                    if (conn.schema !== '') {
+                        dataSource[`${formData.sourceType}`] = {
+                            ...dataSource[`${formData.sourceType}`],
+                            schema: conn.schema,
+                        };
+                    }
+                    if (conn.jdbcParams !== '') {
+                        dataSource[`${formData.sourceType}`] = {
+                            ...dataSource[`${formData.sourceType}`],
+                            jdbcParams: conn.jdbcParams,
+                        };
+                    }
+                    break;
+                }
                 case DbSourceTypeData.Oracle: {
                     dataSource[`${formData.sourceType}`] = {
-                        username: conn.username || '',
-                        password: conn.password || '',
-                        hostPort: conn.hostPort || '',
-                        database: conn.database || '',
+                        username: conn.username,
+                        password: conn.password,
+                        tablePatternAllow: conn.tablePatternAllow,
+                        schemaPatternAllow: conn.schemaPatternAllow,
+                    };
+                    if (conn.hostPort !== '') {
+                        dataSource[`${formData.sourceType}`] = {
+                            ...dataSource[`${formData.sourceType}`],
+                            hostPort: conn.hostPort,
+                        };
+                    }
+                    if (conn.serviceName !== '') {
+                        dataSource[`${formData.sourceType}`] = {
+                            ...dataSource[`${formData.sourceType}`],
+                            serviceName: conn.serviceName,
+                        };
+                    }
+                    if (conn.tnsName !== '') {
+                        dataSource[`${formData.sourceType}`] = {
+                            ...dataSource[`${formData.sourceType}`],
+                            tnsName: conn.tnsName,
+                        };
+                    }
+                    break;
+                }
+                case DbSourceTypeData.Pinot: {
+                    dataSource[`${formData.sourceType}`] = {
+                        username: conn.username,
+                        password: conn.password,
+                        hostPort: conn.hostPort,
                         tablePatternAllow: conn.tablePatternAllow,
                         schemaPatternAllow: conn.schemaPatternAllow,
                     };
