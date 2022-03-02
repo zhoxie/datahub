@@ -25,6 +25,7 @@ import { SidebarViewDefinitionSection } from '../shared/containers/profile/sideb
 import { SidebarRecommendationsSection } from '../shared/containers/profile/sidebar/Recommendations/SidebarRecommendationsSection';
 import { getDataForEntityType } from '../shared/containers/profile/utils';
 import { SidebarDomainSection } from '../shared/containers/profile/sidebar/Domain/SidebarDomainSection';
+import { DatasourcesTab } from '../shared/tabs/Dataset/Source/DatasourcesTab';
 
 const SUBTYPES = {
     VIEW: 'view',
@@ -113,6 +114,14 @@ export class DatasetEntity implements Entity<Dataset> {
                         enabled: (_, dataset: GetDatasetQuery) =>
                             (dataset?.dataset?.incoming?.count || 0) > 0 ||
                             (dataset?.dataset?.outgoing?.count || 0) > 0,
+                    },
+                },
+                {
+                    name: 'Sources',
+                    component: DatasourcesTab,
+                    display: {
+                        visible: (_, _1) => true,
+                        enabled: (_, dataset: GetDatasetQuery) => (dataset?.dataset?.sources?.count || 0) > 0,
                     },
                 },
                 {

@@ -13,6 +13,8 @@ datahub-web-react/src/app/browse/LegacyBrowsePath.tsx
 datahub-web-react/src/app/entity/datasource/preview/Preview.tsx
 datahub-web-react/src/app/preview/DefaultPreviewCard.tsx
 datahub-web-react/src/App.tsx
+datahub-web-react/src/app/entity/dataset/DatasetEntity.tsx
+datahub-web-react/src/app/entity/shared/tabs/Dataset/Source/DatasourcesTab.tsx
 
 # datasource graphql
 datahub-graphql-core/src/main/resources/entity.graphql

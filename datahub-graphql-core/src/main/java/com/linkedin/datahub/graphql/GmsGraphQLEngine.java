@@ -22,6 +22,7 @@ import com.linkedin.datahub.graphql.generated.DataFlow;
 import com.linkedin.datahub.graphql.generated.DataJob;
 import com.linkedin.datahub.graphql.generated.DataJobInputOutput;
 import com.linkedin.datahub.graphql.generated.Dataset;
+import com.linkedin.datahub.graphql.generated.DatasetSources;
 import com.linkedin.datahub.graphql.generated.Datasource;
 import com.linkedin.datahub.graphql.generated.Domain;
 import com.linkedin.datahub.graphql.generated.EntityRelationship;
@@ -755,6 +756,13 @@ public class GmsGraphQLEngine {
                    this.entityClient,
                    "dataset",
                    "subTypes")))
+                .dataFetcher("sources", new AuthenticatedResolver<>(
+                    new LoadableTypeBatchResolver<>(
+                        datasourceType,
+                        (env) -> ((DatasetSources) env.getSource()).getSources().stream()
+                            .map(Datasource::getUrn)
+                            .collect(Collectors.toList())))
+                )
             )
             .type("Owner", typeWiring -> typeWiring
                     .dataFetcher("owner", new AuthenticatedResolver<>(
