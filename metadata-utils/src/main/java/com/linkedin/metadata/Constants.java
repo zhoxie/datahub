@@ -18,6 +18,7 @@ public class Constants {
   public static final String CORP_USER_ENTITY_NAME = "corpuser";
   public static final String CORP_GROUP_ENTITY_NAME = "corpGroup";
   public static final String DATASET_ENTITY_NAME = "dataset";
+  public static final String DATASOURCE_ENTITY_NAME = "datasource";
   public static final String CHART_ENTITY_NAME = "chart";
   public static final String DASHBOARD_ENTITY_NAME = "dashboard";
   public static final String DATA_FLOW_ENTITY_NAME = "dataFlow";
@@ -74,6 +75,11 @@ public class Constants {
   public static final String SCHEMA_METADATA_ASPECT_NAME = "schemaMetadata";
   public static final String EDITABLE_SCHEMA_METADATA_ASPECT_NAME = "editableSchemaMetadata";
   public static final String VIEW_PROPERTIES_ASPECT_NAME = "viewProperties";
+
+  // Datasource
+  public static final String DATASOURCE_KEY_ASPECT_NAME = "datasourceKey";
+  public static final String DATASOURCE_INFO_ASPECT_NAME = "datasourceInfo";
+
 
   // Chart
   public static final String CHART_KEY_ASPECT_NAME = "chartKey";

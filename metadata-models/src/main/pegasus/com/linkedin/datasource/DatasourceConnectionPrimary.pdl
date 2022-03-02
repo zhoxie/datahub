@@ -1,0 +1,29 @@
+namespace com.linkedin.datasource
+
+import com.linkedin.datasource.sources.IcebergSource
+import com.linkedin.datasource.sources.KafkaMetadataSource
+import com.linkedin.datasource.sources.MysqlSource
+import com.linkedin.datasource.sources.OracleSource
+import com.linkedin.datasource.sources.PostgresSource
+import com.linkedin.datasource.sources.TiDBSource
+import com.linkedin.datasource.sources.TrinoSource
+import com.linkedin.datasource.sources.PinotSource
+import com.linkedin.datasource.sources.HiveSource
+import com.linkedin.datasource.sources.PrestoSource
+import com.linkedin.datasource.sources.SnowflakeSource
+
+@Aspect = {
+  "name": "datasourceConnectionPrimary"
+}
+record DatasourceConnectionPrimary {
+  /**
+  * Datasource platform urn associated with the datasource
+  */
+  @Searchable = {
+    "fieldType": "TEXT_PARTIAL",
+    "enableAutocomplete": true
+  }
+  dataCenter: string
+
+  connection: union[IcebergSource, KafkaMetadataSource, MysqlSource, OracleSource, PostgresSource, TiDBSource, TrinoSource, PinotSource, HiveSource, PrestoSource, SnowflakeSource]
+}

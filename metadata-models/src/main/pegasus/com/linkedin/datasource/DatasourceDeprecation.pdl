@@ -1,0 +1,36 @@
+namespace com.linkedin.datasource
+
+import com.linkedin.common.Urn
+
+/**
+ * Datasource deprecation status
+ */
+@Aspect = {
+  "name": "datasourceDeprecation"
+}
+record DatasourceDeprecation {
+
+  /**
+   * Whether the datasource is deprecated by owner.
+   */
+  @Searchable = {
+    "fieldType": "BOOLEAN",
+    "weightsPerFieldValue": { "true": 0.5 }
+  }
+  deprecated: boolean
+
+  /**
+   * The time user plan to decommission this datasource.
+   */
+  decommissionTime: optional long
+
+  /**
+   * Additional information about the datasource deprecation plan, such as the wiki, doc, RB.
+   */
+  note: string
+
+  /**
+   * The corpuser URN which will be credited for modifying this deprecation content.
+   */
+  actor: optional Urn
+}

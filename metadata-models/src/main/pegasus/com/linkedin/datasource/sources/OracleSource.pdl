@@ -1,0 +1,59 @@
+namespace com.linkedin.datasource.sources
+
+@Aspect = {
+  "name": "OracleSource"
+}
+record OracleSource {
+
+  /**
+  * Oracle username.
+  */
+  username: string
+
+  /**
+  * Oracle password.
+  */
+  password: string
+
+  /**
+  * Oracle host URL.
+  */
+  hostPort: optional string
+
+  /**
+  * Oracle service name. If using, omit database.
+  */
+  serviceName: optional string
+
+  tnsName: optional string
+
+  /**
+  * List of regex patterns for tables to include in ingestion.
+  */
+  tablePatternAllow: optional string
+
+  /**
+  * List of regex patterns for tables to exclude from ingestion.
+  */
+  tablePatternDeny: optional string
+
+  /**
+  * Whether to ignore case sensitivity during pattern matching.
+  */
+  tablePatternIgnoreCase: optional boolean = true
+
+  /**
+  * List of regex patterns for schemas to include in ingestion.
+  */
+  schemaPatternAllow: optional string
+
+  /**
+  * List of regex patterns for schemas to exclude from ingestion.
+  */
+  schemaPatternDeny: optional string
+
+  /**
+  * Whether to ignore case sensitivity during pattern matching.
+  */
+  schemaPatternIgnoreCase: optional boolean = true
+}

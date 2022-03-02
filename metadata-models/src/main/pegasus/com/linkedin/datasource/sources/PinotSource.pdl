@@ -1,0 +1,52 @@
+namespace com.linkedin.datasource.sources
+
+@Aspect = {
+  "name": "PinotSource"
+}
+record PinotSource {
+
+  /**
+  * pinot username.
+  */
+  username: string
+
+  /**
+  * pinot password.
+  */
+  password: string
+
+  /**
+  * pinot host URL.
+  */
+  hostPort: string
+
+  /**
+  * List of regex patterns for tables to include in ingestion.
+  */
+  tablePatternAllow: optional string
+
+  /**
+  * List of regex patterns for tables to exclude from ingestion.
+  */
+  tablePatternDeny: optional string
+
+  /**
+  * Whether to ignore case sensitivity during pattern matching.
+  */
+  tablePatternIgnoreCase: optional boolean = true
+
+  /**
+  * List of regex patterns for schemas to include in ingestion.
+  */
+  schemaPatternAllow: optional string
+
+  /**
+  * List of regex patterns for schemas to exclude from ingestion.
+  */
+  schemaPatternDeny: optional string
+
+  /**
+  * Whether to ignore case sensitivity during pattern matching.
+  */
+  schemaPatternIgnoreCase: optional boolean = true
+}

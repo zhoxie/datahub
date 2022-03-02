@@ -601,3 +601,331 @@ fragment entityDomain on Domain {
         name
     }
 }
+
+fragment nonRecursiveDatasourceFields on Datasource {
+    urn
+    name
+    type
+    platform {
+        name
+        info {
+            logoUrl
+        }
+    }
+    origin
+    group {
+        urn
+        type
+        name
+        info {
+            displayName
+            description
+            email
+        }
+    }
+    description
+    uri
+    platformNativeType
+    properties {
+        customProperties {
+            key
+            value
+        }
+        externalUrl
+    }
+    editableProperties {
+        description
+    }
+    ownership {
+        ...ownershipFields
+    }
+    syncCDAPI
+    oracleTNSType
+    region
+    primaryConn {
+        dataCenter
+        connection {
+            ... on IcebergSource {
+                hiveMetastoreUris
+            }
+            ... on HiveSource {
+                username
+                password
+                hostPort
+                database
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on KafkaMetadataSource {
+                bootstrap
+                schemaRegistryUrl
+                topicPatternsAllow
+                topicPatternsDeny
+                topicPatternsIgnoreCase
+            }
+            ... on MysqlSource {
+                username
+                password
+                hostPort
+                database
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on PostgresSource {
+                username
+                password
+                hostPort
+                database
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on OracleSource {
+                username
+                password
+                hostPort
+                serviceName
+                tnsName
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on PinotSource {
+                username
+                password
+                hostPort
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on TiDBSource {
+                username
+                password
+                hostPort
+                database
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on PrestoSource {
+                username
+                password
+                hostPort
+                catalog
+                schema
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on TrinoSource {
+                username
+                password
+                hostPort
+                catalog
+                schema
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on SnowflakeSource {
+                username
+                password
+                hostPort
+                connectionParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+        }
+    }
+    gsbConn {
+        dataCenter
+        connection {
+            ... on IcebergSource {
+                hiveMetastoreUris
+            }
+            ... on HiveSource {
+                username
+                password
+                hostPort
+                database
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on KafkaMetadataSource {
+                bootstrap
+                schemaRegistryUrl
+                topicPatternsAllow
+                topicPatternsDeny
+                topicPatternsIgnoreCase
+            }
+            ... on MysqlSource {
+                username
+                password
+                hostPort
+                database
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on PostgresSource {
+                username
+                password
+                hostPort
+                database
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on OracleSource {
+                username
+                password
+                hostPort
+                serviceName
+                tnsName
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on PinotSource {
+                username
+                password
+                hostPort
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on TiDBSource {
+                username
+                password
+                hostPort
+                database
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on PrestoSource {
+                username
+                password
+                hostPort
+                catalog
+                schema
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on TrinoSource {
+                username
+                password
+                hostPort
+                catalog
+                schema
+                jdbcParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+            ... on SnowflakeSource {
+                username
+                password
+                hostPort
+                connectionParams
+                tablePatternAllow
+                tablePatternDeny
+                tablePatternIgnoreCase
+                schemaPatternAllow
+                schemaPatternDeny
+                schemaPatternIgnoreCase
+            }
+        }
+    }
+    institutionalMemory {
+        elements {
+            url
+            author {
+                urn
+                username
+            }
+            description
+            created {
+                actor
+                time
+            }
+        }
+    }
+    deprecation {
+        actor
+        deprecated
+        note
+        decommissionTime
+    }
+    globalTags {
+        ...globalTagsFields
+    }
+    glossaryTerms {
+        ...glossaryTerms
+    }
+}

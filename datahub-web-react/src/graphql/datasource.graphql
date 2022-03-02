@@ -1,0 +1,106 @@
+mutation updateDatasource($urn: String!, $input: DatasourceUpdateInput!) {
+    updateDatasource(urn: $urn, input: $input) {
+        urn
+    }
+}
+
+mutation createDatasource($input: DatasourceCreateInput!) {
+    createDatasource(input: $input)
+}
+
+mutation deleteDatasource($urn: String!) {
+    deleteDatasource(urn: $urn)
+}
+
+mutation testDatasource($input: DatasourceTestInput!) {
+    testDatasource(input: $input)
+}
+
+query getDatasource($urn: String!) {
+    datasource(urn: $urn) {
+        ...nonRecursiveDatasourceFields
+        usageStats(resource: $urn, range: MONTH) {
+            buckets {
+                bucket
+                duration
+                resource
+                metrics {
+                    uniqueUserCount
+                    totalSqlQueries
+                    topSqlQueries
+                }
+            }
+            aggregations {
+                uniqueUserCount
+                totalSqlQueries
+                users {
+                    user {
+                        urn
+                        username
+                    }
+                    count
+                    userEmail
+                }
+                fields {
+                    fieldName
+                    count
+                }
+            }
+        }
+        datasets: relationships(input: { types: ["Sources"], direction: INCOMING, start: 0, count: 100 }) {
+            start
+            count
+            total
+            relationships {
+                entity {
+                    ... on Dataset {
+                        urn
+                        name
+                        origin
+                        description
+                        uri
+                        platform {
+                            name
+                            info {
+                                displayName
+                                logoUrl
+                            }
+                        }
+                        editableProperties {
+                            description
+                        }
+                        platformNativeType
+                        properties {
+                            customProperties {
+                                key
+                                value
+                            }
+                        }
+                        ownership {
+                            ...ownershipFields
+                        }
+                        globalTags {
+                            ...globalTagsFields
+                        }
+                        glossaryTerms {
+                            ...glossaryTerms
+                        }
+                        subTypes {
+                            typeNames
+                        }
+                    }
+                }
+            }
+        }
+        incoming: relationships(
+            input: { types: ["Sources"], direction: INCOMING, start: 0, count: 100 }
+        ) {
+            ...fullRelationshipResults
+        }
+        outgoing: relationships(
+            input: { types: ["Sources"], direction: OUTGOING, start: 0, count: 100 }
+        ) {
+            ...fullRelationshipResults
+        }
+    }
+}

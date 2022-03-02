@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
-import { Breadcrumb, Row } from 'antd';
+import { Breadcrumb, Button, Row } from 'antd';
 import styled from 'styled-components';
 import { IconBaseProps } from 'react-icons/lib';
 import { VscRepoForked, VscPreview } from 'react-icons/vsc';
@@ -11,6 +11,8 @@ import { useEntityRegistry } from '../useEntityRegistry';
 import { EntityType } from '../../types.generated';
 import { navigateToLineageUrl } from '../lineage/utils/navigateToLineageUrl';
 import useIsLineageMode from '../lineage/utils/useIsLineageMode';
+import { useGetAuthenticatedUser } from '../useGetAuthenticatedUser';
+import AddDataSourceModal from '../entity/datasource/profile/AddDataSourceModal';
 
 interface Props {
     type: EntityType;
@@ -63,6 +65,8 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
     const history = useHistory();
     const location = useLocation();
     const isLineageMode = useIsLineageMode();
+    const [showAddModal, setShowAddModal] = useState(false);
+    const corpUserUrn = useGetAuthenticatedUser()?.corpUser?.urn;
 
     const createPartialPath = (parts: Array<string>) => {
         return parts.join('/');
@@ -83,7 +87,9 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
             </Link>
         </Breadcrumb.Item>
     ));
-
+    const showAdd = () => {
+        return type === EntityType.Datasource && path.length < 1 && corpUserUrn;
+    };
     return (
         <BrowseRow>
             <Breadcrumb style={{ fontSize: '16px' }}>
@@ -97,6 +103,21 @@ export const LegacyBrowsePath = ({ type, path, lineageSupported, isProfilePage, 
                 </Breadcrumb.Item>
                 {pathCrumbs}
             </Breadcrumb>
+            {showAdd() && (
+                <Button type="link" onClick={() => setShowAddModal(true)}>
+                    <b> + </b> Add DataSource
+                </Button>
+            )}
+            {showAddModal && (
+                <AddDataSourceModal
+                    visible
+                    title="Add DataSource"
+                    corpUserUrn={corpUserUrn}
+                    onClose={() => {
+                        setShowAddModal(false);
+                    }}
+                />
+            )}
             {lineageSupported && (
                 <LineageIconGroup>
                     <HoverableVscPreview

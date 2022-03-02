@@ -29,6 +29,8 @@ type Query {
     """
     dataset(urn: String!): Dataset
 
+    datasource(urn: String!): Datasource
+
     """
     Fetch a Dashboard by primary key (urn)
     """
@@ -129,6 +131,14 @@ type Mutation {
     Update the metadata about a particular Dataset
     """
     updateDataset(urn: String!, input: DatasetUpdateInput!): Dataset
+
+    updateDatasource(urn: String!, input: DatasourceUpdateInput!): Datasource
+
+    createDatasource(input: DatasourceCreateInput!): String
+
+    testDatasource(input: DatasourceTestInput!): Boolean
+
+    deleteDatasource(urn: String!): String
 
     """
     Update the metadata about a particular Chart
@@ -312,6 +322,8 @@ enum EntityType {
     The Dataset Entity
     """
     DATASET
+
+    DATASOURCE
 
     """
     The CorpUser Entity
@@ -566,6 +578,8 @@ type Dataset implements EntityWithRelationships & Entity {
     """
     name: String!
 
+    sources: DatasetSources
+
     """
     An additional set of read only properties
     """
@@ -700,6 +714,13 @@ type Dataset implements EntityWithRelationships & Entity {
     For fetching extra entities that do not have custom UI code yet
     """
     aspects(input: AspectParams): [RawAspect!]
+}
+
+type DatasetSources {
+    """
+    Data sources for the dataset
+    """
+    sources: [Datasource!]
 }
 
 
@@ -5772,4 +5793,527 @@ type ListDomainsResult {
   The Domains themselves
   """
   domains: [Domain!]!
+}
+
+type DatasourceProperties {
+    """
+    Environment in which the dataset belongs to or where it was generated
+    Note that this field will soon be deprecated in favor of a more standardized concept of Environment
+    """
+    origin: FabricType!
+
+    """
+    Read only technical description for dataset
+    """
+    description: String
+
+    """
+    Custom properties of the Dataset
+    """
+    customProperties: [StringMapEntry!]
+
+    """
+    External URL associated with the Dataset
+    """
+    externalUrl: String
+}
+
+type Datasource implements EntityWithRelationships & Entity {
+    """
+    The unique Datasource URN
+    """
+    urn: String!
+    """
+    GMS Entity Type
+    """
+    type: EntityType!
+    """
+    datasource platform
+    """
+    platform: DataPlatform!
+    """
+    Datasource native name
+    """
+    name: String!
+    """
+    Fabric type where datasource belongs to or where it was generated
+    """
+    origin: FabricType!
+    """
+    Human readable description for datasource
+    """
+    description: String
+    """
+    The native format for the data platform
+    """
+    platformNativeType: PlatformNativeType
+    """
+    Native Datasource Uri. Uri should not include any environment specific properties
+    """
+    uri: String
+    """
+    Tags used for searching datasource
+    """
+    tags: GlobalTags
+    """
+    A list of platform-specific metadata tuples
+    """
+    properties: DatasourceProperties
+    """
+    A list of editable platform-specific metadata tuples
+    """
+    editableProperties: DatasourceEditableProperties
+    """
+    External URL associated with the Datasource
+    """
+    externalUrl: String
+    """
+    Ownership metadata of the datasource
+    """
+    ownership: Ownership
+    """
+    The datasource deprecation status
+    """
+    deprecation: DatasourceDeprecation
+    """
+    References to internal resources related to the datasource
+    """
+    institutionalMemory: InstitutionalMemory
+    """
+    Status metadata of the datasource
+    """
+    status: Status
+
+    syncCDAPI: Boolean
+
+    oracleTNSType: String
+
+    region: String
+
+    group: CorpGroup
+
+    primaryConn: DatasourceConnection
+
+    gsbConn: DatasourceConnection
+    """
+    The structured tags associated with the datasource
+    """
+    globalTags: GlobalTags @deprecated
+    """
+    Entities upstream of the given entity
+    """
+    upstreamLineage: UpstreamEntityRelationships
+    """
+    Entities downstream of the given entity
+    """
+    downstreamLineage: DownstreamEntityRelationships
+    """
+    Datasets
+    """
+    datasets: DatasourceDatasetsRelationships
+    """
+    The structured glossary terms associated with the datasource
+    """
+    glossaryTerms: GlossaryTerms
+    """
+    Statistics about how this Dataset is used
+    """
+    usageStats(resource: String!, range: TimeRange): UsageQueryResult
+    """
+    Edges extending from this entity.
+    """
+    relationships(input: RelationshipsInput!): EntityRelationshipsResult
+}
+
+type DatasourceConnection {
+
+    dataCenter: String!
+
+    connection: DatasourceSources
+}
+
+union DatasourceSources = IcebergSource | KafkaMetadataSource | MysqlSource | OracleSource | PostgresSource | TrinoSource | PinotSource | PrestoSource | HiveSource | TiDBSource | SnowflakeSource
+
+type SnowflakeSource {
+    username: String
+    password: String
+    hostPort: String
+    connectionParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+type TiDBSource {
+    username: String
+    password: String
+    hostPort: String
+    database: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+type OracleSource {
+    username: String
+    password: String
+    hostPort: String
+    serviceName: String
+    tnsName: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+type PostgresSource {
+    username: String
+    password: String
+    hostPort: String
+    database: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+type MysqlSource {
+    username: String
+    password: String
+    hostPort: String
+    database: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+type HiveSource {
+    username: String
+    password: String
+    hostPort: String
+    database: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+type PrestoSource {
+    username: String
+    password: String
+    hostPort: String
+    catalog: String
+    schema: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+type PinotSource {
+    username: String
+    password: String
+    hostPort: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+type TrinoSource {
+    username: String
+    password: String
+    hostPort: String
+    catalog: String
+    schema: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+type KafkaMetadataSource {
+    bootstrap: String
+    schemaRegistryUrl: String
+    topicPatternsAllow: String
+    topicPatternsDeny: String
+    topicPatternsIgnoreCase: Boolean
+}
+
+type IcebergSource {
+    hiveMetastoreUris: String
+}
+
+input DatasourceSourceInput {
+    dataCenter: String
+    iceberg:IcebergSourceInput
+    kafka:KafkaMetadataSourceInput
+    mysql:MysqlSourceInput
+    oracle:OracleSourceInput
+    postgres:PostgresSourceInput
+    trino:TrinoSourceInput
+    pinot:PinotSourceInput
+    presto:PrestoSourceInput
+    hive:HiveSourceInput
+    tiDB:TiDBSourceInput
+    snowflake:SnowflakeSourceInput
+}
+
+input SnowflakeSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    connectionParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+input OracleSourceInput {
+    username: String!
+    password: String!
+    hostPort: String
+    serviceName: String
+    tnsName: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+input PostgresSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+input MysqlSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+input TiDBSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+input HiveSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    database: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+input PrestoSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    catalog: String
+    schema: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+input PinotSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+input TrinoSourceInput {
+    username: String!
+    password: String!
+    hostPort: String!
+    catalog: String
+    schema: String
+    jdbcParams: String
+    tablePatternAllow: String
+    tablePatternDeny: String
+    tablePatternIgnoreCase: Boolean
+    schemaPatternAllow: String
+    schemaPatternDeny: String
+    schemaPatternIgnoreCase: Boolean
+}
+
+input KafkaMetadataSourceInput {
+    bootstrap: String!
+    schemaRegistryUrl: String
+    topicPatternsAllow: String
+    topicPatternsDeny: String
+    topicPatternsIgnoreCase: Boolean
+}
+
+input IcebergSourceInput {
+    hiveMetastoreUris: String!
+}
+
+type DatasourceEditableProperties {
+    """
+    Description
+    """
+    description: String
+}
+
+type DatasourceDeprecation {
+    """
+    Whether the datasource has been deprecated by owner
+    """
+    deprecated: Boolean!
+
+    """
+    The time user plan to decommission this datasource
+    """
+    decommissionTime: Long
+
+    """
+    Additional information about the datasource deprecation plan
+    """
+    note: String!
+
+    """
+    The user who will be credited for modifying this deprecation content
+    """
+    actor: String
+}
+
+type DatasourceDatasetsRelationships {
+    entities: [EntityRelationshipLegacy]
+}
+
+input DatasourceCreateInput {
+    name: String!
+    group: String
+    region: String
+    syncCDAPI: Boolean!
+    create: Boolean!
+    primaryConn: DatasourceSourceInput!
+    gsbConn: DatasourceSourceInput
+    ownership: OwnershipUpdate
+}
+
+input DatasourceTestInput {
+    connection: DatasourceSourceInput!
+}
+
+input DatasourceEditablePropertiesUpdate {
+    """
+    Description
+    """
+    description: String!
+}
+
+input DatasourceUpdateInput {
+    """
+    Update to ownership
+    """
+    ownership: OwnershipUpdate
+    """
+    Update to deprecation status
+    """
+    deprecation: DatasourceDeprecationUpdate
+    """
+    Update to institutional memory, ie documentation
+    """
+    institutionalMemory: InstitutionalMemoryUpdate
+    """
+    Update to global tags
+    """
+    globalTags: GlobalTagsUpdate
+    """
+    Update to editable properties
+    """
+    editableProperties: DatasourceEditablePropertiesUpdate
+}
+
+input DatasourceDeprecationUpdate {
+    """
+    Whether the datasource is deprecated
+    """
+    deprecated: Boolean!
+
+    """
+    The time user plan to decommission this datasource
+    """
+    decommissionTime: Long
+
+    """
+    Additional information about the datasource deprecation plan
+    """
+    note: String!
 }

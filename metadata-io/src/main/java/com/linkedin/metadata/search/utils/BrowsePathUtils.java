@@ -10,6 +10,7 @@ import com.linkedin.metadata.key.DataFlowKey;
 import com.linkedin.metadata.key.DataJobKey;
 import com.linkedin.metadata.key.DataPlatformKey;
 import com.linkedin.metadata.key.DatasetKey;
+import com.linkedin.metadata.key.DatasourceKey;
 import com.linkedin.metadata.key.GlossaryTermKey;
 import com.linkedin.metadata.models.AspectSpec;
 import com.linkedin.metadata.models.EntitySpec;
@@ -44,6 +45,14 @@ public class BrowsePathUtils {
                 entityRegistry));
         return ("/" + dpKey.getPlatformName() + "/"
             + dsKey.getName()).replace('.', '/').toLowerCase();
+      case "datasource":
+        DatasourceKey datasourceKey = (DatasourceKey) EntityKeyUtils.convertUrnToEntityKey(urn, getKeySchema(urn.getEntityType(), entityRegistry));
+        DataPlatformKey platformKey = (DataPlatformKey) EntityKeyUtils.convertUrnToEntityKey(
+                datasourceKey.getPlatform(),
+                getKeySchema(datasourceKey.getPlatform().getEntityType(),
+                        entityRegistry));
+        return ("/" + datasourceKey.getRegion() + "/" + platformKey.getPlatformName() + "/"
+                + datasourceKey.getName()).replace('.', '/').toLowerCase();
       case "chart":
         ChartKey chartKey = (ChartKey) EntityKeyUtils.convertUrnToEntityKey(urn, getKeySchema(urn.getEntityType(), entityRegistry));
         return ("/" + chartKey.getDashboardTool() + "/"  + chartKey.getChartId()).toLowerCase();

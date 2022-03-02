@@ -13,6 +13,7 @@ import { ChartEntity } from './app/entity/chart/ChartEntity';
 import { UserEntity } from './app/entity/user/User';
 import { GroupEntity } from './app/entity/group/Group';
 import { DatasetEntity } from './app/entity/dataset/DatasetEntity';
+import { DatasourceEntity } from './app/entity/datasource/DatasourceEntity';
 import { DataFlowEntity } from './app/entity/dataFlow/DataFlowEntity';
 import { DataJobEntity } from './app/entity/dataJob/DataJobEntity';
 import { TagEntity } from './app/entity/tag/Tag';
@@ -82,6 +83,7 @@ const App: React.VFC = () => {
     const entityRegistry = useMemo(() => {
         const register = new EntityRegistry();
         register.register(new DatasetEntity());
+        register.register(new DatasourceEntity());
         register.register(new DashboardEntity());
         register.register(new ChartEntity());
         register.register(new UserEntity());

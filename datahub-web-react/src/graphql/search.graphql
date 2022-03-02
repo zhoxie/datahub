@@ -60,6 +60,34 @@ fragment searchResults on SearchResults {
                     ...entityContainer
                 }
             }
+            ... on Datasource {
+                name
+                origin
+                description
+                uri
+                platform {
+                    name
+                    info {
+                        logoUrl
+                    }
+                }
+                platformNativeType
+                properties {
+                    customProperties {
+                        key
+                        value
+                    }
+                }
+                ownership {
+                    ...ownershipFields
+                }
+                globalTags {
+                    ...globalTagsFields
+                }
+                glossaryTerms {
+                    ...glossaryTerms
+                }
+            }
             ... on CorpUser {
                 username
                 info {

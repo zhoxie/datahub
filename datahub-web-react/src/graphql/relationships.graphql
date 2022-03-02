@@ -77,6 +77,30 @@ fragment relationshipFields on Entity {
         }
         ...datasetRelationshipsLeaf
     }
+    ... on Datasource {
+        name
+        origin
+        description
+        platform {
+             name
+             info {
+                 logoUrl
+             }
+         }
+        ownership {
+            ...ownershipFields
+        }
+        globalTags {
+            ...globalTagsFields
+        }
+        region
+        primaryConn {
+            dataCenter
+        }
+        gsbConn {
+            dataCenter
+        }
+    }
     ... on MLModelGroup {
         urn
         type
