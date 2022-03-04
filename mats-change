@@ -108,6 +108,7 @@ datahub-web-react/src/app/shared/admin/AdminHeaderLinks.tsx
 datahub-web-react/src/app/entity/shared/containers/profile/nav/ProfileNavBrowsePath.tsx
 datahub-web-react/src/app/browse/LegacyBrowsePath.tsx
 datahub-web-react/public/index.html
+datahub-web-react/public/favicon.ico
 
 # user avatar icon
 datahub-web-react/src/utils/formatter/dataProcess.ts
