@@ -34,11 +34,13 @@ FROM base as prod-install
 COPY --from=prod-build /war.war /datahub/datahub-gms/bin/war.war
 COPY --from=prod-build /entity-registry.yml /datahub/datahub-gms/resources/entity-registry.yml
 COPY --from=prod-build /start.sh /datahub/datahub-gms/scripts/start.sh
+COPY --from=prod-build /jetty.xml /datahub/datahub-gms/scripts/jetty.xml
 COPY --from=prod-build /client-prometheus-config.yaml /datahub/datahub-gms/scripts/prometheus-config.yaml
 RUN chmod 777 /datahub/datahub-gms/scripts/start.sh
 RUN chmod 777 /datahub/datahub-gms/bin/war.war
 RUN chmod 777 /datahub/datahub-gms/resources/entity-registry.yml
 RUN chmod 777 /datahub/datahub-gms/scripts/prometheus-config.yaml
+RUN chmod 777 /datahub/datahub-gms/scripts/jetty.xml
 
 FROM base as dev-install
 # Dummy stage for development. Assumes code is built on your machine and mounted to this image.
