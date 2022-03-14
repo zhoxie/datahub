@@ -57,6 +57,7 @@ COMMON="
     -jar /jetty-runner.jar \
     --jar jetty-util.jar \
     --jar jetty-jmx.jar \
+    --config jetty.xml \
     /datahub/datahub-gms/bin/war.war"
 
 if [[ $SKIP_ELASTICSEARCH_CHECK != true ]]; then
