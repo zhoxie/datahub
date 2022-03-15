@@ -52,7 +52,6 @@ COMMON="
     $WAIT_FOR_NEO4J \
     -timeout 240s \
     java $JAVA_OPTS $JMX_OPTS \
-    -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005 \
     $OTEL_AGENT \
     $PROMETHEUS_AGENT \
     -jar /jetty-runner.jar \
