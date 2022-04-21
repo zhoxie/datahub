@@ -45,6 +45,7 @@ ENV JAVA_OPTS=" \
    -Xms512m \
    -Xmx1024m \
    -Dhttp.port=$SERVER_PORT \
+   -Dplay.server.akka.max-header-value-length=40960 \
    -Dconfig.file=datahub-frontend/conf/application.conf \
    -Djava.security.auth.login.config=datahub-frontend/conf/jaas.conf \
    -Dlogback.configurationFile=datahub-frontend/conf/logback.xml \

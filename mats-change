@@ -1,3 +1,19 @@
+# logback appender
+docker/mats-frontend/Dockerfile
+build.gradle
+repositories.gradle
+datahub-frontend/conf/logback.xml
+datahub-frontend/run/frontend.env
+datahub-frontend/run/logback.xml
+datahub-frontend/run/run-local-frontend-debug
+datahub-frontend/play.gradle
+metadata-service/war/build.gradle
+metadata-service/war/src/main/resources/logback.xml
+
+# login cookie too large
+datahub-frontend/app/auth/sso/oidc/custom/OidcProfileCreator.java
+datahub-frontend/app/auth/sso/oidc/custom/CustomOidcClient.java
+
 # datasource frontend
 datahub-web-react/src/app/entity/datasource/DatasourceEntity.tsx
 datahub-web-react/src/app/entity/shared/tabs/Datasource/Source/Sources.tsx

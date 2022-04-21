@@ -17,6 +17,7 @@ dependencies {
   runtime externalDependency.mysqlConnector
   runtime externalDependency.postgresql
   runtime externalDependency.springWebMVC
+  runtime externalDependency.matsLogback
 
   runtime spec.product.pegasus.restliDocgen
   runtime spec.product.pegasus.restliSpringBridge

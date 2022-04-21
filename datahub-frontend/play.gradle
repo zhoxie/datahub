@@ -44,6 +44,7 @@ dependencies {
   play externalDependency.playCache
   play externalDependency.playWs
   play externalDependency.kafkaClients
+  play externalDependency.matsLogback
 
   playTest externalDependency.mockito
   playTest externalDependency.playTest

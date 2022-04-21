@@ -2,6 +2,7 @@ plugins {
   id "io.github.kobylynskyi.graphql.codegen" version "4.1.1"
 }
 apply plugin: 'java'
+apply plugin: 'idea'
 apply from: './play.gradle'
 
 
@@ -46,4 +47,11 @@ graphqlCodegen {
 
 tasks.withType(Checkstyle) {
   exclude "**/generated/**"
+}
+
+idea {
+  module {
+    downloadJavadoc = true
+    downloadSources = true
+  }
 }
